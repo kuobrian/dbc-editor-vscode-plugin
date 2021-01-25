@@ -10,7 +10,7 @@
 		"Other"
 	],
 	"activationEvents": [
-        "onCommand:vdcode-demo.helloWorld"
+        "*"
 	],
 	"main": "./out/extension.js",
 	"contributes": {
@@ -18,8 +18,80 @@
 			{
 				"command": "vdcode-demo.helloWorld",
 				"title": "Hello World"
+			},
+			{
+				"command": "vscode-demo.registerDataProvide",
+				"title": "register TreeView DataProvider"
+			},
+			{
+				"command": "vscode-demo.add_treeview",
+				"title": "Add New Item",
+				"icon": {
+					"dark": "assets/add.png",
+					"light": "assets/add.png"
+				}
+			},
+			{
+				"command": "vscode-demo.edit_treeview",
+				"title": "Edit Exist Item",
+				"icon": {
+					"dark": "assets/edit.png",
+					"light": "assets/edit.png"
+				} 
+			},
+			{
+				"command": "vscode-demo.delete_treeview",
+				"title": "Delete Item",
+				"icon": {
+					"light": "assets/trash.png",
+					"dark": "assets/trash.png"
+				}
 			}
-		]
+		],
+		"viewsContainers": {
+			"activitybar": [
+				{
+					"id": "treeview-container",
+					"title": "TreeView Container",
+					"icon": "assets/demo.png"
+				}
+			]
+		},
+		"views":{
+			"treeview-container": [
+				{
+					"id": "TreeView",
+					"name": "TreeView Name",
+					"icon": "assets/demo.png",
+					"contextualTitle": "TreeView Container"
+				}
+			]
+		},
+		"menus": {
+			"view/title": [
+				{
+					"command": "vscode-demo.add_treeview",
+					"when": "view == TreeView"
+				}
+			],
+			"view/item/context": [
+				{
+					"command": "vscode-demo.add_treeview",
+					"when": "view == TreeView && viewItem == treeviewitem",
+					"group": "inline"
+				},
+				{
+					"command": "vscode-demo.edit_treeview",
+					"when": "view == TreeView && viewItem == treeviewitem",
+					"group": "inline"
+				},
+				{
+					"command": "vscode-demo.delete_treeview",
+					"when": "view == TreeView && viewItem == treeviewitem",
+					"group": "inline"
+				}
+			]
+		}
 	},
 	"scripts": {
 		"vscode:prepublish": "yarn run package",

@@ -1,26 +1,59 @@
-// The module 'vscode' contains the VS Code extensibility API
-// Import the module and reference it with the alias vscode in your code below
-import * as vscode from 'vscode';
 
-// this method is called when your extension is activated
-// your extension is activated the very first time the command is executed
+import * as vscode from 'vscode';
+import {DataProvider, TreeViewItem} from "./treeview_dataprovider";
+
+
+
 export function activate(context: vscode.ExtensionContext) {
 
-	// Use the console to output diagnostic information (console.log) and errors (console.error)
-	// This line of code will only be executed once when your extension is activated
 	console.log('Congratulations, your extension "vdcode-demo" is now active123!');
-
-	// The command has been defined in the package.json file
-	// Now provide the implementation of the command with registerCommand
-	// The commandId parameter must match the command field in package.json
 	let disposable = vscode.commands.registerCommand('vdcode-demo.helloWorld', () => {
-		// The code you place here will be executed every time your command is executed
-
-		// Display a message box to the user
 		vscode.window.showInformationMessage('Hello World from demo-test!');
 	});
-
 	context.subscriptions.push(disposable);
+
+	const dataProvider = new DataProvider();
+	vscode.window.registerTreeDataProvider('TreeView', dataProvider);
+
+
+
+	context.subscriptions.push(
+		vscode.commands.registerCommand("vscode-demo.add_treeview", async () => {
+			const itemId = await vscode.window.showInputBox({
+				placeHolder: "your New TreeItem Id"
+			}) || "";
+			
+			if (itemId !== "") {
+				dataProvider.addItem(new TreeViewItem(itemId));
+			}
+
+			vscode.window.showInformationMessage("add Item ", itemId);
+		})
+	);
+	context.subscriptions.push(
+		vscode.commands.registerCommand("vscode-demo.edit_treeview", async (item: TreeViewItem) => {
+			const itemName = await vscode.window.showInputBox({
+				placeHolder: "your New TreeItem Name"
+			}) || "";
+			if (itemName !== "") {
+				dataProvider.editItem(item, itemName);
+			}
+			vscode.window.showInformationMessage("Edit item ", itemName);
+			
+		})
+	);
+	context.subscriptions.push(
+		vscode.commands.registerCommand("vscode-demo.delete_treeview", async (item: TreeViewItem) => {
+			const confirm = await vscode.window.showQuickPick(["delete", "cancel"], {
+				placeHolder: "Do you want to delete item?"
+			})
+			if (confirm === "delete") {
+				dataProvider.deleteItem(item);
+			}
+			vscode.window.showInformationMessage("delete item ");
+		})
+	);
+
 }
 
 // this method is called when your extension is deactivated
