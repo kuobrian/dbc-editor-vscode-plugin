@@ -1,6 +1,6 @@
 {
-  "name": "demo-test",
-	"displayName": "demo-test",
+  "name": "vdcode-demo",
+	"displayName": "vdcode-demo",
 	"description": "",
 	"version": "0.0.1",
 	"engines": {
@@ -10,22 +10,22 @@
 		"Other"
 	],
 	"activationEvents": [
-        "onCommand:demo-test.helloWorld"
+        "onCommand:vdcode-demo.helloWorld"
 	],
-	"main": "./dist/extension.js",
+	"main": "./out/extension.js",
 	"contributes": {
 		"commands": [
 			{
-				"command": "demo-test.helloWorld",
+				"command": "vdcode-demo.helloWorld",
 				"title": "Hello World"
 			}
 		]
 	},
 	"scripts": {
 		"vscode:prepublish": "yarn run package",
-		"compile": "webpack --config ./build/node-extension.webpack.config.js",
-		"watch": "webpack --watch --config ./build/node-extension.webpack.config.js",
-		"package": "webpack --mode production --devtool hidden-source-map --config ./build/node-extension.webpack.config.js",
+		"compile": "webpack --config ./webpack.config.plugin.js",
+		"watch": "webpack --watch --config ./webpack.config.plugin.js",
+		"package": "webpack --mode production --devtool hidden-source-map --config ./webpack.config.plugin.js",
 		"test-compile": "tsc -p ./",
 		"test-watch": "tsc -watch -p ./",
 		"pretest": "yarn run test-compile && yarn run lint",
