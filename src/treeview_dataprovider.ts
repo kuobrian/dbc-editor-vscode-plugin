@@ -4,17 +4,19 @@ import * as fs from 'fs';
 import * as path from 'path';
 
 
-class CANdb {
-    candbId: number;
-    network_nodes: string[];
-    messages: string[];
-    signals: string[];
+interface CANdbForm {
+    firstName: string;
+    lastName: string;
+ }
 
-    constructor(id:number) {
-        this.candbId = id;
-        this.network_nodes = [];
-        this.messages = [];
-        this.signals = [];
+class CANdb {
+    // network_nodes: string[];
+    // messages: string[];
+    // signals: string[];
+    dbMapping = new Map();
+
+    constructor(index: string[]) {
+        index.map(i => this.dbMapping.set(i, []));
    }
 }
 
@@ -23,24 +25,23 @@ class CANdb {
 class TreeViewItem extends vscode.TreeItem{
     constructor(
         public readonly label: string,
-        private readonly version: string, 
         public readonly collapsibleState: vscode.TreeItemCollapsibleState,
         public readonly command?: vscode.Command
-    ) {
-        super(label, collapsibleState);
-        this.tooltip = `${this.label}-${this.version}`;
-        this.description = this.version;
+        ) {
+            super(label, collapsibleState);
+            this.tooltip = `${this.label}`;
+        }
+        
+        iconPath = {
+            light: path.join(__filename, '..', '..', 'assets', 'dependency.svg'),
+            dark: path.join(__filename, '..', '..', 'assets', 'dependency.svg')
+        };
+        contextValue = 'treeviewitem';
     }
-
-    iconPath = {
-        light: path.join(__filename, '..', '..', 'assets', 'dependency.svg'),
-        dark: path.join(__filename, '..', '..', 'assets', 'dependency.svg')
-    };
-    contextValue = 'treeviewitem';
-}
-
+    
 class DataProvider implements vscode.TreeDataProvider<TreeViewItem> {
-
+    private Ids:number = 1;
+        
     private _onDidChangeTreeData: vscode.EventEmitter<TreeViewItem | undefined | void> = new vscode.EventEmitter<TreeViewItem | undefined | void>();
 	readonly onDidChangeTreeData: vscode.Event<TreeViewItem | undefined | void> = this._onDidChangeTreeData.event;
 
@@ -70,9 +71,9 @@ class DataProvider implements vscode.TreeDataProvider<TreeViewItem> {
 
             const toDep = (moduleName: string, version: string): TreeViewItem => {
 				if (this.pathExists(path.join(this.workspaceRoot, 'node_modules', moduleName))) {
-					return new TreeViewItem(moduleName, version, vscode.TreeItemCollapsibleState.Collapsed);
+					return new TreeViewItem(moduleName, vscode.TreeItemCollapsibleState.Collapsed);
 				} else {
-					return new TreeViewItem(moduleName, version, vscode.TreeItemCollapsibleState.None, {
+					return new TreeViewItem(moduleName, vscode.TreeItemCollapsibleState.None, {
 						command: 'extension.openPackageOnNpm',
 						title: '',
 						arguments: [moduleName]
@@ -96,26 +97,43 @@ class DataProvider implements vscode.TreeDataProvider<TreeViewItem> {
     }
 
     getChildren(element?: TreeViewItem): vscode.ProviderResult<TreeViewItem[]> {
+
+
         if (!this.workspaceRoot) {
             console.log(this.workspaceRoot);
 			vscode.window.showInformationMessage('No dependency in empty workspace');
 			return Promise.resolve([]);
         }
         if (element) {
-            console.log(element.label);
-            return Promise.resolve(this.getDepsInPackageJson(path.join(this.workspaceRoot, 'node_modules', element.label, 'package.json')));
+
+            if (element.label === "Network Node") {
+                console.log("Network Node templateCANdb");
+            }
+            else if (element.label === "Messages") {
+                console.log("Messages templateCANdb");
+            }
+            else if (element.label === "Singals") {
+                console.log("Singals templateCANdb");
+            }
+
+
+            // console.log(element.label);
+            // return Promise.resolve(this.getDepsInPackageJson(path.join(this.workspaceRoot, 'node_modules', element.label, 'package.json')));
         } else {
-            const packageJsonPath = path.join(this.workspaceRoot, "package.json");
-            if (this.pathExists(packageJsonPath)) {
-                return Promise.resolve(this.getDepsInPackageJson(packageJsonPath)); 
-            } else {
-				vscode.window.showInformationMessage('Workspace has no package.json');
-				return Promise.resolve([]);
-			}
+            console.log("templateCANdb");
+            return Promise.resolve(this.templateCANdb()); 
 
         }
     }
 
+
+    private templateCANdb(): TreeViewItem[]{
+        let templateTitles = ["Network Node", "Messages", "Singals"];
+        const candb_ = new CANdb(["Network Node", "Messages", "Singals"]);
+        
+        return  [...candb_.dbMapping.keys()].map(title => 
+            new TreeViewItem(title, vscode.TreeItemCollapsibleState.Collapsed));
+    }
 
 
     // public addItem(newItem:TreeViewItem){
