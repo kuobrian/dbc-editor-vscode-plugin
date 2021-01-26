@@ -24,7 +24,7 @@
 				"title": "register TreeView DataProvider"
 			},
 			{
-				"command": "vscode-demo.add_treeview",
+				"command": "vscode-demo.add_treeviewitems",
 				"title": "Add New Item",
 				"icon": {
 					"dark": "assets/add.png",
@@ -70,27 +70,28 @@
 		"menus": {
 			"view/title": [
 				{
-					"command": "vscode-demo.add_treeview",
+					"command": "vscode-demo.add_treeviewitems",
 					"when": "view == TreeView"
 				}
 			],
 			"view/item/context": [
 				{
-					"command": "vscode-demo.add_treeview",
-					"when": "view == TreeView && viewItem == treeviewitem",
-					"group": "inline"
-				},
-				{
-					"command": "vscode-demo.edit_treeview",
-					"when": "view == TreeView && viewItem == treeviewitem",
+					"command": "vscode-demo.add_treeviewitems",
+					"when": "view == TreeView && viewItem == treeviewroot",
 					"group": "inline"
 				},
 				{
 					"command": "vscode-demo.delete_treeview",
 					"when": "view == TreeView && viewItem == treeviewitem",
 					"group": "inline"
+				},
+				{
+					"command": "vscode-demo.edit_treeview",
+					"when": "view == TreeView && viewItem == treeviewitem",
+					"group": "navigation"
 				}
 			]
+			
 		}
 	},
 	"scripts": {
