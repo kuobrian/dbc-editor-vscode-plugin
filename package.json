@@ -1,6 +1,12 @@
 {
-  "name": "vdcode-demo",
-	"displayName": "vdcode-demo",
+	"name": "vscode-plugin-demo",
+	"babel": {
+		"presets": [
+			"@babel/preset-env",
+			"@babel/preset-react"
+		]
+	},
+	"displayName": "vscode-plugin-demo",
 	"description": "",
 	"version": "0.0.1",
 	"engines": {
@@ -10,21 +16,25 @@
 		"Other"
 	],
 	"activationEvents": [
-        "*"
+		"*"
 	],
 	"main": "./out/extension.js",
 	"contributes": {
 		"commands": [
 			{
-				"command": "vdcode-demo.helloWorld",
+				"command": "vscode-plugin-demo.startReactAPP",
+				"title": "React extension"
+			},
+			{
+				"command": "vscode-plugin-demo.helloWorld",
 				"title": "Hello World"
 			},
 			{
-				"command": "vscode-demo.registerDataProvide",
+				"command": "vscode-plugin-demo.registerDataProvide",
 				"title": "register TreeView DataProvider"
 			},
 			{
-				"command": "vscode-demo.add_treeviewitems",
+				"command": "vscode-plugin-demo.add_treeviewitems",
 				"title": "Add New Item",
 				"icon": {
 					"dark": "assets/add.png",
@@ -32,15 +42,15 @@
 				}
 			},
 			{
-				"command": "vscode-demo.edit_treeview",
+				"command": "vscode-plugin-demo.edit_treeview",
 				"title": "Edit Exist Item",
 				"icon": {
 					"dark": "assets/edit.png",
 					"light": "assets/edit.png"
-				} 
+				}
 			},
 			{
-				"command": "vscode-demo.delete_treeview",
+				"command": "vscode-plugin-demo.delete_treeview",
 				"title": "Delete Item",
 				"icon": {
 					"light": "assets/trash.png",
@@ -57,7 +67,7 @@
 				}
 			]
 		},
-		"views":{
+		"views": {
 			"treeview-container": [
 				{
 					"id": "TreeView",
@@ -70,55 +80,73 @@
 		"menus": {
 			"view/title": [
 				{
-					"command": "vscode-demo.add_treeviewitems",
+					"command": "vscode-plugin-demo.add_treeviewitems",
 					"when": "view == TreeView"
 				}
 			],
 			"view/item/context": [
 				{
-					"command": "vscode-demo.add_treeviewitems",
+					"command": "vscode-plugin-demo.add_treeviewitems",
 					"when": "view == TreeView && viewItem == treeviewroot",
 					"group": "inline"
 				},
 				{
-					"command": "vscode-demo.delete_treeview",
+					"command": "vscode-plugin-demo.delete_treeview",
 					"when": "view == TreeView && viewItem == treeviewitem",
 					"group": "inline"
 				},
 				{
-					"command": "vscode-demo.edit_treeview",
+					"command": "vscode-plugin-demo.edit_treeview",
 					"when": "view == TreeView && viewItem == treeviewitem",
 					"group": "navigation"
 				}
 			]
-			
 		}
 	},
 	"scripts": {
-		"vscode:prepublish": "yarn run package",
-		"compile": "webpack --config ./webpack.config.plugin.js",
+		"vscode:prepublish": "npm run package",
+		"compile": "npm run build:view && webpack --config ./webpack.config.plugin.js",
 		"watch": "webpack --watch --config ./webpack.config.plugin.js",
-		"package": "webpack --mode production --devtool hidden-source-map --config ./webpack.config.plugin.js",
 		"test-compile": "tsc -p ./",
 		"test-watch": "tsc -watch -p ./",
 		"pretest": "yarn run test-compile && yarn run lint",
 		"lint": "eslint src --ext ts",
-		"test": "node ./out/test/runTest.js"
+		"test": "node ./out/test/runTest.js",
+
+
+		"debugMode": "npm run watch",
+		"start:view": "webpack-dev-server --open --config ./webpack.config.view.js",
+		"build:view": "webpack --mode production --config ./webpack.config.view.js"
+
 	},
 	"devDependencies": {
-		"@types/vscode": "^1.52.0",
+		"@babel/core": "^7.5.4",
+		"@babel/preset-env": "^7.5.4",
+		"@babel/preset-react": "^7.0.0",
 		"@types/glob": "^7.1.3",
 		"@types/mocha": "^8.0.4",
 		"@types/node": "^12.11.7",
-		"eslint": "^7.15.0",
+		"@types/react": "^17.0.0",
+		"@types/vscode": "^1.52.0",
 		"@typescript-eslint/eslint-plugin": "^4.9.0",
 		"@typescript-eslint/parser": "^4.9.0",
+		"babel-loader": "^8.0.6",
+		"css-loader": "^3.0.0",
+		"eslint": "^7.15.0",
 		"glob": "^7.1.6",
+		"html-webpack-inline-source-plugin": "0.0.10",
+		"html-webpack-plugin": "^3.2.0",
 		"mocha": "^8.1.3",
+		"style-loader": "^0.23.1",
+		"ts-loader": "^8.0.11",
 		"typescript": "^4.1.2",
 		"vscode-test": "^1.4.1",
-		"ts-loader": "^8.0.11",
-		"webpack": "^5.5.1",
-		"webpack-cli": "^4.2.0"
+		"webpack": "^4.20.2",
+		"webpack-cli": "^3.1.1",
+		"webpack-dev-server": "^3.7.2"
+	},
+	"dependencies": {
+		"react": "^16.8.6",
+		"react-dom": "^16.8.6"
 	}
 }

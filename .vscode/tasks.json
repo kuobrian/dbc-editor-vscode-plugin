@@ -4,8 +4,18 @@
 	"version": "2.0.0",
 	"tasks": [
 		{
+			"label": "buildExtension",
 			"type": "npm",
 			"script": "watch",
+			"problemMatcher": [
+                "$ts-webpack-watch",
+                "$tslint-webpack-watch"
+			]
+		},
+		{
+			"label": "buildExtensionAPP",
+			"type": "npm",
+			"script": "compile",
 			"problemMatcher": [
                 "$ts-webpack-watch",
                 "$tslint-webpack-watch"

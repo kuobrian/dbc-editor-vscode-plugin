@@ -1,12 +1,19 @@
 
 import * as vscode from 'vscode';
 import * as path from 'path';
+import {startCommandHandler} from './webview_provider';
 import {DataProvider, TreeViewItem} from "./treeview_dataprovider";
 
-
 export function activate(context: vscode.ExtensionContext) {
-	console.log('Congratulations, your extension "vscode-demo" is now active123!');
-	let disposable = vscode.commands.registerCommand('vdcode-demo.helloWorld', () => {
+	console.log(context.extensionUri);
+	console.log('Congratulations, your extension "vscode-pluing-demo" is now active!');
+
+	const startCommand = vscode.commands.registerCommand("vscode-plugin-demo.startReactAPP", () => startCommandHandler(context));
+	
+
+	context.subscriptions.push(startCommand);
+
+	let disposable = vscode.commands.registerCommand('vscode-plugin-demo.helloWorld', () => {
 		vscode.window.showInformationMessage('Hello World from demo-test!');
 	});
 	context.subscriptions.push(disposable);
@@ -17,8 +24,15 @@ export function activate(context: vscode.ExtensionContext) {
 
 	vscode.window.registerTreeDataProvider('TreeView', dataProvider);
 	
+	vscode.commands.registerCommand('extension.openPackageOnNpm', moduleName =>
+		{
+			console.log(moduleName);
+			startCommandHandler(context);
+		}
+	);
+
 	context.subscriptions.push(
-		vscode.commands.registerCommand("vscode-demo.add_treeviewitems", async (rootName: TreeViewItem) => {
+		vscode.commands.registerCommand("vscode-plugin-demo.add_treeviewitems", async (rootName: TreeViewItem) => {
 			dataProvider.addItem(rootName.label);
 			vscode.window.showInformationMessage("add Item ");
 		})
@@ -36,8 +50,9 @@ export function activate(context: vscode.ExtensionContext) {
 			
 	// 	})
 	// );
+	
 	context.subscriptions.push(
-		vscode.commands.registerCommand("vscode-demo.delete_treeview", async (itemName: TreeViewItem) => {
+		vscode.commands.registerCommand("vscode-plugin-demo.delete_treeview", async (itemName: TreeViewItem) => {
 			const confirm = await vscode.window.showQuickPick(["delete", "cancel"], {
 				placeHolder: "Do you want to delete item?"
 			});

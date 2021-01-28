@@ -38,12 +38,12 @@ class TreeViewItem extends vscode.TreeItem{
         public readonly label: string,
         public readonly collapsibleState: vscode.TreeItemCollapsibleState,
         public readonly contextValue: string,
+        public readonly command?: vscode.Command
         ) {
             super(label, collapsibleState);
             this.tooltip = `${this.label}`;
             this.contextValue = contextValue;
-        }
-        
+        }        
         iconPath = {
             light: path.join(__filename, '..', '..', 'assets', 'dependency.svg'),
             dark: path.join(__filename, '..', '..', 'assets', 'dependency.svg')
@@ -68,47 +68,10 @@ class DataProvider implements vscode.TreeDataProvider<TreeViewItem> {
         }
     }
 
-
     private refresh() {
         this._onDidChangeTreeData.fire();
     }
 
-    private pathExists(p: string): boolean {
-		try {
-			fs.accessSync(p);
-		} catch (err) {
-			return false;
-		}
-
-		return true;
-    }
-    
-    // private getDepsInPackageJson(packageJsonPath: string): TreeViewItem[] {
-    //     if (this.pathExists(packageJsonPath) && (this.workspaceRoot !== undefined) ){
-    //         const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf-8'));
-
-    //         const toDep = (moduleName: string, version: string): TreeViewItem => {
-	// 			if (this.pathExists(path.join(this.workspaceRoot, 'node_modules', moduleName))) {
-	// 				return new TreeViewItem(moduleName, vscode.TreeItemCollapsibleState.Collapsed);
-	// 			} else {
-	// 				return new TreeViewItem(moduleName, vscode.TreeItemCollapsibleState.None, {
-	// 					command: 'extension.openPackageOnNpm',
-	// 					title: '',
-	// 					arguments: [moduleName]
-	// 				});
-	// 			}
-	// 		};            
-    //         const deps = packageJson.dependencies
-	// 			? Object.keys(packageJson.dependencies).map(dep => toDep(dep, packageJson.dependencies[dep]))
-	// 			: [];
-	// 		const devDeps = packageJson.devDependencies
-	// 			? Object.keys(packageJson.devDependencies).map(dep => toDep(dep, packageJson.devDependencies[dep]))
-	// 			: [];
-    //         return deps.concat(devDeps);
-    //     } else {
-    //         return [];
-    //     }
-    // };
       
     getTreeItem(element: TreeViewItem): vscode.TreeItem | Thenable<vscode.TreeItem> {
         return element;
@@ -136,16 +99,18 @@ class DataProvider implements vscode.TreeDataProvider<TreeViewItem> {
             else if (element.label === "Signals") {
                 if (this.candb_.dbMapping.get("Signals").length) {
                     return Promise.resolve(this.candb_.dbMapping.get("Signals").map((title: SignalForm) => 
-                                            new TreeViewItem(title.name, vscode.TreeItemCollapsibleState.None, 'treeviewitem')));
+                                            new TreeViewItem(title.name, vscode.TreeItemCollapsibleState.None, 'treeviewitem',{
+                                                command: 'extension.openPackageOnNpm',
+                                                title: '',
+                                                arguments:[title.name]}
+                                                )));
                 } 
-            }
-
+            } 
         } else {
-            
             return Promise.resolve(this.templateCANdb()); 
-
         }
     }
+
     private templateCANdb(): TreeViewItem[]{
         return  [...this.candb_.dbMapping.keys()].map(title => 
             new TreeViewItem(title, vscode.TreeItemCollapsibleState.Collapsed, 'treeviewroot'));
