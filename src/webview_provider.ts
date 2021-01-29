@@ -21,11 +21,16 @@ export function startCommandHandler(context: vscode.ExtensionContext): void {
     let htmlContent: string = getHtmlForWebview(context.extensionPath);
     
     const vsUri = vscode.Uri.parse( path.join(context.extensionPath, 'dist/webview.js') );
-    let webpackPathOnDisk = vscode.Uri.file(path.join(context.extensionPath, 'dist/bundles.js'));
+    let webpackPathOnDisk = vscode.Uri.file(path.join(context.extensionPath, 'dist/bundle.js'));
     let webpackUri = panel.webview.asWebviewUri(webpackPathOnDisk);
+
+    let helloPathOnDisk = vscode.Uri.file(path.join(context.extensionPath, 'dist/hello.js'));
+    let hellokUri = panel.webview.asWebviewUri(helloPathOnDisk);
+
     console.log(webpackUri);
     /* Rplace keywords from html content */
     htmlContent = htmlContent.replace('${scriptUri}', webpackUri.toString());
+    htmlContent = htmlContent.replace('${helloUri}', hellokUri.toString());
     panel.webview.html = htmlContent;
     
     // // 傳送訊息給Webview

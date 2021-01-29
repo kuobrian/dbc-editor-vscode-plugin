@@ -14,15 +14,27 @@ const htmlWebpackInlineSourcePlugin = new HtmlWebpackInlineSourcePlugin();
 
 module.exports = {
   entry: {
-    bundles: path.resolve(__dirname, "react-app/src/index.js")
+    hello: path.resolve(__dirname, "react-app/src/hello_index.tsx"),
+    bundle: path.resolve(__dirname, "react-app/src/index.js")
   },
   output: {
     path: path.resolve(__dirname, "dist"),
     filename: "[name].js"
   },
-  
+  resolve: {
+    // 加入'.ts' and '.tsx' 結尾
+    extensions: [".ts", ".tsx", ".js", ".json"]
+  },
+
   module: {
     rules: [
+      { test: /\.tsx?$/,
+        exclude: /node_modules/,
+        loader: "ts-loader" ,
+        options: {
+          configFile: path.join(__dirname, "/react-app/tsconfig.json")
+        }
+      },
       {
         test: /\.js$/,
         exclude: /node_modules/,
