@@ -8,7 +8,8 @@ const webViewPanelId = 'reactExtension';
 
 export function startCommandHandler(context: vscode.ExtensionContext): void {
 	const showOptions = {
-		enableScripts: true
+    enableScripts: true,
+    
 	};
 	console.log('startCommandHandler is now active!');
 	const panel = vscode.window.createWebviewPanel(
@@ -18,8 +19,15 @@ export function startCommandHandler(context: vscode.ExtensionContext): void {
 		showOptions
 	);
     let htmlContent: string = getHtmlForWebview(context.extensionPath);
+    
+    const vsUri = vscode.Uri.parse( path.join(context.extensionPath, 'dist/webview.js') );
+    let webpackPathOnDisk = vscode.Uri.file(path.join(context.extensionPath, 'dist/bundles.js'));
+    let webpackUri = panel.webview.asWebviewUri(webpackPathOnDisk);
+    console.log(webpackUri);
+    /* Rplace keywords from html content */
+    htmlContent = htmlContent.replace('${scriptUri}', webpackUri.toString());
     panel.webview.html = htmlContent;
-
+    
     // // 傳送訊息給Webview
     // panel.webview.postMessage({...});
 
@@ -81,7 +89,8 @@ function runDirCommand(callback : Function) {
 export function getHtmlForWebview(rootpath: string): string {
   
 	try {
-    const reactApplicationHtmlFilename = "index.html";
+    // const reactApplicationHtmlFilename = "index_out.html";
+    const reactApplicationHtmlFilename = "template.html";
     const htmlPath = path.join(rootpath, "dist", reactApplicationHtmlFilename);
     console.log("htmlPath: ", htmlPath);
     const html = fs.readFileSync(htmlPath).toString();

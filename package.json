@@ -105,19 +105,15 @@
 	},
 	"scripts": {
 		"vscode:prepublish": "npm run package",
-		"compile": "npm run build:view && webpack --config ./webpack.config.plugin.js",
-		"watch": "webpack --watch --config ./webpack.config.plugin.js",
-		"test-compile": "tsc -p ./",
+		"package": "webpack --watch --mode development --config webpack.config.pluging.js",
+		"compile": "npm-run-all compile:*",
+		"compile:views": "webpack --mode production --config ./webpack.config.view.js",
+		"compile:extension": "webpack --mode production --config webpack.config.pluging.js",
+		"watch": "npm-run-all -p watch:*",
+		"watch:extension": "webpack --watch --mode development --config webpack.config.pluging.js",
+		"watch:views": "webpack --watch --mode development --config webpack.config.view.js",
 		"test-watch": "tsc -watch -p ./",
-		"pretest": "yarn run test-compile && yarn run lint",
-		"lint": "eslint src --ext ts",
-		"test": "node ./out/test/runTest.js",
-
-
-		"debugMode": "npm run watch",
-		"start:view": "webpack-dev-server --open --config ./webpack.config.view.js",
-		"build:view": "webpack --mode production --config ./webpack.config.view.js"
-
+		"test": "node ./out/test/runTest.js"
 	},
 	"devDependencies": {
 		"@babel/core": "^7.5.4",
@@ -135,15 +131,15 @@
 		"eslint": "^7.15.0",
 		"glob": "^7.1.6",
 		"html-webpack-inline-source-plugin": "0.0.10",
-		"html-webpack-plugin": "^3.2.0",
+		"html-webpack-plugin": "^4.5.1",
 		"mocha": "^8.1.3",
+		"npm-run-all": "^4.1.5",
 		"style-loader": "^0.23.1",
 		"ts-loader": "^8.0.11",
 		"typescript": "^4.1.2",
 		"vscode-test": "^1.4.1",
-		"webpack": "^4.20.2",
-		"webpack-cli": "^3.1.1",
-		"webpack-dev-server": "^3.7.2"
+		"webpack": "^5.5.1",
+		"webpack-cli": "^4.2.0"
 	},
 	"dependencies": {
 		"react": "^16.8.6",

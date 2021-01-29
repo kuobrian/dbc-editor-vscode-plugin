@@ -23,7 +23,7 @@ class Index extends React.Component {
       <div className="container">
         <div className="row">
           <div className="col-sm">
-            <h1>VSCode React application
+            <h1>VSCode React application123
           <small>Do something productive...</small>
             </h1>
             <hr />
@@ -33,7 +33,7 @@ class Index extends React.Component {
           <div className="col-sm">
             <h3>Some functionality</h3>
             <p>Use this button to execute some functionality</p>
-            <button onClick={() => { Interactor.showInformationMessage("Emojis123123 are in vogue at the moment 🐛") }}>
+            <button onClick={() => { Interactor.showInformationMessage("Emojis are in vogue at the moment 🐛") }}>
               Click me
           </button>
           </div>
@@ -57,17 +57,17 @@ class Index extends React.Component {
             </form>
           </div>
         </div>
-        {/* <div className="row">
+        <div className="row">
           <div className="col-sm">
             <div className="card">
-              <h3>Cat gif</h3>
+              <h3>Cat gif123</h3>
               <img src="https://media.giphy.com/media/JIX9t2j0ZTN9S/giphy.gif" width="300" className="section media" />
             </div>
           </div>
-        </div> */}
+        </div>
       </div>
     </>
   }
 }
 
-ReactDOM.render(<Index />, document.getElementById("test"));
+ReactDOM.render(<Index />, document.getElementById("root"));

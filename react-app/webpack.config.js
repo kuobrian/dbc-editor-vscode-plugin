@@ -14,8 +14,6 @@ module.exports = {
     path.resolve(__dirname, "src/index.js")
   ],
  
-  
-  
   module: {
     rules: [
       {

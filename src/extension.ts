@@ -6,7 +6,7 @@ import {DataProvider, TreeViewItem} from "./treeview_dataprovider";
 
 export function activate(context: vscode.ExtensionContext) {
 	console.log(context.extensionUri);
-	console.log('Congratulations, your extension "vscode-pluing-demo" is now active!');
+	console.log('Congratulations, your extension "vscode-pluing-demo123" is now active!');
 
 	const startCommand = vscode.commands.registerCommand("vscode-plugin-demo.startReactAPP", () => startCommandHandler(context));
 	
