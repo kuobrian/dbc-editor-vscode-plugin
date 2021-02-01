@@ -79,7 +79,6 @@ class DataProvider implements vscode.TreeDataProvider<TreeViewItem> {
 
     getChildren(element?: TreeViewItem): vscode.ProviderResult<TreeViewItem[]> {
         if (!this.workspaceRoot) {
-            console.log(this.workspaceRoot);
 			vscode.window.showInformationMessage('No dependency in empty workspace');
 			return Promise.resolve([]);
         }
@@ -118,7 +117,6 @@ class DataProvider implements vscode.TreeDataProvider<TreeViewItem> {
 
 
     public addItem(rootName:string){
-        console.log(rootName);
         if (rootName === "Signals") {
             const newItem: SignalForm = { name: "new_"+rootName.slice(0, -1) + "_"+ (this.candb_.dbMapping.get(rootName).length+1),
                                         bitlength: 8,

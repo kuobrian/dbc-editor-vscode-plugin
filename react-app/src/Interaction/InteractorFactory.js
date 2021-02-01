@@ -1,6 +1,9 @@
 import BrowserInteractor from './BrowserInteractor';
 import VsCodeInteractorFactory from './VsCodeInteractorFactory';
 
+const Interactor = InteractorFactory.create();
+
+
 function tryAcquireVsCodeApi() {
   try {
     return acquireVsCodeApi();
@@ -12,6 +15,7 @@ function tryAcquireVsCodeApi() {
 
 function create() {
   const vsCodeApi = tryAcquireVsCodeApi();
+  console.log(vsCodeApi);
 
   if (vsCodeApi === null) {
     return BrowserInteractor;

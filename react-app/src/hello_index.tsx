@@ -1,7 +1,7 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 
-import {HomePage, MyComponent} from './hello';
+import {HomePage} from './hello';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 // ReactDOM.render(
@@ -10,5 +10,6 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 // );
 
 
-// ReactDOM.render(<MyComponent />, document.getElementById('hello'));
-ReactDOM.render(<HomePage/>, document.getElementById('hello'));
+ReactDOM.render(<HomePage />, document.getElementById('root'));
+
+
