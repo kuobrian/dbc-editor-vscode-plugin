@@ -118,7 +118,10 @@ export function startCommandHandler(context: vscode.ExtensionContext): void {
     panel.webview.html = htmlContent;
 
     // // 傳送訊息給Webview
-    panel.webview.postMessage({text: "hello hihihihihihihihihihihihihihihihihi"});
+    panel.webview.postMessage( {
+        test : "test_hello",
+        text: "hello hihihihihihihihihihihihihihihihihi"
+      });
 
     // 接收Webview傳來的訊息
     panel.webview.onDidReceiveMessage(

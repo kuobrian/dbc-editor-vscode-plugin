@@ -23,7 +23,7 @@ const vsCodeStateChangeBuffer = {
 window.addEventListener('message', event => {
   const message = event.data;
   console.log('Webview接收到的消息：', message);
-  console.log(event.data['text']);
+  console.log(event.data['text'], event.data['test']);
 
   switch(message.command){
     case 'getDirectoryInfo':
