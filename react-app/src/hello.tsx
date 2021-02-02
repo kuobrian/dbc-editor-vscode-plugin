@@ -13,37 +13,20 @@ import {InteractorFactory, Interactor } from './utils';
 
 const res = new InteractorFactory();
 
-interface SignalForm {
-    name: string;
-    bitlength: Number;
-    byteorder: string;
-    valuetype: string;
-    factor: Number;
-    minimun: Number;
-    maximum: Number;
-    offset: Number;
-    initValue: Number;
-    unit?: Number;
- }
 
-interface MessageForm {
-    name: string;
-    msgType: string;
-    id: string;
-    dlc: Number;
- }
 
 
 export class HomePage extends React.Component {
+	initvvvv = "init value";
 
 	constructor(props) {
 		super(props);
 		this.state = { directoryInfo: "", val: "" };
 	}
-
+	
 	updateFilesToDisplay() {
 		res._interactor.getDirectoryInfo(directoryInfo => {
-		this.setState({ directoryInfo: "directoryInfo 123" });
+				this.setState({ directoryInfo: directoryInfo });
 		});
 	}
 
@@ -61,7 +44,7 @@ export class HomePage extends React.Component {
 							<Form.Group controlId="signalName">
 								<Form.Label>Name:</Form.Label> <Form.Control type="email" placeholder="Enter email" />
 								<Form.Text className="text-muted">
-									We'll never share your email with anyone else.
+								init value
 								</Form.Text>
 							</Form.Group>
 
@@ -115,7 +98,13 @@ export class HomePage extends React.Component {
 			</Tabs>
 
 
-
+			<div>
+				<button onClick={() => this.updateFilesToDisplay()}>Run <code>dir</code> command</button>
+				<br/>
+				<code>
+					{this.state["directoryInfo"] !== "" ? this.state["directoryInfo"] : "Run the command123..."}
+				</code>
+			</div>
 			
 			{/* <div className="col-sm">
 			<div>
@@ -133,3 +122,5 @@ export class HomePage extends React.Component {
 		);
 	}
 }
+
+

@@ -10,6 +10,6 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 // );
 
 
-ReactDOM.render(<HomePage />, document.getElementById('root'));
+ReactDOM.render(<HomePage />, document.getElementById('hello'));
 
 

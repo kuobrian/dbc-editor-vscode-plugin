@@ -8,7 +8,8 @@ declare global {
 /* List  Interactors */
 export const Interactor = {
   showInformationMessageTTT: text => console.log(`showInformationMessage ${text}`),
-  getDirectoryInfo: callback => console.log(`getDirectoryInfo ${callback}`)
+  getDirectoryInfo: callback => console.log(`getDirectoryInfo ${callback}`),
+  getinitFormValue: callback => console.log(`getinitFormValue ${callback}`)
 };
 
 
@@ -29,32 +30,34 @@ window.addEventListener('message', event => {
     case 'getDirectoryInfo':
       vsCodeStateChangeBuffer.directoryInfo += message.directoryInfo;
       vsCodeStateChangeCallbacks.getDirectoryInfo(vsCodeStateChangeBuffer.directoryInfo);
+    case 'getInitValue':
+      console.log( message.initText);
+      Interactor.getinitFormValue(message.initText);
     break;
   }
 });
 
-function createFromVsCodeApi(vscode) {
-  Interactor.showInformationMessageTTT = text =>
-    vscode.postMessage({
-    command: 'showInformationMessage123',
-    text: text
-  });
-
-  Interactor.getDirectoryInfo = callback => {
-    vsCodeStateChangeCallbacks.getDirectoryInfo = callback;
-    vsCodeStateChangeBuffer.directoryInfo = "";
-    vscode.postMessage({ command: 'getDirectoryInfo' });
-  };
-  return Interactor;
-}
-
-
 export class InteractorFactory {
-  public _interactor: any ;
-  constructor() {
-    this._interactor = this.create();
-  };
-  private create() {
-    return createFromVsCodeApi(window.acquireVsCodeApi());
-  }
+	public _interactor: any ;
+
+	constructor() {
+		this._interactor = this.create(window.acquireVsCodeApi());
+	};
+
+
+	private create(vscode) {
+		Interactor.showInformationMessageTTT = text =>
+			vscode.postMessage({
+			command: 'showInformationMessage123',
+			text: text
+		});
+
+		Interactor.getDirectoryInfo = callback => {
+			vsCodeStateChangeCallbacks.getDirectoryInfo = callback;
+			vsCodeStateChangeBuffer.directoryInfo = "";
+			vscode.postMessage({ command: 'getDirectoryInfo' });
+		};
+
+		return Interactor;
+	}
 }

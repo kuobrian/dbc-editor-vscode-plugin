@@ -32,15 +32,15 @@ class WebViewPanel {
     let htmlContent: string = getHtmlForWebview(context.extensionPath);
     
     const vsUri = vscode.Uri.parse( path.join(context.extensionPath, 'dist/webview.js') );
-    let webpackPathOnDisk = vscode.Uri.file(path.join(context.extensionPath, 'dist/bundle.js'));
+    let webpackPathOnDisk = vscode.Uri.file(path.join(context.extensionPath, 'dist/candbEditor.js'));
     let webpackUri = this._panel.webview.asWebviewUri(webpackPathOnDisk);
 
     let helloPathOnDisk = vscode.Uri.file(path.join(context.extensionPath, 'dist/hello.js'));
     let hellokUri = this._panel.webview.asWebviewUri(helloPathOnDisk);
 
     /* Rplace keywords from html content */
-    htmlContent = htmlContent.replace('${scriptUri}', webpackUri.toString());
-    htmlContent = htmlContent.replace('${helloUri}', hellokUri.toString());
+    htmlContent = htmlContent.replace('${rootUri}', webpackUri.toString());
+    // htmlContent = htmlContent.replace('${helloUri}', hellokUri.toString());
     this._panel.webview.html = htmlContent;
     this._disposables.push(this._panel);
   }
@@ -112,16 +112,18 @@ export function startCommandHandler(context: vscode.ExtensionContext): void {
     
     let htmlContent: string = getHtmlForWebview(context.extensionPath);
 
+    let webpackPathOnDisk = vscode.Uri.file(path.join(context.extensionPath, 'dist/candbEditor.js'));
+    let webpackUri = panel.webview.asWebviewUri(webpackPathOnDisk);
+    htmlContent = htmlContent.replace('${rootUri}', webpackUri.toString());
+
     let helloPathOnDisk = vscode.Uri.file(path.join(context.extensionPath, 'dist/hello.js'));
     let hellokUri = panel.webview.asWebviewUri(helloPathOnDisk);
-    htmlContent = htmlContent.replace('${scriptUri}', hellokUri.toString());
+    htmlContent = htmlContent.replace('${helloUri}', hellokUri.toString());
+
     panel.webview.html = htmlContent;
 
     // // 傳送訊息給Webview
-    panel.webview.postMessage( {
-        test : "test_hello",
-        text: "hello hihihihihihihihihihihihihihihihihi"
-      });
+    panel.webview.postMessage( { command: 'getInitValue', initText: "123" });
 
     // 接收Webview傳來的訊息
     panel.webview.onDidReceiveMessage(
@@ -148,7 +150,7 @@ function onPanelDidReceiveMessage(message: any) {
   
       case 'getDirectoryInfo':
         runDirCommand((result : string) => 
-          webViewPanel.webview.postMessage({ command: 'getDirectoryInfo', directoryInfo: result })
+          webViewPanel.webview.postMessage({ command: 'getDirectoryInfo', directoryInfo: "123" })
         );
         return;
     }
@@ -157,10 +159,14 @@ function onPanelDidReceiveMessage(message: any) {
 function runDirCommand(callback : Function) {
     var spawn = require('child_process').spawn;
     var cp = spawn(process.env.comspec, ['/c', 'dir']);
+    console.log(spawn);
+
+    console.log(cp.stdout);
+
+    
     
     cp.stdout.on("data", function(data : any) {
       const dataString = data.toString();
-  
       callback(dataString);
     });
     

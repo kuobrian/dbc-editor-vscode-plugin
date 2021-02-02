@@ -26,6 +26,7 @@ export function activate(context: vscode.ExtensionContext) {
 	
 	vscode.commands.registerCommand('extension.openPackageOnNpm', moduleName =>
 		{
+
 			startCommandHandler(context);
 		}
 	);
