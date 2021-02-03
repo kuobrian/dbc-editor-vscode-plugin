@@ -5,6 +5,7 @@ import * as path from 'path';
 
 
 export interface SignalForm {
+    uid: string;
     name: string;
     bitlength: Number;
     byteorder: string;
@@ -15,9 +16,11 @@ export interface SignalForm {
     offset: Number;
     initValue: Number;
     unit?: Number;
+    valuetable?: any;
  }
 
 export interface MessageForm {
+    uid: string;
     name: string;
     msgType: string;
     id: string;

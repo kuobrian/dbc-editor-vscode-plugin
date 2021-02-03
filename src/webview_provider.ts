@@ -128,7 +128,7 @@ export function startCommandHandler(context: vscode.ExtensionContext, modulename
     console.log(candbSignal);
 
     // // 傳送訊息給Webview
-    panel.webview.postMessage( candbSignal );
+    panel.webview.postMessage(candbSignal );
 
     // 接收Webview傳來的訊息
     panel.webview.onDidReceiveMessage(
@@ -151,6 +151,9 @@ function onPanelDispose(): void {
 function onPanelDidReceiveMessage(message: any) {
   console.log(message.command);
   switch (message.command) {
+    case 'modifySignalValue':
+      console.log(message.data);
+
     case 'showInformationMessage123':
         vscode.window.showInformationMessage(message.text);
         return;

@@ -5,6 +5,14 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as CANDB from './candb_provider';
 
+
+function uuidv4() {
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+      var r = Math.random() * 16 | 0, v = c === 'x' ? r : (r & 0x3 | 0x8);
+      return v.toString(16);
+    });
+}
+
 class TreeViewItem extends vscode.TreeItem{
     constructor(
         public readonly label: string,
@@ -90,7 +98,8 @@ class DataProvider implements vscode.TreeDataProvider<TreeViewItem> {
 
     public addItem(rootName:string){
         if (rootName === "Signals") {
-            const newItem: CANDB.SignalForm = { name: "new_"+rootName.slice(0, -1) + "_"+ (this.candb_.dbMapping.get(rootName).length+1),
+            const newItem: CANDB.SignalForm = { uid: uuidv4(),
+                                        name: "new_"+rootName.slice(0, -1) + "_"+ (this.candb_.dbMapping.get(rootName).length+1),
                                         bitlength: 8,
                                         byteorder: "Intel",
                                         valuetype: 'Signed',
@@ -98,16 +107,18 @@ class DataProvider implements vscode.TreeDataProvider<TreeViewItem> {
                                         minimun: 0,
                                         maximum: 0,
                                         offset:  0,
-                                        initValue: 0
+                                        initValue: 0,
+                                        valuetable: null
                                         };
             
             this.candb_.dbMapping.get(rootName).push(newItem);
         }
         else if (rootName === "Messages") {
-            const newItem: CANDB.MessageForm = { name: "new_"+rootName.slice(0, -1) + "_"+ (this.candb_.dbMapping.get(rootName).length+1),
-                                            msgType: "CAN Standard",
-                                            id: "0x"+(this.candb_.dbMapping.get(rootName).length+1),
-                                            dlc: 8};
+            const newItem: CANDB.MessageForm = { uid: uuidv4(),
+                        name: "new_"+rootName.slice(0, -1) + "_"+ (this.candb_.dbMapping.get(rootName).length+1),
+                        msgType: "CAN Standard",
+                        id: "0x"+(this.candb_.dbMapping.get(rootName).length+1),
+                        dlc: 8};
             this.candb_.dbMapping.get(rootName).push(newItem);
         }
         this.refresh();
