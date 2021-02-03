@@ -27,8 +27,8 @@ export interface HelloProps { compiler: string; framework: string; }
 
 window.addEventListener('message', (event) =>{
     const message = event.data;
-    console.log('candbEditor  Webview接收到的消息：', message);
-
+    console.log('candbEditor  Webview接收到的消息：',
+                message.name, message.bitlength, message.byteorder);
 
 
     const App = () =>  {
@@ -56,19 +56,21 @@ window.addEventListener('message', (event) =>{
       };  
         return (
                 <>
-                <Tabs defaultActiveKey="messages" id="uncontrolled-tab-example">
+                <Tabs defaultActiveKey="definition" id="uncontrolled-tab-example">
                     <Tab eventKey="definition" title="Definition">
                       <Container fluid  style={styles.row}>
                         <Row >
                             <Form inline>
                                 <Col style={styles.col}> <Form.Label style={formGroupStyle}>Name:</Form.Label> </Col>
-                                <Col > <Form.Control type="name" placeholder="Enter signal name" />  </Col>
+                                <Col > <Form.Control type="name"
+                                                    defaultValue={message.name} />  </Col>
                             </Form>
                         </Row>
                         <Row >
                           <Form inline>
                               <Col style={styles.col}> <Form.Label style={formGroupStyle}>Length:</Form.Label> </Col>
-                              <Col> <Form.Control type="Length" placeholder="8" />  </Col>
+                              <Col> <Form.Control type="Length" 
+                                                  defaultValue={message.bitlength} />  </Col>
                           </Form>
                         </Row>
                         <Row >
@@ -81,7 +83,8 @@ window.addEventListener('message', (event) =>{
                                 </Form.Control>
                               </Col>
                               <Col style={styles.col}> <Form.Label style={formGroupStyle}>Unit:</Form.Label> </Col>
-                              <Col > <Form.Control type="Length"  />  </Col>
+                              <Col > <Form.Control type="Length" 
+                                                  defaultValue={message.unit} />  </Col>
                           </Form>
                         </Row>
                         <Row >
@@ -96,23 +99,28 @@ window.addEventListener('message', (event) =>{
                                   </Form.Control>
                               </Col>
                               <Col style={styles.col}> <Form.Label style={formGroupStyle}>Init Value:</Form.Label> </Col>
-                              <Col > <Form.Control type="Length"  />  </Col>
+                              <Col > <Form.Control type="Length" 
+                                                  defaultValue={message.initValue} />  </Col>
                           </Form>
                         </Row>
                         <Row >
                           <Form inline>
                               <Col style={styles.col}> <Form.Label style={formGroupStyle}>Factor:</Form.Label> </Col>
-                              <Col > <Form.Control type="Length"  />  </Col>
+                              <Col > <Form.Control type="Length" 
+                                                  defaultValue={message.factor} />  </Col>
                               <Col style={styles.col}> <Form.Label style={formGroupStyle}>Offset:</Form.Label> </Col>
-                              <Col > <Form.Control type="Length"  />  </Col>
+                              <Col > <Form.Control type="Length" 
+                                                  defaultValue={message.offset} />  </Col>
                           </Form>
                         </Row>
                         <Row >
                           <Form inline>
                               <Col style={styles.col}> <Form.Label style={formGroupStyle}>Minimun:</Form.Label> </Col>
-                              <Col > <Form.Control type="Length"  />  </Col>
+                              <Col > <Form.Control type="Length" 
+                                                  defaultValue={message.minimun} />  </Col>
                               <Col style={styles.col}> <Form.Label style={formGroupStyle}>Maximum:</Form.Label> </Col>
-                              <Col > <Form.Control type="Length"  />  </Col>
+                              <Col > <Form.Control type="Length" 
+                                                  defaultValue={message.maximum} />  </Col>
                               <Col style={{ paddingLeft: 20 }}>
                               
                               </Col>

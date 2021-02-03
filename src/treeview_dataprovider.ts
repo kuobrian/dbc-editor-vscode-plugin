@@ -3,35 +3,7 @@
 import * as vscode from 'vscode';
 import * as fs from 'fs';
 import * as path from 'path';
-
-
-interface SignalForm {
-    name: string;
-    bitlength: Number;
-    byteorder: string;
-    valuetype: string;
-    factor: Number;
-    minimun: Number;
-    maximum: Number;
-    offset: Number;
-    initValue: Number;
-    unit?: Number;
- }
-
-interface MessageForm {
-    name: string;
-    msgType: string;
-    id: string;
-    dlc: Number;
- }
-
-class CANdb {
-    dbMapping = new Map();
-
-    constructor(index: string[]) {
-        index.map(i => this.dbMapping.set(i, []));
-   }
-}
+import * as CANDB from './candb_provider';
 
 class TreeViewItem extends vscode.TreeItem{
     constructor(
@@ -54,7 +26,7 @@ class TreeViewItem extends vscode.TreeItem{
 class DataProvider implements vscode.TreeDataProvider<TreeViewItem> {
     
     private templateTitles = ["Network Node", "Messages", "Signals"];
-    private candb_ = new CANdb(["Network Node", "Messages", "Signals"]);
+    private candb_ = new CANDB.CANdb(["Network Node", "Messages", "Signals"]);
         
     private _onDidChangeTreeData: vscode.EventEmitter<TreeViewItem | undefined | void> = new vscode.EventEmitter<TreeViewItem | undefined | void>();
 	readonly onDidChangeTreeData: vscode.Event<TreeViewItem | undefined | void> = this._onDidChangeTreeData.event;
@@ -91,17 +63,17 @@ class DataProvider implements vscode.TreeDataProvider<TreeViewItem> {
             }
             else if (element.label === "Messages") {
                 if (this.candb_.dbMapping.get("Messages").length) {
-                    return Promise.resolve(this.candb_.dbMapping.get("Messages").map((title: MessageForm) => 
-                                            new TreeViewItem(title.name, vscode.TreeItemCollapsibleState.None, 'treeviewitem')));
+                    return Promise.resolve(this.candb_.dbMapping.get("Messages").map((messageitem: CANDB.MessageForm) => 
+                                            new TreeViewItem(messageitem.name, vscode.TreeItemCollapsibleState.None, 'treeviewitem')));
                 } 
             }
             else if (element.label === "Signals") {
                 if (this.candb_.dbMapping.get("Signals").length) {
-                    return Promise.resolve(this.candb_.dbMapping.get("Signals").map((title: SignalForm) => 
-                                            new TreeViewItem(title.name, vscode.TreeItemCollapsibleState.None, 'treeviewitem',{
+                    return Promise.resolve(this.candb_.dbMapping.get("Signals").map((signalitem: CANDB.SignalForm) => 
+                                            new TreeViewItem(signalitem.name, vscode.TreeItemCollapsibleState.None, 'treeviewitem',{
                                                 command: 'extension.openPackageOnNpm',
                                                 title: '',
-                                                arguments:[title.name]}
+                                                arguments:[signalitem.name, this.candb_]}
                                                 )));
                 } 
             } 
@@ -118,7 +90,7 @@ class DataProvider implements vscode.TreeDataProvider<TreeViewItem> {
 
     public addItem(rootName:string){
         if (rootName === "Signals") {
-            const newItem: SignalForm = { name: "new_"+rootName.slice(0, -1) + "_"+ (this.candb_.dbMapping.get(rootName).length+1),
+            const newItem: CANDB.SignalForm = { name: "new_"+rootName.slice(0, -1) + "_"+ (this.candb_.dbMapping.get(rootName).length+1),
                                         bitlength: 8,
                                         byteorder: "Intel",
                                         valuetype: 'Signed',
@@ -132,7 +104,7 @@ class DataProvider implements vscode.TreeDataProvider<TreeViewItem> {
             this.candb_.dbMapping.get(rootName).push(newItem);
         }
         else if (rootName === "Messages") {
-            const newItem: MessageForm = { name: "new_"+rootName.slice(0, -1) + "_"+ (this.candb_.dbMapping.get(rootName).length+1),
+            const newItem: CANDB.MessageForm = { name: "new_"+rootName.slice(0, -1) + "_"+ (this.candb_.dbMapping.get(rootName).length+1),
                                             msgType: "CAN Standard",
                                             id: "0x"+(this.candb_.dbMapping.get(rootName).length+1),
                                             dlc: 8};
@@ -145,10 +117,10 @@ class DataProvider implements vscode.TreeDataProvider<TreeViewItem> {
         const rootName = itemName.label.split("_")[1]+"s";
         // this.candb_.dbMapping.set(root, this.candb_.dbMapping.get(root).filter((i: string) => i !== itemName.label));
         if (rootName === "Signals") {
-            this.candb_.dbMapping.set(rootName, this.candb_.dbMapping.get(rootName).filter((i: SignalForm) => i.name !== itemName.label));
+            this.candb_.dbMapping.set(rootName, this.candb_.dbMapping.get(rootName).filter((i: CANDB.SignalForm) => i.name !== itemName.label));
         }
         else if (rootName === "Messages") {
-            this.candb_.dbMapping.set(rootName, this.candb_.dbMapping.get(rootName).filter((i: MessageForm) => i.name !== itemName.label));
+            this.candb_.dbMapping.set(rootName, this.candb_.dbMapping.get(rootName).filter((i: CANDB.MessageForm) => i.name !== itemName.label));
             
         }
         this.refresh();

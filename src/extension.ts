@@ -5,29 +5,24 @@ import {startCommandHandler} from './webview_provider';
 import {DataProvider, TreeViewItem} from "./treeview_dataprovider";
 
 export function activate(context: vscode.ExtensionContext) {
-	console.log(context.extensionUri);
-	console.log('Congratulations, your extension "vscode-pluing-demo123" is now active!');
-
-	const startCommand = vscode.commands.registerCommand("vscode-plugin-demo.startReactAPP", () => startCommandHandler(context));
 	
 
-	context.subscriptions.push(startCommand);
+	// const startCommand = vscode.commands.registerCommand("vscode-plugin-demo.startReactAPP", () =>{
+	// 		console.log("vscode-plugin-demo.startReactAPP");
+	// 		startCommandHandler(context);
+	// });
+	// context.subscriptions.push(startCommand);
 
 	let disposable = vscode.commands.registerCommand('vscode-plugin-demo.helloWorld', () => {
 		vscode.window.showInformationMessage('Hello World from demo-test!');
 	});
 	context.subscriptions.push(disposable);
 	
-	
-	console.log(context.extensionPath);
 	const dataProvider = new DataProvider(path.join(context.extensionPath, 'db_output'));
-
 	vscode.window.registerTreeDataProvider('TreeView', dataProvider);
-	
-	vscode.commands.registerCommand('extension.openPackageOnNpm', moduleName =>
+	vscode.commands.registerCommand('extension.openPackageOnNpm', (moduleName, candb) =>
 		{
-
-			startCommandHandler(context);
+			startCommandHandler(context, moduleName, candb);
 		}
 	);
 

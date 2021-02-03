@@ -2,6 +2,7 @@ import * as vscode from 'vscode';
 import * as path from 'path';
 import * as fs from 'fs';
 import { throws } from 'assert';
+import * as CANDB from './candb_provider';
 
 
 class WebViewPanel {
@@ -101,17 +102,18 @@ class WebViewPanel {
 }
 
 
-
-export function startCommandHandler(context: vscode.ExtensionContext): void {
+export function startCommandHandler(context: vscode.ExtensionContext, modulename: string, candb: CANDB.CANdb): void {
+    // console.log(candb.itemsInCANdb());
+    // console.log(candb.itemsInSignal());
+    // console.log("===============================================");
     const panel = vscode.window.createWebviewPanel('reactExtension',
-                                                  'React extension',
+                                                  modulename,
                                                   vscode.ViewColumn.One,
                                                   {
                                                     enableScripts: true
                                                   }  );
     
     let htmlContent: string = getHtmlForWebview(context.extensionPath);
-
     let webpackPathOnDisk = vscode.Uri.file(path.join(context.extensionPath, 'dist/candbEditor.js'));
     let webpackUri = panel.webview.asWebviewUri(webpackPathOnDisk);
     htmlContent = htmlContent.replace('${rootUri}', webpackUri.toString());
@@ -121,9 +123,12 @@ export function startCommandHandler(context: vscode.ExtensionContext): void {
     htmlContent = htmlContent.replace('${helloUri}', hellokUri.toString());
 
     panel.webview.html = htmlContent;
+    
+    let candbSignal = candb.dbMapping.get("Signals").find((element: CANDB.SignalForm) => element.name === modulename);
+    console.log(candbSignal);
 
     // // 傳送訊息給Webview
-    panel.webview.postMessage( { command: 'getInitValue', initText: "123" });
+    panel.webview.postMessage( candbSignal );
 
     // 接收Webview傳來的訊息
     panel.webview.onDidReceiveMessage(
@@ -140,7 +145,9 @@ let webViewPanel : vscode.WebviewPanel;
 
 function onPanelDispose(): void {
     // Clean up panel here
-  }
+}
+
+
 function onPanelDidReceiveMessage(message: any) {
   console.log(message.command);
   switch (message.command) {
@@ -159,11 +166,7 @@ function onPanelDidReceiveMessage(message: any) {
 function runDirCommand(callback : Function) {
     var spawn = require('child_process').spawn;
     var cp = spawn(process.env.comspec, ['/c', 'dir']);
-    console.log(spawn);
 
-    console.log(cp.stdout);
-
-    
     
     cp.stdout.on("data", function(data : any) {
       const dataString = data.toString();
