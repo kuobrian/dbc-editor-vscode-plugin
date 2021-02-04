@@ -48,7 +48,7 @@ class DataProvider implements vscode.TreeDataProvider<TreeViewItem> {
         }
     }
 
-    private refresh() {
+    refresh() {
         this._onDidChangeTreeData.fire();
     }
 

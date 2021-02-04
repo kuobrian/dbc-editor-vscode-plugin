@@ -22,10 +22,6 @@
 	"contributes": {
 		"commands": [
 			{
-				"command": "vscode-plugin-demo.startReactAPP",
-				"title": "React extension"
-			},
-			{
 				"command": "vscode-plugin-demo.helloWorld",
 				"title": "Hello World"
 			},
@@ -40,6 +36,11 @@
 					"dark": "assets/add.png",
 					"light": "assets/add.png"
 				}
+			},
+			{
+				"command": "vscode-plugin-demo.refresh_treeview",
+				"title": "Refrsh Exist Item"
+				
 			},
 			{
 				"command": "vscode-plugin-demo.edit_treeview",
@@ -80,7 +81,7 @@
 		"menus": {
 			"view/title": [
 				{
-					"command": "vscode-plugin-demo.add_treeviewitems",
+					"command": "vscode-plugin-demo.refresh_treeview",
 					"when": "view == TreeView"
 				}
 			],

@@ -68,6 +68,8 @@ window.addEventListener('message', (event) =>{
 
         const handleClose = () => setShow(false);
         const handleShow = () => setShow(true);
+        let copyMsg:any=[];
+        copyMsg = JSON.parse(JSON.stringify(message));
         const handleFormChange = (e: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLSelectElement>): void => {
           const msgKey = e.target.id.split("_")[1];
           message[msgKey] = e.target.value;
@@ -75,8 +77,14 @@ window.addEventListener('message', (event) =>{
 
         function onSaveBtnClick(): void {
           vscode.postMessage({
-            command: 'modifySignalValue',
-            data: {message}
+            command: 'modifySignalForm',
+            data: message
+          });
+        }
+        
+        function onCancelBtnClick(): void {
+          vscode.postMessage({
+            command: 'cancelSignalForm'
           });
         }
 
@@ -394,7 +402,7 @@ window.addEventListener('message', (event) =>{
                     <Button variant="success" size="lg" type="save" onClick={onSaveBtnClick}>
                     Save
                     </Button>{' '}
-                    <Button   variant="secondary" size="lg"  type="cancel">
+                    <Button   variant="secondary" size="lg"  type="cancel" onClick={onCancelBtnClick}>
                     Cancel
                     </Button>
                 </div>

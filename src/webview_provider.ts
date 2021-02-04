@@ -128,14 +128,37 @@ export function startCommandHandler(context: vscode.ExtensionContext, modulename
     console.log(candbSignal);
 
     // // 傳送訊息給Webview
-    panel.webview.postMessage(candbSignal );
+    panel.webview.postMessage(candbSignal);
 
     // 接收Webview傳來的訊息
-    panel.webview.onDidReceiveMessage(
-        onPanelDidReceiveMessage,
-        undefined,
-        context.subscriptions
+    panel.webview.onDidReceiveMessage((message: any) => {
+      switch (message.command) {
+        case 'modifySignalForm':
+          let index = candb.dbMapping.get("Signals").findIndex((element: CANDB.SignalForm) => element.uid === message.data.uid);
+          if (index !== -1) {
+            candb.dbMapping.get("Signals")[index] = message.data;
+            // vscode.commands.executeCommand('workbench.action.closeActiveEditor');
+          }
+          vscode.commands.executeCommand('vscode-plugin-demo.refresh_treeview');
+          return;
+        case 'cancelSignalForm':
+            vscode.commands.executeCommand('workbench.action.closeActiveEditor');
+            return;
+
+        case 'showInformationMessage123':
+          vscode.window.showInformationMessage(message.text);
+          return;
+
+        case 'getDirectoryInfo':
+          runDirCommand((result : string) => 
+            webViewPanel.webview.postMessage({ command: 'getDirectoryInfo', directoryInfo: "123" })
+            );
+          return;
+      }}, 
+      undefined,
+      context.subscriptions
     );
+    
     panel.onDidDispose(onPanelDispose, null, context.subscriptions);
 
     webViewPanel = panel;
