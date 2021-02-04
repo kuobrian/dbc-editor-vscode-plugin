@@ -72,14 +72,18 @@ class DataProvider implements vscode.TreeDataProvider<TreeViewItem> {
             else if (element.label === "Messages") {
                 if (this.candb_.dbMapping.get("Messages").length) {
                     return Promise.resolve(this.candb_.dbMapping.get("Messages").map((messageitem: CANDB.MessageForm) => 
-                                            new TreeViewItem(messageitem.name, vscode.TreeItemCollapsibleState.None, 'treeviewitem')));
+                                            new TreeViewItem(messageitem.name, vscode.TreeItemCollapsibleState.None, 'treeviewitem', {
+                                                command: 'extension.openMessageEditor',
+                                                title: '',
+                                                arguments:[messageitem.name, this.candb_]}
+                                                )));
                 } 
             }
             else if (element.label === "Signals") {
                 if (this.candb_.dbMapping.get("Signals").length) {
                     return Promise.resolve(this.candb_.dbMapping.get("Signals").map((signalitem: CANDB.SignalForm) => 
                                             new TreeViewItem(signalitem.name, vscode.TreeItemCollapsibleState.None, 'treeviewitem',{
-                                                command: 'extension.openPackageOnNpm',
+                                                command: 'extension.openSignalEditor',
                                                 title: '',
                                                 arguments:[signalitem.name, this.candb_]}
                                                 )));
@@ -115,10 +119,11 @@ class DataProvider implements vscode.TreeDataProvider<TreeViewItem> {
         }
         else if (rootName === "Messages") {
             const newItem: CANDB.MessageForm = { uid: uuidv4(),
-                        name: "new_"+rootName.slice(0, -1) + "_"+ (this.candb_.dbMapping.get(rootName).length+1),
-                        msgType: "CAN Standard",
-                        id: "0x"+(this.candb_.dbMapping.get(rootName).length+1),
-                        dlc: 8};
+                                                name: "new_"+rootName.slice(0, -1) + "_"+ (this.candb_.dbMapping.get(rootName).length+1),
+                                                msgType: "CAN Standard",
+                                                id: "0x"+(this.candb_.dbMapping.get(rootName).length+1),
+                                                dlc: 8,
+                                                cycletime: 0};
             this.candb_.dbMapping.get(rootName).push(newItem);
         }
         this.refresh();

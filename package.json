@@ -40,7 +40,6 @@
 			{
 				"command": "vscode-plugin-demo.refresh_treeview",
 				"title": "Refrsh Exist Item"
-				
 			},
 			{
 				"command": "vscode-plugin-demo.edit_treeview",

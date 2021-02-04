@@ -25,6 +25,7 @@ export interface MessageForm {
     msgType: string;
     id: string;
     dlc: Number;
+    cycletime: Number;
  }
 
 export class CANdb {

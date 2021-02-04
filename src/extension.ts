@@ -1,7 +1,8 @@
 
 import * as vscode from 'vscode';
 import * as path from 'path';
-import {startCommandHandler} from './webview_provider';
+import {startSignalHandler} from './signalview_provider';
+import {startMsgHandler} from './msgview_provider';
 import {DataProvider, TreeViewItem} from "./treeview_dataprovider";
 
 export function activate(context: vscode.ExtensionContext) {
@@ -16,8 +17,13 @@ export function activate(context: vscode.ExtensionContext) {
 
 
 
-	vscode.commands.registerCommand('extension.openPackageOnNpm', (moduleName, candb) => {
-			startCommandHandler(context, moduleName, candb);
+	vscode.commands.registerCommand('extension.openSignalEditor', (moduleName, candb) => {
+			startSignalHandler(context, moduleName, candb);
+	});
+
+	vscode.commands.registerCommand('extension.openMessageEditor', (moduleName, candb) => {
+			console.log("openMessageEditor:", moduleName);
+			startMsgHandler(context, moduleName, candb);
 	});
 
 	context.subscriptions.push(

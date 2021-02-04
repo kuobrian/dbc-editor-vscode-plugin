@@ -14,9 +14,8 @@ const htmlWebpackInlineSourcePlugin = new HtmlWebpackInlineSourcePlugin();
 
 module.exports = {
   entry: {
-    hello: path.resolve(__dirname, "react-app/src/hello_index.tsx"),
-    index: path.resolve(__dirname, "react-app/src/index.js"),
-    candbEditor: path.resolve(__dirname, "react-app/src/candbEditor.tsx"),
+    signalEditor: path.resolve(__dirname, "react-app/src/signalEditor.tsx"),
+    messageEditor: path.resolve(__dirname, "react-app/src/messageEditor.tsx"),
   },
   output: {
     path: path.resolve(__dirname, "dist"),

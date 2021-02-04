@@ -24,7 +24,100 @@ declare global {
 }
 
 
-export interface HelloProps { compiler: string; framework: string; }
+class DynamicTable extends React.Component {
+  
+  state = { rows: [{}] };
+
+  handleChange = idx => e => {
+    const { name, value } = e.target;
+    const rows = [...this.state.rows];
+    rows[idx] = { [name]: value };
+    this.setState({  rows });
+  };
+  handleAddRow = () => {
+    const item = {
+      name: "",
+      mobile: ""
+    };
+    this.setState({
+      rows: [...this.state.rows, item]
+    });
+  };
+  handleRemoveRow = () => {
+    this.setState({
+      rows: this.state.rows.slice(0, -1)
+    });
+  };
+
+  handleRemoveSpecificRow = (idx) => () => {
+    const rows = [...this.state.rows];
+    rows.splice(idx, 1);
+    this.setState({ rows });
+  };
+  render() {
+    return (
+      <div>
+        <div className="container">
+          <div className="row clearfix">
+            <div className="col-md-12 column">
+              <Table  striped bordered hover variant="dark" 
+                      className="table table-bordered table-hover"
+                      id="tab_logic">
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>ID</th>
+                    <th>ID-Format</th>
+                    <th>DLC [Byte]</th>
+                    <th>Remove</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {this.state.rows.map((item, idx) => (
+                    <tr id="addr0" key={idx}>
+                      <td>{idx}</td>
+                      <td>
+                        <input type="text"
+                                name="name"
+                                value={this.state.rows[idx].name}
+                                onChange={this.handleChange(idx)}
+                                className="form-control"
+                        />
+                      </td>
+                      <td>
+                        <input type="text"
+                              name="mobile"
+                              value={this.state.rows[idx].mobile}
+                              onChange={this.handleChange(idx)}
+                              className="form-control" />
+                      </td>
+                      <td>{idx}</td>
+                      <td>
+                        <button className="btn btn-outline-danger btn-sm"
+                                onClick={this.handleRemoveSpecificRow(idx)} >
+                          Remove
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </Table >
+              <button onClick={this.handleAddRow} className="btn btn-primary">
+              Add Row
+              </button>
+              <button  onClick={this.handleRemoveRow} className="btn btn-danger float-right" >
+              Delete Last Row
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+}
+
+
+
 
 window.addEventListener('message', (event) =>{
     let vscode = window.acquireVsCodeApi();
@@ -33,18 +126,6 @@ window.addEventListener('message', (event) =>{
     const signalUid = message.uid;
     console.log('candbEditor  Webview接收到的消息：',
                 message.name, message.bitlength, message.byteorder, message.uid);
-
-
-    // function setState(event: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLSelectElement>,
-    //                               ecucParamValue: ecucParamType.EcucParamValueType): void {
-      // vscode.postMessage({
-      //   command: 'modifyParameterValue',
-      //   data: {
-      //     newParameterValue: event.target.value,
-      //     parameterValueUuid: ecucParamValue.uuid
-      //   }
-      // });
-    // }
 
     const App = () =>  {
         const styles = {
@@ -70,6 +151,8 @@ window.addEventListener('message', (event) =>{
         const handleShow = () => setShow(true);
         let copyMsg:any=[];
         copyMsg = JSON.parse(JSON.stringify(message));
+        
+        
         const handleFormChange = (e: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLSelectElement>): void => {
           const msgKey = e.target.id.split("_")[1];
           message[msgKey] = e.target.value;
@@ -77,20 +160,45 @@ window.addEventListener('message', (event) =>{
 
         function onSaveBtnClick(): void {
           vscode.postMessage({
-            command: 'modifySignalForm',
+            command: 'modifyMsgForm',
             data: message
           });
         }
         
         function onCancelBtnClick(): void {
           vscode.postMessage({
-            command: 'cancelSignalForm'
+            command: 'cancelMsgForm'
           });
         }
 
-
+        const state = {
+          rows: [{}]
+        };
+        const handleChange = idx => e => {
+          const { name, value } = e.target;
+          const rows = [...state.rows];
+          rows[idx] = {  [name]: value };
+          // setState({ rows });
+        };
+        const handleAddRow = () => {
+          const item = {
+            name: "",
+            mobile: ""
+          };
+          // this.setState({  rows: [...this.state.rows, item] });
+        };
+        const handleRemoveRow = () => {
+          // this.setState({ rows: this.state.rows.slice(0, -1) });
+        };
+        const handleRemoveSpecificRow = (idx) => () => {
+          const rows = [...state.rows];
+          rows.splice(idx, 1);
+          // this.setState({ rows })
+        }
         return (
                 <>
+
+
                 <Tabs defaultActiveKey="definition" id="uncontrolled-tab-example">
                     <Tab eventKey="definition" title="Definition">
                       <Form >
@@ -106,132 +214,59 @@ window.addEventListener('message', (event) =>{
                         </Form.Row>
                         <Form.Row>
                           <Form.Group as={Col} md="3" controlId="_bitlength">
-                            <Form.Label>Length (Bit):</Form.Label>
-                            <Form.Control type="Length"
-                                          defaultValue={message.bitlength}
+                            <Form.Label>Type:</Form.Label>
+                            <Form.Control as="select"
+                                          defaultValue={message.msgType}
                                           onChange={(event) => handleFormChange(event as any)}>
+                                <option>CAN Standard</option>
+                                <option>CAN Extended</option>
                             </Form.Control>
                           </Form.Group>
                         </Form.Row>
                         <Form.Row>
                           <Form.Group as={Col} md="3" controlId="_byteorder">
-                            <Form.Label>Byte Order:</Form.Label>
-                            <Form.Control as="select" 
-                                          defaultValue={message.byteorder} 
+                            <Form.Label>ID:</Form.Label>
+                            <Form.Control defaultValue={message.id} 
                                           onChange={(event) => handleFormChange(event as any)}>
-                                  <option>Intel</option>
-                                  <option>Motorola</option>
                             </Form.Control>
                           </Form.Group>
-                          <Form.Group as={Col} md="3" controlId="_unit">
-                            <Form.Label>Unit:</Form.Label>
-                            <Form.Control type="Length"
-                                          defaultValue={message.unit}
+                          <Form.Group as={Col} md="2" controlId="_unit">
+                            <Form.Label>DLC:</Form.Label>
+                            <Form.Control type='number'
+                                          min='1' max='8' step='1'
+                                          defaultValue={message.dlc}
                                           onChange={(event) => handleFormChange(event as any)}>
                             </Form.Control>
                           </Form.Group>
                         </Form.Row>
                         <Form.Row>
                           <Form.Group as={Col} md="3" controlId="_valuetype">
-                            <Form.Label>Value Type:</Form.Label>
+                            <Form.Label>Transmitter:</Form.Label>
                             <Form.Control as="select"
-                                          defaultValue={message.valuetype}
-                                          onChange={(event) => handleFormChange(event as any)}>
-                                    <option>Signed</option>
-                                    <option>Unsigned</option>
-                                    <option>IEEE Float</option>
-                                    <option>IEEE Double</option>
+                                          onChange={(event) => handleFormChange(event as any)} disabled>
+                                    <option>-- No Transmitter --</option>
                             </Form.Control>
                           </Form.Group>
-                          <Form.Group as={Col} md="3" controlId="_initValue">
-                            <Form.Label>Init Value:</Form.Label>
-                            <Form.Control type="Length" 
-                                          defaultValue={message.initValue}
-                                          onChange={(event) => handleFormChange(event as any)}>
-                            </Form.Control>
-                          </Form.Group>
-                        </Form.Row>
-                        <Form.Row>
-                          <Form.Group as={Col} md="3" controlId="_factor">
-                            <Form.Label>Factor:</Form.Label>
-                            <Form.Control type="Length" 
-                                          defaultValue={message.factor}
-                                          onChange={(event) => handleFormChange(event as any)}>
-                            </Form.Control>
-                          </Form.Group>
-                          <Form.Group as={Col} md="3" controlId="_offset">
-                            <Form.Label>Offset:</Form.Label>
-                            <Form.Control type="Length" 
-                                          defaultValue={message.offset}
-                                          onChange={(event) => handleFormChange(event as any)}>
-                            </Form.Control>
-                          </Form.Group>
-                        </Form.Row>
-                        <Form.Row>
-                          <Form.Group as={Col} md="3" controlId="_minimun">
-                            <Form.Label>Minimun:</Form.Label>
-                            <Form.Control type="Length"
-                                          defaultValue={message.minimun}
-                                          onChange={(event) => handleFormChange(event as any)}>
-                            </Form.Control>
-                          </Form.Group>
-                          <Form.Group as={Col} md="3" controlId="_maximum">
-                            <Form.Label>Maximum:</Form.Label>
-                            <Form.Control type="Length"
-                                          defaultValue={message.maximum}
-                                          onChange={(event) => handleFormChange(event as any)}>
+                          <Form.Group as={Col} md="3" controlId="_valuetype">
+                            <Form.Label>Tx Method:</Form.Label>
+                            <Form.Control as="select"
+                                          onChange={(event) => handleFormChange(event as any)} disabled>
+                                    <option>NoMsgSendType</option>
                             </Form.Control>
                           </Form.Group>
                         </Form.Row>
                         <Form.Row>
                           <Form.Group as={Col} md="6" controlId="validationCustom03">
-                            <Button variant="primary" size="sm" block>Calculate minimum and maximum</Button>
-                          </Form.Group>
-                        </Form.Row>
-                        <Form.Row>
-                          <Form.Group as={Col} md="6" controlId="validationCustom03">
-                            <Form.Label>Value Table:</Form.Label>
-                            <Form.Control as="select" 
-                                          defaultValue={message.valuetable}
-                                          onChange={(event) => handleFormChange(event as any)}>
-                              <option>None</option>
+                            <Form.Label>Cycle Time:</Form.Label>
+                            <Form.Control defaultValue={message.cycletime}
+                                          onChange={(event) => handleFormChange(event as any)} disabled>
                             </Form.Control>
                           </Form.Group>
                         </Form.Row>
                       </Form>
                     </Tab>
-                    <Tab eventKey="messages" title="Messages">
-                        <Table striped bordered hover variant="dark">
-                            <thead>
-                              <tr>
-                                  <th>Name</th>
-                                  <th>ID</th>
-                                  <th>ID-Format</th>
-                                  <th>DLC [Byte]</th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                              <tr>
-                                <td>1</td>
-                                    {Array.from({ length: 3 }).map((_, index) => (
-                                            <td key={index}>Table cell {index}</td>
-                                      ))
-                                    }
-                              </tr>
-                              <tr>
-                                <td>2</td>
-                                    {Array.from({ length: 3 }).map((_, index) => (
-                                            <td key={index}>Table cell {index}</td>
-                                      ))
-                                    }
-                              </tr>
-                              <tr>
-                                <td>3</td>
-                                <td colSpan={2}>Larry the Bird</td>
-                                <td>@twitter</td>
-                              </tr>
-                            </tbody>
-                        </Table>
+                    <Tab eventKey="signals" title="Signals">
+                        <DynamicTable/>
                         <Row>
                           <Col>
                               <Button variant="primary" onClick={handleShow}>
@@ -267,7 +302,7 @@ window.addEventListener('message', (event) =>{
                           </Col>
                         </Row>
                     </Tab>
-                    <Tab eventKey="receivers" title="Receivers">
+                    <Tab eventKey="transmitters" title="Transmitters">
                       <Table striped bordered hover variant="dark">
                           <thead>
                             <tr>
@@ -300,7 +335,7 @@ window.addEventListener('message', (event) =>{
                           </Col>
                         </Row>                    
                     </Tab>
-                    <Tab eventKey="attributes" title="Attributes" >
+                    <Tab eventKey="receivers" title="Receivers" >
                       <Table striped bordered hover variant="dark">
                         <thead>
                           <tr>
@@ -360,7 +395,7 @@ window.addEventListener('message', (event) =>{
                           </Col>
                         </Row>
                     </Tab>
-                    <Tab eventKey="valueDescriptions" title="Value Descriptions" >
+                    <Tab eventKey="layout" title="Layout" >
                       <Table striped bordered hover variant="dark">
                         <thead>
                           <tr>
@@ -385,6 +420,15 @@ window.addEventListener('message', (event) =>{
                           </tr>
                         </tbody>
                       </Table>
+                    </Tab>
+                    <Tab eventKey="attributes" title="Attributes" >
+                      <Form.Group controlId="textarea1">
+                        <Form.Control as="textarea" rows={30} placeholder="Type your message here..." />
+                        <Button style={{ marginLeft: "50%"}} variant="primary" type="submit">
+                        Submit
+                        </Button>
+                      </Form.Group>
+                       
                     </Tab>
                     <Tab eventKey="comment" title="Comment" >
                       <Form.Group controlId="textarea1">
