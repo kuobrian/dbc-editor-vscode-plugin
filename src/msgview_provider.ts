@@ -4,9 +4,9 @@ import * as fs from 'fs';
 import * as CANDB from './candb_provider';
 
 export function startMsgHandler(context: vscode.ExtensionContext, modulename: string, candb: CANDB.CANdb): void {
-    console.log(candb.itemsInCANdb());
-    console.log(candb.itemsInMsg());
-    console.log("===============================================");
+    // console.log(candb.itemsInCANdb());
+    // console.log(candb.itemsInMsg());
+    // console.log("===============================================");
     const panel = vscode.window.createWebviewPanel('reactExtension',
                                                   modulename,
                                                   vscode.ViewColumn.One,
@@ -21,10 +21,14 @@ export function startMsgHandler(context: vscode.ExtensionContext, modulename: st
 
     panel.webview.html = htmlContent;
     
-    let candbSignal = candb.dbMapping.get("Messages").find((element: CANDB.SignalForm) => element.name === modulename);
-    console.log(candbSignal);
+    let candbMsg = candb.dbMapping.get("Messages").find((element: CANDB.SignalForm) => element.name === modulename);
+    let candbAllSignals = candb.dbMapping.get("Signals");
+    console.log(candbMsg);
+    console.log(candbAllSignals);
 
-    panel.webview.postMessage(candbSignal);
+    panel.webview.postMessage({
+                      message: candbMsg,
+                      signals: candbAllSignals});
 
     panel.webview.onDidReceiveMessage((message: any) => {
       switch (message.command) {

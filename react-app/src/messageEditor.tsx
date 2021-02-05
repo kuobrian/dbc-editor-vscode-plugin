@@ -22,37 +22,43 @@ declare global {
       acquireVsCodeApi(): any;
     }
 }
+interface IRecipeProps {
+  msg?:any;
+  allSignals?: any[];
+}
 
+interface IRecipeState {
+  selectSignal: any[];
+  show: boolean;
+  checkSelectSignal: boolean
+}
 
-class DynamicTable extends React.Component {
-  
-  state = { rows: [{}] };
+class SelectSignalTable extends React.Component <IRecipeProps, IRecipeState> {
+  constructor(props) {
+    super(props);
+    this.state = {selectSignal: [],
+                  show: false,
+                  checkSelectSignal: false };
+    this.handleClose = this.handleClose.bind(this);
+    this.handleShow = this.handleShow.bind(this);
+  }
 
-  handleChange = idx => e => {
-    const { name, value } = e.target;
-    const rows = [...this.state.rows];
-    rows[idx] = { [name]: value };
-    this.setState({  rows });
+  handleClose () { this.setState({ show: false } );}
+  handleShow ()  { this.setState({ show: true }); }
+  handleSelectSignal (selectItem) {
+    if (! this.state.selectSignal.includes(selectItem)) {
+      const rows = [...this.state.selectSignal, selectItem];
+      this.setState({ selectSignal: rows}, () => {
+        console.log("Log: Add selectSignal", this.state.selectSignal.length);
+      }); 
+    } 
   };
-  handleAddRow = () => {
-    const item = {
-      name: "",
-      mobile: ""
-    };
-    this.setState({
-      rows: [...this.state.rows, item]
-    });
-  };
-  handleRemoveRow = () => {
-    this.setState({
-      rows: this.state.rows.slice(0, -1)
-    });
-  };
+
 
   handleRemoveSpecificRow = (idx) => () => {
-    const rows = [...this.state.rows];
+    const rows = [...this.state.selectSignal];
     rows.splice(idx, 1);
-    this.setState({ rows });
+    this.setState({ selectSignal: rows });
   };
   render() {
     return (
@@ -65,49 +71,92 @@ class DynamicTable extends React.Component {
                       id="tab_logic">
                 <thead>
                   <tr>
-                    <th>Name</th>
-                    <th>ID</th>
-                    <th>ID-Format</th>
-                    <th>DLC [Byte]</th>
+                    <th>Signal</th>
+                    <th>Message</th>
+                    <th>Multiplexing/Group</th>
+                    <th>Startbit</th>
+                    <th>Length (Bit)</th>
+                    <th>Byte Order</th>
+                    <th>Value Type</th>
                     <th>Remove</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {this.state.rows.map((item, idx) => (
-                    <tr id="addr0" key={idx}>
-                      <td>{idx}</td>
-                      <td>
-                        <input type="text"
-                                name="name"
-                                value={this.state.rows[idx].name}
-                                onChange={this.handleChange(idx)}
-                                className="form-control"
-                        />
-                      </td>
-                      <td>
-                        <input type="text"
-                              name="mobile"
-                              value={this.state.rows[idx].mobile}
-                              onChange={this.handleChange(idx)}
-                              className="form-control" />
-                      </td>
-                      <td>{idx}</td>
-                      <td>
-                        <button className="btn btn-outline-danger btn-sm"
-                                onClick={this.handleRemoveSpecificRow(idx)} >
-                          Remove
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
+                    { this.state.selectSignal.map((item, idx) => {
+                      return (
+                        <tr>
+                          <td>{item.name}</td>
+                          <td>{this.props.msg.name}</td>
+                          <td>{'-'}</td>
+                          <td>{idx*8}</td>
+                          <td>{item.bitlength}</td>
+                          <td>{item.byteorder}</td>
+                          <td>{item.valuetype}</td>
+                          <td>
+                            <Button variant="danger" onClick={this.handleRemoveSpecificRow(idx)} >
+                            Remove
+                            </Button>
+                          </td>
+                        </tr> 
+                      );})
+                    }
+
                 </tbody>
               </Table >
-              <button onClick={this.handleAddRow} className="btn btn-primary">
-              Add Row
+              <button onClick={this.handleShow} className="btn btn-primary">
+              Add ...
               </button>
-              <button  onClick={this.handleRemoveRow} className="btn btn-danger float-right" >
-              Delete Last Row
-              </button>
+              <Modal  size="lg"
+                            aria-labelledby="contained-modal-title-vcenter"
+                            centered
+                            show={this.state.show}
+                            onHide={this.handleClose}
+                            backdrop="static">
+                <Modal.Header closeButton>
+                  <Modal.Title>Modal heading</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <Table  striped bordered hover variant="dark" 
+                        className="table table-bordered table-hover"
+                        id="tab_logic">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Length (Bit)</th>
+                                <th>Byte Order</th>
+                                <th>Value Type</th>
+                                <th>Selected</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                              { 
+                                this.props.allSignals.map((item, idx) => {
+                                  if (! this.state.selectSignal.includes(item)) {
+                                    return (
+                                      <tr>
+                                        <td>{item.name} {this.state.selectSignal.includes(item)}</td> 
+                                        <td>{item.bitlength}</td>
+                                        <td>{item.byteorder}</td>
+                                        <td>{item.valuetype}</td>
+                                        <td>
+                                          <Button variant="primary" onClick={() => this.handleSelectSignal(item)}>
+                                          add
+                                          </Button>
+                                        </td>
+                                      </tr> 
+                                    );
+                                }
+                              })
+                              }
+                        </tbody>
+                    </Table >
+                </Modal.Body>
+                <Modal.Footer>
+                  <Button variant="secondary" onClick={this.handleClose}>
+                  quit
+                  </Button>
+                </Modal.Footer>
+              </Modal>
             </div>
           </div>
         </div>
@@ -116,16 +165,16 @@ class DynamicTable extends React.Component {
   }
 }
 
-
-
-
 window.addEventListener('message', (event) =>{
     let vscode = window.acquireVsCodeApi();
-    const message = event.data;
+    const message = event.data.message;
+    const allSignals = event.data.signals;
 
-    const signalUid = message.uid;
-    console.log('candbEditor  Webview接收到的消息：',
-                message.name, message.bitlength, message.byteorder, message.uid);
+    const messageUid = message.uid;
+
+
+
+    console.log('Webview接收到的消息：', message.name, allSignals.length);
 
     const App = () =>  {
         const styles = {
@@ -147,13 +196,14 @@ window.addEventListener('message', (event) =>{
         };
         const [show, setShow] = React.useState(false);
 
-        const handleClose = () => setShow(false);
-        const handleShow = () => setShow(true);
+        const t_handleClose = () => setShow(false);
+        const t_handleShow = () => setShow(true);
         let copyMsg:any=[];
         copyMsg = JSON.parse(JSON.stringify(message));
         
         
         const handleFormChange = (e: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLSelectElement>): void => {
+          // console.log( e.target.value);
           const msgKey = e.target.id.split("_")[1];
           message[msgKey] = e.target.value;
         };
@@ -171,35 +221,12 @@ window.addEventListener('message', (event) =>{
           });
         }
 
-        const state = {
-          rows: [{}]
-        };
-        const handleChange = idx => e => {
-          const { name, value } = e.target;
-          const rows = [...state.rows];
-          rows[idx] = {  [name]: value };
-          // setState({ rows });
-        };
-        const handleAddRow = () => {
-          const item = {
-            name: "",
-            mobile: ""
-          };
-          // this.setState({  rows: [...this.state.rows, item] });
-        };
-        const handleRemoveRow = () => {
-          // this.setState({ rows: this.state.rows.slice(0, -1) });
-        };
-        const handleRemoveSpecificRow = (idx) => () => {
-          const rows = [...state.rows];
-          rows.splice(idx, 1);
-          // this.setState({ rows })
-        }
+
         return (
                 <>
 
 
-                <Tabs defaultActiveKey="definition" id="uncontrolled-tab-example">
+                <Tabs defaultActiveKey="signals" id="uncontrolled-tab-example">
                     <Tab eventKey="definition" title="Definition">
                       <Form >
                         <Form.Row>
@@ -213,7 +240,7 @@ window.addEventListener('message', (event) =>{
                           </Form.Group>
                         </Form.Row>
                         <Form.Row>
-                          <Form.Group as={Col} md="3" controlId="_bitlength">
+                          <Form.Group as={Col} md="3" controlId="_msgType">
                             <Form.Label>Type:</Form.Label>
                             <Form.Control as="select"
                                           defaultValue={message.msgType}
@@ -224,13 +251,13 @@ window.addEventListener('message', (event) =>{
                           </Form.Group>
                         </Form.Row>
                         <Form.Row>
-                          <Form.Group as={Col} md="3" controlId="_byteorder">
+                          <Form.Group as={Col} md="3" controlId="_id">
                             <Form.Label>ID:</Form.Label>
                             <Form.Control defaultValue={message.id} 
                                           onChange={(event) => handleFormChange(event as any)}>
                             </Form.Control>
                           </Form.Group>
-                          <Form.Group as={Col} md="2" controlId="_unit">
+                          <Form.Group as={Col} md="2" controlId="_dlc">
                             <Form.Label>DLC:</Form.Label>
                             <Form.Control type='number'
                                           min='1' max='8' step='1'
@@ -240,14 +267,14 @@ window.addEventListener('message', (event) =>{
                           </Form.Group>
                         </Form.Row>
                         <Form.Row>
-                          <Form.Group as={Col} md="3" controlId="_valuetype">
+                          <Form.Group as={Col} md="3" controlId="_transmitter">
                             <Form.Label>Transmitter:</Form.Label>
                             <Form.Control as="select"
                                           onChange={(event) => handleFormChange(event as any)} disabled>
                                     <option>-- No Transmitter --</option>
                             </Form.Control>
                           </Form.Group>
-                          <Form.Group as={Col} md="3" controlId="_valuetype">
+                          <Form.Group as={Col} md="3" controlId="_txmethod">
                             <Form.Label>Tx Method:</Form.Label>
                             <Form.Control as="select"
                                           onChange={(event) => handleFormChange(event as any)} disabled>
@@ -256,7 +283,7 @@ window.addEventListener('message', (event) =>{
                           </Form.Group>
                         </Form.Row>
                         <Form.Row>
-                          <Form.Group as={Col} md="6" controlId="validationCustom03">
+                          <Form.Group as={Col} md="6" controlId="_cycletime">
                             <Form.Label>Cycle Time:</Form.Label>
                             <Form.Control defaultValue={message.cycletime}
                                           onChange={(event) => handleFormChange(event as any)} disabled>
@@ -266,41 +293,7 @@ window.addEventListener('message', (event) =>{
                       </Form>
                     </Tab>
                     <Tab eventKey="signals" title="Signals">
-                        <DynamicTable/>
-                        <Row>
-                          <Col>
-                              <Button variant="primary" onClick={handleShow}>
-                              Add ...
-                              </Button>
-                              <Modal show={show}
-                                      onHide={handleClose}
-                                      backdrop="static"
-                                      keyboard={false}>
-                                <Modal.Header closeButton>
-                                  <Modal.Title>Modal heading</Modal.Title>
-                                </Modal.Header>
-                                <Modal.Body>Woohoo, you're reading this text in a modal!</Modal.Body>
-                                  <Modal.Footer>
-                                    <Button variant="secondary" onClick={handleClose}>
-                                    Close
-                                    </Button>
-                                    <Button variant="primary" onClick={handleClose}>
-                                    Save Changes
-                                    </Button>
-                                 </Modal.Footer>
-                              </Modal>
-                          </Col>
-                          <Col>
-                              <Button variant="primary" onClick={handleShow}>
-                              Remove
-                              </Button>
-                          </Col>
-                          <Col>
-                              <Button variant="primary" onClick={handleShow}>
-                              View
-                              </Button>
-                          </Col>
-                        </Row>
+                        <SelectSignalTable msg={message}  allSignals={allSignals}/>
                     </Tab>
                     <Tab eventKey="transmitters" title="Transmitters">
                       <Table striped bordered hover variant="dark">
@@ -329,7 +322,7 @@ window.addEventListener('message', (event) =>{
                       </Table>
                       <Row>
                           <Col>
-                              <Button variant="primary" onClick={handleShow}>
+                              <Button variant="primary" onClick={t_handleShow}>
                               View
                               </Button>
                           </Col>
@@ -362,11 +355,11 @@ window.addEventListener('message', (event) =>{
                       </Table>
                       <Row>
                           <Col>
-                              <Button variant="secondary" onClick={handleShow} disabled>
+                              <Button variant="secondary" onClick={t_handleShow} disabled>
                               Read from DB ...
                               </Button>
                               <Modal show={show}
-                                      onHide={handleClose}
+                                      onHide={t_handleClose}
                                       backdrop="static"
                                       keyboard={false}>
                                 <Modal.Header closeButton>
@@ -374,22 +367,22 @@ window.addEventListener('message', (event) =>{
                                 </Modal.Header>
                                 <Modal.Body>Woohoo, you're reading this text in a modal!</Modal.Body>
                                   <Modal.Footer>
-                                    <Button variant="secondary" onClick={handleClose}>
+                                    <Button variant="secondary" onClick={t_handleClose}>
                                     Close
                                     </Button>
-                                    <Button variant="primary" onClick={handleClose}>
+                                    <Button variant="primary" onClick={t_handleClose}>
                                     Save Changes
                                     </Button>
                                  </Modal.Footer>
                               </Modal>
                           </Col>
                           <Col>
-                              <Button variant="secondary" onClick={handleShow} disabled>
+                              <Button variant="secondary" onClick={t_handleShow} disabled>
                               Write to DB
                               </Button>
                           </Col>
                           <Col>
-                              <Button variant="secondary" onClick={handleShow} disabled>
+                              <Button variant="secondary" onClick={t_handleShow} disabled>
                               Reset
                               </Button>
                           </Col>
