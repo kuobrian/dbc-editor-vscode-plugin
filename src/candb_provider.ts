@@ -17,6 +17,7 @@ export interface SignalForm {
     initValue: Number;
     unit?: Number;
     valuetable?: any;
+    msgUids: string[];
     comments?: string;
  }
 
@@ -28,6 +29,7 @@ export interface MessageForm {
     dlc: Number;
     cycletime: Number;
     comments?: string;
+    signalUids: string[];
  }
 
 export class CANdb {

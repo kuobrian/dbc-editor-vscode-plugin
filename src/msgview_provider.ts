@@ -4,9 +4,6 @@ import * as fs from 'fs';
 import * as CANDB from './candb_provider';
 
 export function startMsgHandler(context: vscode.ExtensionContext, modulename: string, candb: CANDB.CANdb): void {
-    // console.log(candb.itemsInCANdb());
-    // console.log(candb.itemsInMsg());
-    // console.log("===============================================");
     const panel = vscode.window.createWebviewPanel('reactExtension',
                                                   modulename,
                                                   vscode.ViewColumn.One,
@@ -23,8 +20,8 @@ export function startMsgHandler(context: vscode.ExtensionContext, modulename: st
     
     let candbMsg = candb.dbMapping.get("Messages").find((element: CANDB.SignalForm) => element.name === modulename);
     let candbAllSignals = candb.dbMapping.get("Signals");
-    console.log(candbMsg);
-    console.log(candbAllSignals);
+    console.log(candbMsg.signalUids);
+
 
     panel.webview.postMessage({
                       message: candbMsg,
@@ -32,16 +29,18 @@ export function startMsgHandler(context: vscode.ExtensionContext, modulename: st
 
     panel.webview.onDidReceiveMessage((message: any) => {
       switch (message.command) {
-        case 'modifySignalForm':
-          let index = candb.dbMapping.get("Signals").findIndex((element: CANDB.SignalForm) => element.uid === message.data.uid);
+        case 'modifyMsgForm':
+          let index = candb.dbMapping.get("Messages").findIndex((element: CANDB.MessageForm) =>
+                  element.uid === message.data.uid);
           if (index !== -1) {
-            candb.dbMapping.get("Signals")[index] = message.data;
+            console.log(message.data.signalUids);
+            candb.dbMapping.get("Messages")[index] = message.data;
           }
           vscode.commands.executeCommand('vscode-plugin-demo.refresh_treeview');
-          vscode.window.showInformationMessage("save signal");
+          vscode.window.showInformationMessage("save message");
           return;
           
-        case 'cancelSignalForm':
+        case 'cancelMsgForm':
             vscode.commands.executeCommand('workbench.action.closeActiveEditor');
             return;
 

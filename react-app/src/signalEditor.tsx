@@ -2,6 +2,7 @@ import * as React from 'react';
 import * as ReactDOM from "react-dom";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import {SelectMsgTable} from "../signalComponents/msgSelected";
+import { SignalForm } from '../../src/candb_provider';
 
 
 import {  Row, Col, Tabs, Tab, Table, Form, Button,  Modal } from "react-bootstrap";
@@ -15,8 +16,8 @@ declare global {
 
 window.addEventListener('message', (event) =>{
     let vscode = window.acquireVsCodeApi();
-    const messages = event.data.message;
-    const signal = event.data.signals;
+    let messages = event.data.message;
+    let signal = event.data.signals;
 
     const signalUid = signal.uid;
 
@@ -45,7 +46,11 @@ window.addEventListener('message', (event) =>{
         const handleClose = () => setShow(false);
         const handleShow = () => setShow(true);
         let copyMsg:any=[];
+        
         copyMsg = JSON.parse(JSON.stringify(signal));
+        const updateSignalValue =  (data: SignalForm) => {
+          signal = data;
+        };
         const handleFormChange = (e: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLSelectElement>): void => {
           const msgKey = e.target.id.split("_")[1];
           signal[msgKey] = e.target.value;
@@ -177,7 +182,7 @@ window.addEventListener('message', (event) =>{
                       </Form>
                     </Tab>
                     <Tab eventKey="messages" title="Messages">
-                        <SelectMsgTable allMessages={messages}  signal={signal}/>
+                        <SelectMsgTable allMessages={messages}  signal={signal} updateValue={updateSignalValue}/>
                     </Tab>
                     <Tab eventKey="receivers" title="Receivers">
                       <Table striped bordered hover variant="dark">
@@ -300,7 +305,7 @@ window.addEventListener('message', (event) =>{
                     </Tab>
                     <Tab eventKey="comment" title="Comment" >
                       <Form.Group controlId="textarea1">
-                        <Form.Control as="textarea" rows={30} placeholder="Type your message here..." />
+                        <Form.Control as="textarea" rows={30} placeholder="Type your comment here..." />
                         <Button style={{ marginLeft: "50%"}} variant="primary" type="submit">
                         Submit
                         </Button>

@@ -4,6 +4,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import {SelectSignalTable} from "../msgComponents/signalSelected";
 import {SelectTransmittersTable} from "../msgComponents/transmittersSelected";
 import {  Row, Col, Tabs, Tab, Table, Form, Button,  Modal } from "react-bootstrap";
+import { MessageForm } from '../../src/candb_provider';
 
 declare global {
     interface Window {
@@ -13,14 +14,13 @@ declare global {
 
 window.addEventListener('message', (event) =>{
     let vscode = window.acquireVsCodeApi();
-    const message = event.data.message;
-    const allSignals = event.data.signals;
+    let message = event.data.message;
+    let allSignals = event.data.signals;
 
     const messageUid = message.uid;
+    console.log('Webview接收到的消息：', message.name, allSignals.length, message.signalUids.length);
 
 
-
-    console.log('Webview接收到的消息：', message.name, allSignals.length);
 
     const App = () =>  {
         const styles = {
@@ -46,6 +46,10 @@ window.addEventListener('message', (event) =>{
         const t_handleShow = () => setShow(true);
         let copyMsg:any=[];
         copyMsg = JSON.parse(JSON.stringify(message));
+
+        const updateMessageValue =  (msg: MessageForm) => {
+          message = msg;
+        };
         
         
         const handleFormChange = (e: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLSelectElement>): void => {
@@ -137,10 +141,10 @@ window.addEventListener('message', (event) =>{
                       </Form>
                     </Tab>
                     <Tab eventKey="signals" title="Signals">
-                        <SelectSignalTable msg={message}  allSignals={allSignals}/>
+                        <SelectSignalTable msg={message}  allSignals={allSignals} updateValue={updateMessageValue}/>
                     </Tab>
                     <Tab eventKey="transmitters" title="Transmitters">
-                        <SelectTransmittersTable msg={message}  allSignals={allSignals}/>
+                        <SelectTransmittersTable msg={message}  allSignals={allSignals}  updateValue={updateMessageValue}/>
                     </Tab>
                     <Tab eventKey="receivers" title="Receivers" >
                       <Table striped bordered hover variant="dark">
