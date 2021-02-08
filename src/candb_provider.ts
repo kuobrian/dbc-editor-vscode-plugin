@@ -17,6 +17,7 @@ export interface SignalForm {
     initValue: Number;
     unit?: Number;
     valuetable?: any;
+    comments?: string;
  }
 
 export interface MessageForm {
@@ -26,6 +27,7 @@ export interface MessageForm {
     id: string;
     dlc: Number;
     cycletime: Number;
+    comments?: string;
  }
 
 export class CANdb {
@@ -40,7 +42,6 @@ export class CANdb {
     }
 
     public itemsInSignal () {
-        
         console.log(this.dbMapping.get("Signals"));
     }
 

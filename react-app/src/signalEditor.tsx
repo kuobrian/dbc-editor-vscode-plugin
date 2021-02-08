@@ -1,21 +1,10 @@
 import * as React from 'react';
 import * as ReactDOM from "react-dom";
 import 'bootstrap/dist/css/bootstrap.min.css';
+import {SelectMsgTable} from "../signalComponents/msgSelected";
 
-import Container from 'react-bootstrap/Container';
 
-import {
-  Row, Col, Tabs, Tab, Badge,
-  Table,
-  Navbar,
-  Nav,
-  NavDropdown,
-  InputGroup,
-  Form,
-  FormControl,
-  Button,
-  Modal
- } from "react-bootstrap";
+import {  Row, Col, Tabs, Tab, Table, Form, Button,  Modal } from "react-bootstrap";
 
 declare global {
     interface Window {
@@ -24,15 +13,14 @@ declare global {
 }
 
 
-export interface HelloProps { compiler: string; framework: string; }
-
 window.addEventListener('message', (event) =>{
     let vscode = window.acquireVsCodeApi();
-    const message = event.data;
+    const messages = event.data.message;
+    const signal = event.data.signals;
 
-    const signalUid = message.uid;
-    console.log('candbEditor  Webview接收到的消息：',
-                message.name, message.bitlength, message.byteorder, message.uid);
+    const signalUid = signal.uid;
+
+    console.log('signalEditor  Webview接收到的消息：', signal.name, messages.length);
 
     const App = () =>  {
         const styles = {
@@ -57,16 +45,16 @@ window.addEventListener('message', (event) =>{
         const handleClose = () => setShow(false);
         const handleShow = () => setShow(true);
         let copyMsg:any=[];
-        copyMsg = JSON.parse(JSON.stringify(message));
+        copyMsg = JSON.parse(JSON.stringify(signal));
         const handleFormChange = (e: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLSelectElement>): void => {
           const msgKey = e.target.id.split("_")[1];
-          message[msgKey] = e.target.value;
+          signal[msgKey] = e.target.value;
         };
 
         function onSaveBtnClick(): void {
           vscode.postMessage({
             command: 'modifySignalForm',
-            data: message
+            data: signal
           });
         }
         
@@ -87,7 +75,7 @@ window.addEventListener('message', (event) =>{
                             <Form.Label>Name:</Form.Label>
                             <Form.Control required
                                           type="text"
-                                          defaultValue={message.name}
+                                          defaultValue={signal.name}
                                           onChange={(event) => handleFormChange(event as any)}>
                             </Form.Control>
                           </Form.Group>
@@ -96,7 +84,7 @@ window.addEventListener('message', (event) =>{
                           <Form.Group as={Col} md="3" controlId="_bitlength">
                             <Form.Label>Length (Bit):</Form.Label>
                             <Form.Control type="Length"
-                                          defaultValue={message.bitlength}
+                                          defaultValue={signal.bitlength}
                                           onChange={(event) => handleFormChange(event as any)}>
                             </Form.Control>
                           </Form.Group>
@@ -105,7 +93,7 @@ window.addEventListener('message', (event) =>{
                           <Form.Group as={Col} md="3" controlId="_byteorder">
                             <Form.Label>Byte Order:</Form.Label>
                             <Form.Control as="select" 
-                                          defaultValue={message.byteorder} 
+                                          defaultValue={signal.byteorder} 
                                           onChange={(event) => handleFormChange(event as any)}>
                                   <option>Intel</option>
                                   <option>Motorola</option>
@@ -114,7 +102,7 @@ window.addEventListener('message', (event) =>{
                           <Form.Group as={Col} md="3" controlId="_unit">
                             <Form.Label>Unit:</Form.Label>
                             <Form.Control type="Length"
-                                          defaultValue={message.unit}
+                                          defaultValue={signal.unit}
                                           onChange={(event) => handleFormChange(event as any)}>
                             </Form.Control>
                           </Form.Group>
@@ -123,7 +111,7 @@ window.addEventListener('message', (event) =>{
                           <Form.Group as={Col} md="3" controlId="_valuetype">
                             <Form.Label>Value Type:</Form.Label>
                             <Form.Control as="select"
-                                          defaultValue={message.valuetype}
+                                          defaultValue={signal.valuetype}
                                           onChange={(event) => handleFormChange(event as any)}>
                                     <option>Signed</option>
                                     <option>Unsigned</option>
@@ -134,7 +122,7 @@ window.addEventListener('message', (event) =>{
                           <Form.Group as={Col} md="3" controlId="_initValue">
                             <Form.Label>Init Value:</Form.Label>
                             <Form.Control type="Length" 
-                                          defaultValue={message.initValue}
+                                          defaultValue={signal.initValue}
                                           onChange={(event) => handleFormChange(event as any)}>
                             </Form.Control>
                           </Form.Group>
@@ -143,14 +131,14 @@ window.addEventListener('message', (event) =>{
                           <Form.Group as={Col} md="3" controlId="_factor">
                             <Form.Label>Factor:</Form.Label>
                             <Form.Control type="Length" 
-                                          defaultValue={message.factor}
+                                          defaultValue={signal.factor}
                                           onChange={(event) => handleFormChange(event as any)}>
                             </Form.Control>
                           </Form.Group>
                           <Form.Group as={Col} md="3" controlId="_offset">
                             <Form.Label>Offset:</Form.Label>
                             <Form.Control type="Length" 
-                                          defaultValue={message.offset}
+                                          defaultValue={signal.offset}
                                           onChange={(event) => handleFormChange(event as any)}>
                             </Form.Control>
                           </Form.Group>
@@ -159,14 +147,14 @@ window.addEventListener('message', (event) =>{
                           <Form.Group as={Col} md="3" controlId="_minimun">
                             <Form.Label>Minimun:</Form.Label>
                             <Form.Control type="Length"
-                                          defaultValue={message.minimun}
+                                          defaultValue={signal.minimun}
                                           onChange={(event) => handleFormChange(event as any)}>
                             </Form.Control>
                           </Form.Group>
                           <Form.Group as={Col} md="3" controlId="_maximum">
                             <Form.Label>Maximum:</Form.Label>
                             <Form.Control type="Length"
-                                          defaultValue={message.maximum}
+                                          defaultValue={signal.maximum}
                                           onChange={(event) => handleFormChange(event as any)}>
                             </Form.Control>
                           </Form.Group>
@@ -180,7 +168,7 @@ window.addEventListener('message', (event) =>{
                           <Form.Group as={Col} md="6" controlId="validationCustom03">
                             <Form.Label>Value Table:</Form.Label>
                             <Form.Control as="select" 
-                                          defaultValue={message.valuetable}
+                                          defaultValue={signal.valuetable}
                                           onChange={(event) => handleFormChange(event as any)}>
                               <option>None</option>
                             </Form.Control>
@@ -189,71 +177,7 @@ window.addEventListener('message', (event) =>{
                       </Form>
                     </Tab>
                     <Tab eventKey="messages" title="Messages">
-                        <Table striped bordered hover variant="dark">
-                            <thead>
-                              <tr>
-                                  <th>Name</th>
-                                  <th>ID</th>
-                                  <th>ID-Format</th>
-                                  <th>DLC [Byte]</th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                              <tr>
-                                <td>1</td>
-                                    {Array.from({ length: 3 }).map((_, index) => (
-                                            <td key={index}>Table cell {index}</td>
-                                      ))
-                                    }
-                              </tr>
-                              <tr>
-                                <td>2</td>
-                                    {Array.from({ length: 3 }).map((_, index) => (
-                                            <td key={index}>Table cell {index}</td>
-                                      ))
-                                    }
-                              </tr>
-                              <tr>
-                                <td>3</td>
-                                <td colSpan={2}>Larry the Bird</td>
-                                <td>@twitter</td>
-                              </tr>
-                            </tbody>
-                        </Table>
-                        <Row>
-                          <Col>
-                              <Button variant="primary" onClick={handleShow}>
-                              Add ...
-                              </Button>
-                              <Modal show={show}
-                                      onHide={handleClose}
-                                      backdrop="static"
-                                      keyboard={false}>
-                                <Modal.Header closeButton>
-                                  <Modal.Title>Modal heading</Modal.Title>
-                                </Modal.Header>
-                                <Modal.Body>Woohoo, you're reading this text in a modal!</Modal.Body>
-                                  <Modal.Footer>
-                                    <Button variant="secondary" onClick={handleClose}>
-                                    Close
-                                    </Button>
-                                    <Button variant="primary" onClick={handleClose}>
-                                    Save Changes
-                                    </Button>
-                                 </Modal.Footer>
-                              </Modal>
-                          </Col>
-                          <Col>
-                              <Button variant="primary" onClick={handleShow}>
-                              Remove
-                              </Button>
-                          </Col>
-                          <Col>
-                              <Button variant="primary" onClick={handleShow}>
-                              View
-                              </Button>
-                          </Col>
-                        </Row>
+                        <SelectMsgTable allMessages={messages}  signal={signal}/>
                     </Tab>
                     <Tab eventKey="receivers" title="Receivers">
                       <Table striped bordered hover variant="dark">

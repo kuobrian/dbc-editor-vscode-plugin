@@ -20,9 +20,13 @@ export function startSignalHandler(context: vscode.ExtensionContext, modulename:
     panel.webview.html = htmlContent;
     
     let candbSignal = candb.dbMapping.get("Signals").find((element: CANDB.SignalForm) => element.name === modulename);
-    console.log(candbSignal);
+    let candbAllMsgs = candb.dbMapping.get("Messages");
+    console.log(candbAllMsgs);
 
-    panel.webview.postMessage(candbSignal);
+    panel.webview.postMessage({ message: candbAllMsgs,
+                                signals: candbSignal});
+
+
 
     panel.webview.onDidReceiveMessage((message: any) => {
       switch (message.command) {
