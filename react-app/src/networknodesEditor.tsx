@@ -44,12 +44,12 @@ window.addEventListener('message', (event) =>{
               paddingRight: 0
           }
         };
-        let copyNN:any=[];
+        let copyNN = JSON.parse(JSON.stringify(networknode));
         
-        copyNN = JSON.parse(JSON.stringify(networknode));
         const updateNNValue =  (data: NetworkNodesForm) => {
           networknode = data;
         };
+        
         const handleFormChange = (e: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLSelectElement>): void => {
           const msgKey = e.target.id.split("_")[1];
           networknode[msgKey] = e.target.value;
@@ -110,13 +110,14 @@ window.addEventListener('message', (event) =>{
                     <Tab eventKey="attributes" title="Attributes" >
                     </Tab>
                     <Tab eventKey="comment" title="Comment" >
-                      <Form.Group controlId="textarea1">
-                        <Form.Control as="textarea" rows={30} placeholder="Type your comment here..." />
-                        <Button style={{ marginLeft: "50%"}} variant="primary" type="submit">
-                        Submit
-                        </Button>
+                      <Form.Group controlId="_comments">
+                        <Form.Control as="textarea" 
+                                      rows={30}
+                                      defaultValue={ networknode.comments}
+                                      placeholder="Type your comments here ..."
+                                      onChange={(event) => handleFormChange(event as any)}/>
+                        
                       </Form.Group>
-                       
                     </Tab>
                 </Tabs>
               

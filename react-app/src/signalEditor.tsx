@@ -304,13 +304,14 @@ window.addEventListener('message', (event) =>{
                       </Table>
                     </Tab>
                     <Tab eventKey="comment" title="Comment" >
-                      <Form.Group controlId="textarea1">
-                        <Form.Control as="textarea" rows={30} placeholder="Type your comment here..." />
-                        <Button style={{ marginLeft: "50%"}} variant="primary" type="submit">
-                        Submit
-                        </Button>
+                      <Form.Group controlId="_comments">
+                        <Form.Control as="textarea" 
+                                      rows={30}
+                                      defaultValue={ signal.comments}
+                                      placeholder="Type your comments here ..."
+                                      onChange={(event) => handleFormChange(event as any)}/>
+                        
                       </Form.Group>
-                       
                     </Tab>
                 </Tabs>
               

@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
-import * as fs from 'fs';
+
 import * as CANDB from '../candb_provider';
 
 export function startSignalHandler(context: vscode.ExtensionContext, modulename: string, candb: CANDB.CANdb): void {
@@ -12,7 +12,7 @@ export function startSignalHandler(context: vscode.ExtensionContext, modulename:
                                                     retainContextWhenHidden: true
                                                   }  );
     
-    let htmlContent: string = getHtmlForWebview(context.extensionPath);
+    let htmlContent: string = CANDB.getHtmlForWebview(context.extensionPath);
     let webpackPathOnDisk = vscode.Uri.file(path.join(context.extensionPath, 'dist/signalEditor.js'));
     let webpackUri = panel.webview.asWebviewUri(webpackPathOnDisk);
     htmlContent = htmlContent.replace('${rootUri}', webpackUri.toString());
@@ -22,7 +22,6 @@ export function startSignalHandler(context: vscode.ExtensionContext, modulename:
     
     let candbSignal = candb.dbMapping.get("Signals").find((element: CANDB.SignalForm) => element.name === modulename);
     let candbAllMsgs = candb.dbMapping.get("Messages");
-    // console.log(candbAllMsgs);
 
     panel.webview.postMessage({ message: candbAllMsgs,
                                 signals: candbSignal});
@@ -59,18 +58,5 @@ function onPanelDispose(): void {
     // Clean up panel here
 }
 
-export function getHtmlForWebview(rootpath: string): string {
-  
-	try {
-    // const reactApplicationHtmlFilename = "index_out.html";
-    const reactApplicationHtmlFilename = "template.html";
-    const htmlPath = path.join(rootpath, "dist", reactApplicationHtmlFilename);
-    
-    const html = fs.readFileSync(htmlPath).toString();
-    return html;
-	}
-	catch(e) {
-		return `Error getting HTML for web view: ${e}`;
-	}
-}
+
 

@@ -1,4 +1,3 @@
-import * as vscode from 'vscode';
 import * as fs from 'fs';
 import * as path from 'path';
 
@@ -18,7 +17,7 @@ export interface SignalForm {
     unit?: Number;
     valuetable?: any;
     msgUids: string[];
-    comments?: string;
+    comments: string;
 }
 
 export interface MessageForm {
@@ -28,7 +27,7 @@ export interface MessageForm {
     id: string;
     dlc: Number;
     cycletime: Number;
-    comments?: string;
+    comments: string;
     signalUids: string[];
 }
 
@@ -62,3 +61,16 @@ export class CANdb {
     }
 }
 
+export function getHtmlForWebview(rootpath: string): string {
+  
+	try {
+    const reactApplicationHtmlFilename = "template.html";
+    const htmlPath = path.join(rootpath, "dist", reactApplicationHtmlFilename);
+    
+    const html = fs.readFileSync(htmlPath).toString();
+    return html;
+	}
+	catch(e) {
+		return `Error getting HTML for web view: ${e}`;
+	}
+}

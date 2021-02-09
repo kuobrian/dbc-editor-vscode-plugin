@@ -116,6 +116,7 @@ class DataProvider implements vscode.TreeDataProvider<TreeViewItem> {
                                         offset:  0,
                                         initValue: 0,
                                         valuetable: null,
+                                        comments: "",
                                         msgUids: []};
             
             this.candb_.dbMapping.get(rootName).push(newItem);
@@ -127,6 +128,7 @@ class DataProvider implements vscode.TreeDataProvider<TreeViewItem> {
                                                 id: "0x"+(this.candb_.dbMapping.get(rootName).length+1),
                                                 dlc: 8,
                                                 cycletime: 0,
+                                                comments: "",
                                                 signalUids: []};
             this.candb_.dbMapping.get(rootName).push(newItem);
         }

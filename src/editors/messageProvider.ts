@@ -11,7 +11,7 @@ export function startMsgHandler(context: vscode.ExtensionContext, modulename: st
                                                     enableScripts: true
                                                   }  );
     
-    let htmlContent: string = getHtmlForWebview(context.extensionPath);
+    let htmlContent: string = CANDB.getHtmlForWebview(context.extensionPath);
     let webpackPathOnDisk = vscode.Uri.file(path.join(context.extensionPath, 'dist/messageEditor.js'));
     let webpackUri = panel.webview.asWebviewUri(webpackPathOnDisk);
     htmlContent = htmlContent.replace('${rootUri}', webpackUri.toString());
@@ -20,8 +20,6 @@ export function startMsgHandler(context: vscode.ExtensionContext, modulename: st
     
     let candbMsg = candb.dbMapping.get("Messages").find((element: CANDB.SignalForm) => element.name === modulename);
     let candbAllSignals = candb.dbMapping.get("Signals");
-    console.log(candbMsg.signalUids);
-
 
     panel.webview.postMessage({
                       message: candbMsg,
@@ -33,7 +31,6 @@ export function startMsgHandler(context: vscode.ExtensionContext, modulename: st
           let index = candb.dbMapping.get("Messages").findIndex((element: CANDB.MessageForm) =>
                   element.uid === message.data.uid);
           if (index !== -1) {
-            console.log(message.data.signalUids);
             candb.dbMapping.get("Messages")[index] = message.data;
           }
           vscode.commands.executeCommand('vscode-plugin-demo.refresh_treeview');
@@ -43,13 +40,6 @@ export function startMsgHandler(context: vscode.ExtensionContext, modulename: st
         case 'cancelMsgForm':
             vscode.commands.executeCommand('workbench.action.closeActiveEditor');
             return;
-
-
-        case 'getDirectoryInfo':
-          runDirCommand((result : string) => 
-            panel.webview.postMessage({ command: 'getDirectoryInfo', directoryInfo: "123" })
-            );
-          return;
       }}, 
       undefined,
       context.subscriptions
@@ -65,33 +55,3 @@ export function startMsgHandler(context: vscode.ExtensionContext, modulename: st
 function onPanelDispose(): void {
     // Clean up panel here
 }
-
-function runDirCommand(callback : Function) {
-    var spawn = require('child_process').spawn;
-    var cp = spawn(process.env.comspec, ['/c', 'dir']);
-
-    cp.stdout.on("data", function(data : any) {
-      const dataString = data.toString();
-      callback(dataString);
-    });
-    
-    cp.stderr.on("data", function(data : any) {
-      // No op
-    });
-  }
-
-export function getHtmlForWebview(rootpath: string): string {
-  
-	try {
-    // const reactApplicationHtmlFilename = "index_out.html";
-    const reactApplicationHtmlFilename = "template.html";
-    const htmlPath = path.join(rootpath, "dist", reactApplicationHtmlFilename);
-    
-    const html = fs.readFileSync(htmlPath).toString();
-    return html;
-	}
-	catch(e) {
-		return `Error getting HTML for web view: ${e}`;
-	}
-}
-

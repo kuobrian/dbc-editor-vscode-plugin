@@ -13,7 +13,7 @@ export function startNetworkNodesHandler(context: vscode.ExtensionContext, modul
                                                     retainContextWhenHidden: true
                                                   }  );
     
-    let htmlContent: string = getHtmlForWebview(context.extensionPath);
+    let htmlContent: string = CANDB.getHtmlForWebview(context.extensionPath);
     let webpackPathOnDisk = vscode.Uri.file(path.join(context.extensionPath, 'dist/networknodesEditor.js'));
     let webpackUri = panel.webview.asWebviewUri(webpackPathOnDisk);
     htmlContent = htmlContent.replace('${rootUri}', webpackUri.toString());
@@ -38,8 +38,6 @@ export function startNetworkNodesHandler(context: vscode.ExtensionContext, modul
           let index = candb.dbMapping.get("Network Node").findIndex((element: CANDB.SignalForm) => element.uid === message.data.uid);
           if (index !== -1) {
             candb.dbMapping.get("Network Node")[index] = message.data;
-            // console.log("msgUids: ", candb.dbMapping.get("Network Node")[index].msgUids.length);
-            // console.log("signalUids ", candb.dbMapping.get("Network Node")[index].signalUids.length);
           }
           vscode.commands.executeCommand('vscode-plugin-demo.refresh_treeview');
           return;
@@ -62,20 +60,5 @@ export function startNetworkNodesHandler(context: vscode.ExtensionContext, modul
 
 function onPanelDispose(): void {
     // Clean up panel here
-}
-
-export function getHtmlForWebview(rootpath: string): string {
-  
-	try {
-    // const reactApplicationHtmlFilename = "index_out.html";
-    const reactApplicationHtmlFilename = "template.html";
-    const htmlPath = path.join(rootpath, "dist", reactApplicationHtmlFilename);
-    
-    const html = fs.readFileSync(htmlPath).toString();
-    return html;
-	}
-	catch(e) {
-		return `Error getting HTML for web view: ${e}`;
-	}
 }
 
