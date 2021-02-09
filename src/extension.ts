@@ -20,8 +20,8 @@ export function activate(context: vscode.ExtensionContext) {
 	vscode.window.registerTreeDataProvider('TreeView', dataProvider);
 
 
-	vscode.commands.registerCommand('extension.openSignalEditor', (moduleName, candb) => {
-			startSignalHandler(context, moduleName, candb);
+	vscode.commands.registerCommand('extension.openSignalEditor', (moduleName, candb, isPreview=false) => {
+			startSignalHandler(context, moduleName, candb, isPreview);
 	});
 
 	vscode.commands.registerCommand('extension.openMessageEditor', (moduleName, candb) => {

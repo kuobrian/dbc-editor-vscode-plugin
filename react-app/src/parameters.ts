@@ -11,7 +11,9 @@ export interface IMsgProps {
 export interface ISignalProps {
     signal: SignalForm;
     allMessages: MessageForm[];
+    isPreview: boolean;
     updateValue: (arg0: SignalForm) => void;
+
 }
 
 export interface INNProps {

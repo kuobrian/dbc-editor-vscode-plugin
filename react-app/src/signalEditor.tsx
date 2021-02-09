@@ -1,8 +1,9 @@
 import * as React from 'react';
 import * as ReactDOM from "react-dom";
 import 'bootstrap/dist/css/bootstrap.min.css';
+import { MessageForm, SignalForm } from '../../src/candb_provider';
 import {SelectMsgTable} from "../signalComponents/msgSelected";
-import { SignalForm } from '../../src/candb_provider';
+import {SignalDefinition} from "../signalComponents/signalDefinition";
 
 
 import {  Row, Col, Tabs, Tab, Table, Form, Button,  Modal } from "react-bootstrap";
@@ -18,10 +19,11 @@ window.addEventListener('message', (event) =>{
     let vscode = window.acquireVsCodeApi();
     let messages = event.data.message;
     let signal = event.data.signals;
+    let isPreview = event.data.isPreview;
 
     const signalUid = signal.uid;
 
-    console.log('signalEditor  Webview接收到的消息：', signal.name, messages.length);
+    console.log('signalEditor  Webview接收到的消息：', signal.name, messages.length, isPreview);
 
     const App = () =>  {
         const styles = {
@@ -75,114 +77,11 @@ window.addEventListener('message', (event) =>{
                 <Tabs defaultActiveKey="definition" id="uncontrolled-tab-example">
                     <Tab eventKey="definition" title="Definition">
                       <Form >
-                        <Form.Row>
-                          <Form.Group as={Col} md="3" controlId="_name">
-                            <Form.Label>Name:</Form.Label>
-                            <Form.Control required
-                                          type="text"
-                                          defaultValue={signal.name}
-                                          onChange={(event) => handleFormChange(event as any)}>
-                            </Form.Control>
-                          </Form.Group>
-                        </Form.Row>
-                        <Form.Row>
-                          <Form.Group as={Col} md="3" controlId="_bitlength">
-                            <Form.Label>Length (Bit):</Form.Label>
-                            <Form.Control type="Length"
-                                          defaultValue={signal.bitlength}
-                                          onChange={(event) => handleFormChange(event as any)}>
-                            </Form.Control>
-                          </Form.Group>
-                        </Form.Row>
-                        <Form.Row>
-                          <Form.Group as={Col} md="3" controlId="_byteorder">
-                            <Form.Label>Byte Order:</Form.Label>
-                            <Form.Control as="select" 
-                                          defaultValue={signal.byteorder} 
-                                          onChange={(event) => handleFormChange(event as any)}>
-                                  <option>Intel</option>
-                                  <option>Motorola</option>
-                            </Form.Control>
-                          </Form.Group>
-                          <Form.Group as={Col} md="3" controlId="_unit">
-                            <Form.Label>Unit:</Form.Label>
-                            <Form.Control type="Length"
-                                          defaultValue={signal.unit}
-                                          onChange={(event) => handleFormChange(event as any)}>
-                            </Form.Control>
-                          </Form.Group>
-                        </Form.Row>
-                        <Form.Row>
-                          <Form.Group as={Col} md="3" controlId="_valuetype">
-                            <Form.Label>Value Type:</Form.Label>
-                            <Form.Control as="select"
-                                          defaultValue={signal.valuetype}
-                                          onChange={(event) => handleFormChange(event as any)}>
-                                    <option>Signed</option>
-                                    <option>Unsigned</option>
-                                    <option>IEEE Float</option>
-                                    <option>IEEE Double</option>
-                            </Form.Control>
-                          </Form.Group>
-                          <Form.Group as={Col} md="3" controlId="_initValue">
-                            <Form.Label>Init Value:</Form.Label>
-                            <Form.Control type="Length" 
-                                          defaultValue={signal.initValue}
-                                          onChange={(event) => handleFormChange(event as any)}>
-                            </Form.Control>
-                          </Form.Group>
-                        </Form.Row>
-                        <Form.Row>
-                          <Form.Group as={Col} md="3" controlId="_factor">
-                            <Form.Label>Factor:</Form.Label>
-                            <Form.Control type="Length" 
-                                          defaultValue={signal.factor}
-                                          onChange={(event) => handleFormChange(event as any)}>
-                            </Form.Control>
-                          </Form.Group>
-                          <Form.Group as={Col} md="3" controlId="_offset">
-                            <Form.Label>Offset:</Form.Label>
-                            <Form.Control type="Length" 
-                                          defaultValue={signal.offset}
-                                          onChange={(event) => handleFormChange(event as any)}>
-                            </Form.Control>
-                          </Form.Group>
-                        </Form.Row>
-                        <Form.Row>
-                          <Form.Group as={Col} md="3" controlId="_minimun">
-                            <Form.Label>Minimun:</Form.Label>
-                            <Form.Control type="Length"
-                                          defaultValue={signal.minimun}
-                                          onChange={(event) => handleFormChange(event as any)}>
-                            </Form.Control>
-                          </Form.Group>
-                          <Form.Group as={Col} md="3" controlId="_maximum">
-                            <Form.Label>Maximum:</Form.Label>
-                            <Form.Control type="Length"
-                                          defaultValue={signal.maximum}
-                                          onChange={(event) => handleFormChange(event as any)}>
-                            </Form.Control>
-                          </Form.Group>
-                        </Form.Row>
-                        <Form.Row>
-                          <Form.Group as={Col} md="6" controlId="validationCustom03">
-                            <Button variant="primary" size="sm" block>Calculate minimum and maximum</Button>
-                          </Form.Group>
-                        </Form.Row>
-                        <Form.Row>
-                          <Form.Group as={Col} md="6" controlId="validationCustom03">
-                            <Form.Label>Value Table:</Form.Label>
-                            <Form.Control as="select" 
-                                          defaultValue={signal.valuetable}
-                                          onChange={(event) => handleFormChange(event as any)}>
-                              <option>None</option>
-                            </Form.Control>
-                          </Form.Group>
-                        </Form.Row>
+                        <SignalDefinition signal={signal} allMessages={messages} isPreview={isPreview} updateValue={updateSignalValue} />
                       </Form>
                     </Tab>
                     <Tab eventKey="messages" title="Messages">
-                        <SelectMsgTable allMessages={messages}  signal={signal} updateValue={updateSignalValue}/>
+                        <SelectMsgTable allMessages={messages}  signal={signal} isPreview={false} updateValue={updateSignalValue}/>
                     </Tab>
                     <Tab eventKey="receivers" title="Receivers">
                       <Table striped bordered hover variant="dark">

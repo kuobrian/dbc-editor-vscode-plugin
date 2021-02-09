@@ -6,18 +6,19 @@ import * as path from 'path';
 export interface SignalForm {
     uid: string;
     name: string;
-    bitlength: Number;
+    bitlength: number;
     byteorder: string;
     valuetype: string;
-    factor: Number;
-    minimun: Number;
-    maximum: Number;
-    offset: Number;
-    initValue: Number;
-    unit?: Number;
+    factor: number;
+    minimun: number;
+    maximum: number;
+    offset: number;
+    initValue: number;
+    unit?: number;
     valuetable?: any;
     msgUids: string[];
     comments: string;
+    [key: string]: any;
 }
 
 export interface MessageForm {
@@ -25,10 +26,11 @@ export interface MessageForm {
     name: string;
     msgType: string;
     id: string;
-    dlc: Number;
-    cycletime: Number;
+    dlc: number;
+    cycletime: number;
     comments: string;
     signalUids: string[];
+    [key: string]: any;
 }
 
 export interface NetworkNodesForm {
@@ -39,13 +41,14 @@ export interface NetworkNodesForm {
     networkUids:string[];
     msgUids: string[];
     signalUids: string[];
+    [key: string]: any;
 }
 
 export class CANdb {
     dbMapping = new Map();
 
-    constructor(index: string[]) {
-        index.map(i => this.dbMapping.set(i, []));
+    constructor(labels: string[]) {
+        labels.map(label => this.dbMapping.set(label, []));
     }
 
     public itemsInCANdb () {

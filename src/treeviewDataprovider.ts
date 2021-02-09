@@ -57,41 +57,73 @@ class DataProvider implements vscode.TreeDataProvider<TreeViewItem> {
     }
 
     getChildren(element?: TreeViewItem): vscode.ProviderResult<TreeViewItem[]> {
+        
         if (!this.workspaceRoot) {
 			vscode.window.showInformationMessage('No dependency in empty workspace');
 			return Promise.resolve([]);
         }
         if (element) {
+            let treeItemList: TreeViewItem[] = [];
             if (element.label === "Network Node") {
-                if (this.candb_.dbMapping.get("Network Node").length) {
-                    return Promise.resolve(this.candb_.dbMapping.get("Network Node").map((nnitem: CANDB.NetworkNodesForm) => 
-                                            new TreeViewItem(nnitem.name, vscode.TreeItemCollapsibleState.None, 'treeviewitem', {
-                                                command: 'extension.openNetworkNodesEditor',
-                                                title: '',
-                                                arguments:[nnitem.name, this.candb_]}
-                                                )));
-                } 
+                this.candb_.dbMapping.get("Network Node").map((nnitem: CANDB.NetworkNodesForm) => 
+                        treeItemList.push(new TreeViewItem( nnitem.name, 
+                                                            vscode.TreeItemCollapsibleState.None,
+                                                            'treeviewitem',
+                                                            {
+                                                                command: 'extension.openNetworkNodesEditor',
+                                                                title: '',
+                                                                arguments:[nnitem.name, this.candb_] 
+                                            }))
+                    
+                    );
             }
             else if (element.label === "Messages") {
                 if (this.candb_.dbMapping.get("Messages").length) {
-                    return Promise.resolve(this.candb_.dbMapping.get("Messages").map((messageitem: CANDB.MessageForm) => 
-                                            new TreeViewItem(messageitem.name, vscode.TreeItemCollapsibleState.None, 'treeviewitem', {
-                                                command: 'extension.openMessageEditor',
-                                                title: '',
-                                                arguments:[messageitem.name, this.candb_]}
-                                                )));
-                } 
+                    this.candb_.dbMapping.get("Messages").map((messageitem: CANDB.MessageForm) =>
+                        treeItemList.push(new TreeViewItem( messageitem.name, 
+                                                            vscode.TreeItemCollapsibleState.Collapsed,
+                                                            'treeviewitem',
+                                                            {
+                                                                command: 'extension.openMessageEditor',
+                                                                title: '',
+                                                                arguments:[messageitem.name, this.candb_] 
+                                            }))
+                    
+                    );};
+                
             }
             else if (element.label === "Signals") {
                 if (this.candb_.dbMapping.get("Signals").length) {
-                    return Promise.resolve(this.candb_.dbMapping.get("Signals").map((signalitem: CANDB.SignalForm) => 
-                                            new TreeViewItem(signalitem.name, vscode.TreeItemCollapsibleState.None, 'treeviewitem',{
-                                                command: 'extension.openSignalEditor',
-                                                title: '',
-                                                arguments:[signalitem.name, this.candb_]}
-                                                )));
-                } 
+
+                    this.candb_.dbMapping.get("Signals").map((signalitem: CANDB.SignalForm) =>
+                        treeItemList.push(new TreeViewItem( signalitem.name, 
+                                                            vscode.TreeItemCollapsibleState.None,
+                                                            'treeviewitem',
+                                                            {
+                                                                command: 'extension.openSignalEditor',
+                                                                title: '',
+                                                                arguments:[signalitem.name, this.candb_] 
+                                            }))
+                    
+                    );};
             } 
+            else if (element.label.includes("Messag")) {
+                let msgIdx = this.candb_.dbMapping.get("Messages").findIndex((item: CANDB.MessageForm) => item.name === element.label);
+
+                this.candb_.dbMapping.get("Messages")[msgIdx].signalUids.map((uid: string) =>{
+                    this.candb_.dbMapping.get("Signals").forEach((signal: CANDB.SignalForm) => {
+                        if (signal.uid === uid) {
+                            treeItemList.push(new TreeViewItem( signal.name,
+                                                                vscode.TreeItemCollapsibleState.None, 
+                                                                'treeviewitem',
+                                                                {
+                                                                    command: 'extension.openSignalEditor',
+                                                                    title: '',
+                                                                    arguments:[signal.name, this.candb_, true]
+                                                                }));}});
+                });
+            }
+            return Promise.resolve(treeItemList);
         } else {
             return Promise.resolve(this.templateCANdb()); 
         }

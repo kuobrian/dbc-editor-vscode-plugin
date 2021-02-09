@@ -3,7 +3,7 @@ import * as path from 'path';
 
 import * as CANDB from '../candb_provider';
 
-export function startSignalHandler(context: vscode.ExtensionContext, modulename: string, candb: CANDB.CANdb): void {
+export function startSignalHandler(context: vscode.ExtensionContext, modulename: string, candb: CANDB.CANdb, isPreview: boolean): void {
     const panel = vscode.window.createWebviewPanel('reactExtension',
                                                   modulename,
                                                   vscode.ViewColumn.One,
@@ -24,7 +24,8 @@ export function startSignalHandler(context: vscode.ExtensionContext, modulename:
     let candbAllMsgs = candb.dbMapping.get("Messages");
 
     panel.webview.postMessage({ message: candbAllMsgs,
-                                signals: candbSignal});
+                                signals: candbSignal,
+                                isPreview: isPreview});
 
 
 
