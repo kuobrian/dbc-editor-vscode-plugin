@@ -1,55 +1,51 @@
 import * as React from 'react';
 import * as ReactDOM from "react-dom";
-import {SignalForm, MessageForm} from "../../src/candb_provider";
-import {IMsgProps, ISelItemsState} from "../src/parameters";
 import 'bootstrap/dist/css/bootstrap.min.css';
-import {  Row, Col, Tabs, Tab, Table, Form, Button,  Modal } from "react-bootstrap";
+import {Table, Button,  Modal } from "react-bootstrap";
+import {INNProps, ISelItemsState} from "../src/parameters";
+import {SignalForm, MessageForm} from "../../src/candb_provider";
 
-export class SelectSignalTable extends React.Component <IMsgProps , ISelItemsState> {
-  
-  constructor(props: IMsgProps) {
+export class SelectMsgTable extends React.Component <INNProps, ISelItemsState> {
+    constructor(props : INNProps) {
       super(props);
-      
-      this.state = {selectItem: this.initSelectSignals(),
+      this.state = {selectItem:  this.initSelectMsgs(),
                     show: false };
       this.handleClose = this.handleClose.bind(this);
       this.handleShow = this.handleShow.bind(this);
     }
-
-    initSelectSignals() {
-      let rows: SignalForm[] = [];
-      for (let item of this.props.allSignals) {
-        if (this.props.msg.signalUids.includes(item.uid)) {
+    initSelectMsgs() {
+      let rows: MessageForm[] = [];
+      for (let item of this.props.allMessages) {
+        if (this.props.netwoknode.msgUids.includes(item.uid)) {
           rows.push(item); 
         }
       }
       return rows;
     }
-
     updateValue = this.props.updateValue;
     handleClose () { this.setState({ show: false } );}
     handleShow ()  { this.setState({ show: true }); }
     handleSelectSignal (selectItem: any) {
       if (! this.state.selectItem.includes(selectItem)) {
         const rows = [...this.state.selectItem, selectItem];
-        
         this.setState({ selectItem: rows}, () => {
-          this.state.selectItem.forEach(item =>  this.props.msg.signalUids.push(item.uid));
-          this.props.msg.signalUids = this.props.msg.signalUids.filter(function(elem, index, self) {
+          this.state.selectItem.forEach(item =>  this.props.netwoknode.msgUids.push(item.uid));
+          this.props.netwoknode.msgUids = this.props.netwoknode.msgUids.filter(function(elem, index, self) {
             return index === self.indexOf(elem);
           });
-          this.updateValue( this.props.msg);
+          this.updateValue( this.props.netwoknode);
+
         }); 
       } 
     };
   
-    handleRemoveSpecificSignal = (idx: number) => () => {
+    handleRemoveSpecificRow = (idx: number) => () => {
       const rows = [...this.state.selectItem];
       const delItem = rows[idx];
       rows.splice(idx, 1);
       this.setState({ selectItem: rows }, () =>{
-        this.props.msg.signalUids = this.props.msg.signalUids.filter(uid=> uid !== delItem.uid);
-        this.updateValue( this.props.msg);
+        this.props.netwoknode.msgUids = this.props.netwoknode.msgUids.filter(uid=> uid !== delItem.uid);
+        this.updateValue( this.props.netwoknode);
       }) ;
     };
     render() {
@@ -63,13 +59,10 @@ export class SelectSignalTable extends React.Component <IMsgProps , ISelItemsSta
                         id="tab_logic">
                   <thead>
                     <tr>
-                      <th>Signal</th>
-                      <th>Message</th>
-                      <th>Multiplexing/Group</th>
-                      <th>Startbit</th>
-                      <th>Length (Bit)</th>
-                      <th>Byte Order</th>
-                      <th>Value Type</th>
+                      <th>Name</th>
+                      <th>ID</th>
+                      <th>ID-Format</th>
+                      <th>DLC (Byte)</th>
                       <th>Remove</th>
                     </tr>
                   </thead>
@@ -78,14 +71,11 @@ export class SelectSignalTable extends React.Component <IMsgProps , ISelItemsSta
                         return (
                           <tr>
                             <td>{item.name}</td>
-                            <td>{this.props.msg.name}</td>
-                            <td>{'-'}</td>
-                            <td>{idx*8}</td>
-                            <td>{item.bitlength}</td>
-                            <td>{item.byteorder}</td>
-                            <td>{item.valuetype}</td>
+                            <td>{item.id}</td>
+                            <td>{item.msgType}</td>
+                            <td>{item.dlc}</td>
                             <td>
-                              <Button variant="danger" onClick={this.handleRemoveSpecificSignal(idx)} >
+                              <Button variant="danger" onClick={this.handleRemoveSpecificRow(idx)} >
                               Remove
                               </Button>
                             </td>
@@ -114,22 +104,21 @@ export class SelectSignalTable extends React.Component <IMsgProps , ISelItemsSta
                           <thead>
                               <tr>
                                   <th>Name</th>
-                                  <th>Length (Bit)</th>
-                                  <th>Byte Order</th>
-                                  <th>Value Type</th>
-                                  <th>Selected</th>
+                                  <th>ID</th>
+                                  <th>ID-Format</th>
+                                  <th>DLC (Byte)</th>
                               </tr>
                           </thead>
                           <tbody>
                                 { 
-                                  this.props.allSignals.map((item: SignalForm, idx: any) => {
+                                  this.props.allMessages.map((item, idx) => {
                                     if (! this.state.selectItem.includes(item)) {
                                       return (
                                         <tr>
-                                          <td>{item.name} {this.state.selectItem.includes(item)}</td> 
-                                          <td>{item.bitlength}</td>
-                                          <td>{item.byteorder}</td>
-                                          <td>{item.valuetype}</td>
+                                          <td>{item.name}</td>
+                                          <td>{item.id}</td>
+                                          <td>{item.msgType}</td>
+                                          <td>{item.dlc}</td>
                                           <td>
                                             <Button variant="primary" onClick={() => this.handleSelectSignal(item)}>
                                             add

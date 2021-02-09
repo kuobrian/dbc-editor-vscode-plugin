@@ -1,5 +1,5 @@
 
-import {SignalForm, MessageForm} from "../../src/candb_provider";
+import {SignalForm, MessageForm, NetworkNodesForm} from "../../src/candb_provider";
 
 
 export interface IMsgProps {
@@ -12,6 +12,13 @@ export interface ISignalProps {
     signal: SignalForm;
     allMessages: MessageForm[];
     updateValue: (arg0: SignalForm) => void;
+}
+
+export interface INNProps {
+    netwoknode: NetworkNodesForm;
+    allMessages: MessageForm[];
+    allSignals: SignalForm[];
+    updateValue: (arg0: NetworkNodesForm) => void;
 }
   
 export interface ISelItemsState {

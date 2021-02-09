@@ -16,6 +16,7 @@ module.exports = {
   entry: {
     signalEditor: path.resolve(__dirname, "react-app/src/signalEditor.tsx"),
     messageEditor: path.resolve(__dirname, "react-app/src/messageEditor.tsx"),
+    networknodesEditor: path.resolve(__dirname, "react-app/src/networknodesEditor.tsx"),
   },
   output: {
     path: path.resolve(__dirname, "dist"),

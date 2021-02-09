@@ -1,13 +1,13 @@
 import * as React from 'react';
 import * as ReactDOM from "react-dom";
 import {SignalForm, MessageForm} from "../../src/candb_provider";
-import {IMsgProps, ISelItemsState} from "../src/parameters";
+import {INNProps, ISelItemsState} from "../src/parameters";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import {  Row, Col, Tabs, Tab, Table, Form, Button,  Modal } from "react-bootstrap";
 
-export class SelectSignalTable extends React.Component <IMsgProps , ISelItemsState> {
+export class SelectSignalTable extends React.Component <INNProps , ISelItemsState> {
   
-  constructor(props: IMsgProps) {
+  constructor(props: INNProps) {
       super(props);
       
       this.state = {selectItem: this.initSelectSignals(),
@@ -18,9 +18,11 @@ export class SelectSignalTable extends React.Component <IMsgProps , ISelItemsSta
 
     initSelectSignals() {
       let rows: SignalForm[] = [];
-      for (let item of this.props.allSignals) {
-        if (this.props.msg.signalUids.includes(item.uid)) {
-          rows.push(item); 
+      if (this.props.allSignals !== undefined) {
+        for (let item of this.props.allSignals) {
+          if (this.props.netwoknode.signalUids.includes(item.uid)) {
+            rows.push(item); 
+          }
         }
       }
       return rows;
@@ -34,11 +36,11 @@ export class SelectSignalTable extends React.Component <IMsgProps , ISelItemsSta
         const rows = [...this.state.selectItem, selectItem];
         
         this.setState({ selectItem: rows}, () => {
-          this.state.selectItem.forEach(item =>  this.props.msg.signalUids.push(item.uid));
-          this.props.msg.signalUids = this.props.msg.signalUids.filter(function(elem, index, self) {
+          this.state.selectItem.forEach(item =>  this.props.netwoknode.signalUids.push(item.uid));
+          this.props.netwoknode.signalUids = this.props.netwoknode.signalUids.filter(function(elem, index, self) {
             return index === self.indexOf(elem);
           });
-          this.updateValue( this.props.msg);
+          this.updateValue( this.props.netwoknode);
         }); 
       } 
     };
@@ -48,8 +50,8 @@ export class SelectSignalTable extends React.Component <IMsgProps , ISelItemsSta
       const delItem = rows[idx];
       rows.splice(idx, 1);
       this.setState({ selectItem: rows }, () =>{
-        this.props.msg.signalUids = this.props.msg.signalUids.filter(uid=> uid !== delItem.uid);
-        this.updateValue( this.props.msg);
+        this.props.netwoknode.signalUids = this.props.netwoknode.signalUids.filter(uid=> uid !== delItem.uid);
+        this.updateValue( this.props.netwoknode);
       }) ;
     };
     render() {
@@ -78,7 +80,7 @@ export class SelectSignalTable extends React.Component <IMsgProps , ISelItemsSta
                         return (
                           <tr>
                             <td>{item.name}</td>
-                            <td>{this.props.msg.name}</td>
+                            <td>{this.props.netwoknode.name}</td>
                             <td>{'-'}</td>
                             <td>{idx*8}</td>
                             <td>{item.bitlength}</td>

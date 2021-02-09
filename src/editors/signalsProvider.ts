@@ -1,14 +1,15 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
 import * as fs from 'fs';
-import * as CANDB from './candb_provider';
+import * as CANDB from '../candb_provider';
 
 export function startSignalHandler(context: vscode.ExtensionContext, modulename: string, candb: CANDB.CANdb): void {
     const panel = vscode.window.createWebviewPanel('reactExtension',
                                                   modulename,
                                                   vscode.ViewColumn.One,
                                                   {
-                                                    enableScripts: true
+                                                    enableScripts: true,
+                                                    retainContextWhenHidden: true
                                                   }  );
     
     let htmlContent: string = getHtmlForWebview(context.extensionPath);
@@ -21,7 +22,7 @@ export function startSignalHandler(context: vscode.ExtensionContext, modulename:
     
     let candbSignal = candb.dbMapping.get("Signals").find((element: CANDB.SignalForm) => element.name === modulename);
     let candbAllMsgs = candb.dbMapping.get("Messages");
-    console.log(candbAllMsgs);
+    // console.log(candbAllMsgs);
 
     panel.webview.postMessage({ message: candbAllMsgs,
                                 signals: candbSignal});
@@ -36,19 +37,12 @@ export function startSignalHandler(context: vscode.ExtensionContext, modulename:
             candb.dbMapping.get("Signals")[index] = message.data;
           }
           vscode.commands.executeCommand('vscode-plugin-demo.refresh_treeview');
-          vscode.window.showInformationMessage("save signal");
           return;
           
         case 'cancelSignalForm':
             vscode.commands.executeCommand('workbench.action.closeActiveEditor');
             return;
 
-
-        case 'getDirectoryInfo':
-          runDirCommand((result : string) => 
-            panel.webview.postMessage({ command: 'getDirectoryInfo', directoryInfo: "123" })
-            );
-          return;
       }}, 
       undefined,
       context.subscriptions
@@ -64,20 +58,6 @@ export function startSignalHandler(context: vscode.ExtensionContext, modulename:
 function onPanelDispose(): void {
     // Clean up panel here
 }
-
-function runDirCommand(callback : Function) {
-    var spawn = require('child_process').spawn;
-    var cp = spawn(process.env.comspec, ['/c', 'dir']);
-
-    cp.stdout.on("data", function(data : any) {
-      const dataString = data.toString();
-      callback(dataString);
-    });
-    
-    cp.stderr.on("data", function(data : any) {
-      // No op
-    });
-  }
 
 export function getHtmlForWebview(rootpath: string): string {
   

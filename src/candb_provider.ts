@@ -19,7 +19,7 @@ export interface SignalForm {
     valuetable?: any;
     msgUids: string[];
     comments?: string;
- }
+}
 
 export interface MessageForm {
     uid: string;
@@ -30,7 +30,17 @@ export interface MessageForm {
     cycletime: Number;
     comments?: string;
     signalUids: string[];
- }
+}
+
+export interface NetworkNodesForm {
+    uid: string;
+    name: string;
+    address: string;
+    comments?: string;
+    networkUids:string[];
+    msgUids: string[];
+    signalUids: string[];
+}
 
 export class CANdb {
     dbMapping = new Map();

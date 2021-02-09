@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
 import * as fs from 'fs';
-import * as CANDB from './candb_provider';
+import * as CANDB from '../candb_provider';
 
 export function startMsgHandler(context: vscode.ExtensionContext, modulename: string, candb: CANDB.CANdb): void {
     const panel = vscode.window.createWebviewPanel('reactExtension',
