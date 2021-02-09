@@ -4,6 +4,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import { MessageForm, SignalForm } from '../../src/candb_provider';
 import {SelectMsgTable} from "../signalComponents/msgSelected";
 import {SignalDefinition} from "../signalComponents/signalDefinition";
+import {MessageDefinition} from "../msgComponents/messageDefinition";
 
 
 import {  Row, Col, Tabs, Tab, Table, Form, Button,  Modal } from "react-bootstrap";
@@ -81,7 +82,24 @@ window.addEventListener('message', (event) =>{
                       </Form>
                     </Tab>
                     <Tab eventKey="messages" title="Messages">
-                        <SelectMsgTable allMessages={messages}  signal={signal} isPreview={false} updateValue={updateSignalValue}/>
+                        {(() => {
+                          if (isPreview) {
+                            return ( <MessageDefinition msg={messages}  allSignals={signal} isPreview={isPreview}/> );
+                          } else {
+                            return ( <SelectMsgTable allMessages={messages}  signal={signal} isPreview={isPreview} updateValue={updateSignalValue}/> );
+                          }
+                          })()
+                        }
+
+                        
+                        
+                        
+                        
+                        
+                        
+                    
+                    
+                    
                     </Tab>
                     <Tab eventKey="receivers" title="Receivers">
                       <Table striped bordered hover variant="dark">

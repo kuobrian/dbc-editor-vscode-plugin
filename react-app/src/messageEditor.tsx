@@ -1,10 +1,11 @@
 import * as React from 'react';
 import * as ReactDOM from "react-dom";
 import 'bootstrap/dist/css/bootstrap.min.css';
-import {SelectSignalTable} from "../msgComponents/signalSelected";
-import {SelectTransmittersTable} from "../msgComponents/transmittersSelected";
 import {  Row, Col, Tabs, Tab, Table, Form, Button,  Modal } from "react-bootstrap";
 import { MessageForm } from '../../src/candb_provider';
+import {SelectTransmittersTable} from "../msgComponents/transmittersSelected";
+import {SelectSignalTable} from "../msgComponents/signalSelected";
+import {MessageDefinition} from "../msgComponents/messageDefinition";
 
 declare global {
     interface Window {
@@ -76,75 +77,13 @@ window.addEventListener('message', (event) =>{
                 <>
                 <Tabs defaultActiveKey="definition" id="uncontrolled-tab-example">
                     <Tab eventKey="definition" title="Definition">
-                      <Form >
-                        <Form.Row>
-                          <Form.Group as={Col} md="3" controlId="_name">
-                            <Form.Label>Name:</Form.Label>
-                            <Form.Control required
-                                          type="text"
-                                          defaultValue={message.name}
-                                          onChange={(event) => handleFormChange(event as any)}>
-                            </Form.Control>
-                          </Form.Group>
-                        </Form.Row>
-                        <Form.Row>
-                          <Form.Group as={Col} md="3" controlId="_msgType">
-                            <Form.Label>Type:</Form.Label>
-                            <Form.Control as="select"
-                                          defaultValue={message.msgType}
-                                          onChange={(event) => handleFormChange(event as any)}>
-                                <option>CAN Standard</option>
-                                <option>CAN Extended</option>
-                            </Form.Control>
-                          </Form.Group>
-                        </Form.Row>
-                        <Form.Row>
-                          <Form.Group as={Col} md="3" controlId="_id">
-                            <Form.Label>ID:</Form.Label>
-                            <Form.Control defaultValue={message.id} 
-                                          onChange={(event) => handleFormChange(event as any)}>
-                            </Form.Control>
-                          </Form.Group>
-                          <Form.Group as={Col} md="2" controlId="_dlc">
-                            <Form.Label>DLC:</Form.Label>
-                            <Form.Control type='number'
-                                          min='1' max='8' step='1'
-                                          defaultValue={message.dlc}
-                                          onChange={(event) => handleFormChange(event as any)}>
-                            </Form.Control>
-                          </Form.Group>
-                        </Form.Row>
-                        <Form.Row>
-                          <Form.Group as={Col} md="3" controlId="_transmitter">
-                            <Form.Label>Transmitter:</Form.Label>
-                            <Form.Control as="select"
-                                          onChange={(event) => handleFormChange(event as any)} disabled>
-                                    <option>-- No Transmitter --</option>
-                            </Form.Control>
-                          </Form.Group>
-                          <Form.Group as={Col} md="3" controlId="_txmethod">
-                            <Form.Label>Tx Method:</Form.Label>
-                            <Form.Control as="select"
-                                          onChange={(event) => handleFormChange(event as any)} disabled>
-                                    <option>NoMsgSendType</option>
-                            </Form.Control>
-                          </Form.Group>
-                        </Form.Row>
-                        <Form.Row>
-                          <Form.Group as={Col} md="6" controlId="_cycletime">
-                            <Form.Label>Cycle Time:</Form.Label>
-                            <Form.Control defaultValue={message.cycletime}
-                                          onChange={(event) => handleFormChange(event as any)} disabled>
-                            </Form.Control>
-                          </Form.Group>
-                        </Form.Row>
-                      </Form>
+                      <MessageDefinition msg={message}  allSignals={allSignals} isPreview={false} updateValue={updateMessageValue}/>
                     </Tab>
                     <Tab eventKey="signals" title="Signals">
-                        <SelectSignalTable msg={message}  allSignals={allSignals} updateValue={updateMessageValue}/>
+                        {/* <SelectSignalTable msg={message}  allSignals={allSignals} updateValue={updateMessageValue}/> */}
                     </Tab>
                     <Tab eventKey="transmitters" title="Transmitters">
-                        <SelectTransmittersTable msg={message}  allSignals={allSignals}  updateValue={updateMessageValue}/>
+                        {/* <SelectTransmittersTable msg={message}  allSignals={allSignals}  updateValue={updateMessageValue}/> */}
                     </Tab>
                     <Tab eventKey="receivers" title="Receivers" >
                       <Table striped bordered hover variant="dark">

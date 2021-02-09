@@ -48,7 +48,10 @@ export class CANdb {
     dbMapping = new Map();
 
     constructor(labels: string[]) {
-        labels.map(label => this.dbMapping.set(label, []));
+        for(let label of labels) {
+            this.dbMapping.set(label, []);
+         }
+        // labels.map(label => this.dbMapping.set(label, []));
     }
 
     public itemsInCANdb () {

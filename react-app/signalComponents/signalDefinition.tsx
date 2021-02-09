@@ -52,7 +52,6 @@ export class SignalDefinition extends React.Component <ISignalProps, ISelItemsSt
               </Form.Control>
             </Form.Group>
           </Form.Row>
-         
           {(() => {
             if (! this.isPreview){
                 return(
@@ -164,17 +163,21 @@ export class SignalDefinition extends React.Component <ISignalProps, ISelItemsSt
                       </Form.Control>
                     </Form.Group>
                   </Form.Row>
+                  <Form.Row>
+                    <Form.Group as={Col} md="3" controlId="_startbit">
+                      <Form.Label>Startbit (Bit):</Form.Label>
+                      <Form.Control as="select">
+                          <option>Signal</option>
+                          <option>Multiplexor Signal</option>
+                          <option>Multiplexed Signal</option>
+                      </Form.Control>
+                    </Form.Group>
+                  </Form.Row>
                 </>);
             }
           })()
         }
-
-
-         
-        
-        
         </Form>
-                    
       );
     }
   }
