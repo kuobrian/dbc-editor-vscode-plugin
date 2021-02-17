@@ -4,16 +4,18 @@ import {SignalForm, MessageForm, NetworkNodesForm} from "../../src/candb_provide
 
 export interface IMsgProps {
     msg: MessageForm;
-    allSignals: SignalForm[];
+    listOfSignal: SignalForm[];
     isPreview: boolean;
-    updateValue?: (arg0: MessageForm) => void |undefined;
+    connection: string[];
+    updateValue?: (arg0: MessageForm, arg1: string[]) => void;
 }
 
 export interface ISignalProps {
     signal: SignalForm;
-    allMessages: MessageForm[];
+    listOfMsg: MessageForm[];
     isPreview: boolean;
-    updateValue?: (arg0: SignalForm) => void;
+    connection: string[];
+    updateValue?: (arg0: SignalForm, arg1: string[]) => void;
 
 }
 

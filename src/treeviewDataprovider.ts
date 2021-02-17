@@ -65,7 +65,7 @@ class DataProvider implements vscode.TreeDataProvider<TreeViewItem> {
         if (element) {
             let treeItemList: TreeViewItem[] = [];
             if (element.label === "Network Node") {
-                this.candb_.dbMapping.get("Network Node").map((nnitem: CANDB.NetworkNodesForm) => 
+                this.candb_.listOfItems.get("Network Node").map((nnitem: CANDB.NetworkNodesForm) => 
                         treeItemList.push(new TreeViewItem( nnitem.name, 
                                                             vscode.TreeItemCollapsibleState.None,
                                                             'treeviewitem',
@@ -73,13 +73,14 @@ class DataProvider implements vscode.TreeDataProvider<TreeViewItem> {
                                                                 command: 'extension.openNetworkNodesEditor',
                                                                 title: '',
                                                                 arguments:[nnitem.name, this.candb_] 
-                                            }))
+                                                            }
+                                            ))
                     
                     );
             }
             else if (element.label === "Messages") {
-                if (this.candb_.dbMapping.get("Messages").length) {
-                    this.candb_.dbMapping.get("Messages").map((messageitem: CANDB.MessageForm) =>
+                if (this.candb_.listOfItems.get("Messages").length) {
+                    this.candb_.listOfItems.get("Messages").map((messageitem: CANDB.MessageForm) =>
                         treeItemList.push(new TreeViewItem( messageitem.name, 
                                                             vscode.TreeItemCollapsibleState.Collapsed,
                                                             'treeviewitem',
@@ -87,15 +88,16 @@ class DataProvider implements vscode.TreeDataProvider<TreeViewItem> {
                                                                 command: 'extension.openMessageEditor',
                                                                 title: '',
                                                                 arguments:[messageitem.name, this.candb_] 
-                                            }))
+                                                            }
+                                            ))
                     
                     );};
                 
             }
             else if (element.label === "Signals") {
-                if (this.candb_.dbMapping.get("Signals").length) {
+                if (this.candb_.listOfItems.get("Signals").length) {
 
-                    this.candb_.dbMapping.get("Signals").map((signalitem: CANDB.SignalForm) =>
+                    this.candb_.listOfItems.get("Signals").map((signalitem: CANDB.SignalForm) =>
                         treeItemList.push(new TreeViewItem( signalitem.name, 
                                                             vscode.TreeItemCollapsibleState.None,
                                                             'treeviewitem',
@@ -103,15 +105,16 @@ class DataProvider implements vscode.TreeDataProvider<TreeViewItem> {
                                                                 command: 'extension.openSignalEditor',
                                                                 title: '',
                                                                 arguments:[signalitem.name, this.candb_] 
-                                            }))
+                                                            }
+                                            ))
                     
                     );};
             } 
             else if (element.label.includes("Messag")) {
-                let msgIdx = this.candb_.dbMapping.get("Messages").findIndex((item: CANDB.MessageForm) => item.name === element.label);
+                let msgIdx = this.candb_.listOfItems.get("Messages").findIndex((item: CANDB.MessageForm) => item.name === element.label);
 
-                this.candb_.dbMapping.get("Messages")[msgIdx].signalUids.map((uid: string) =>{
-                    this.candb_.dbMapping.get("Signals").forEach((signal: CANDB.SignalForm) => {
+                this.candb_.listOfItems.get("Messages")[msgIdx].signalUids.map((uid: string) =>{
+                    this.candb_.listOfItems.get("Signals").forEach((signal: CANDB.SignalForm) => {
                         if (signal.uid === uid) {
                             treeItemList.push(new TreeViewItem( signal.name,
                                                                 vscode.TreeItemCollapsibleState.None, 
@@ -120,7 +123,8 @@ class DataProvider implements vscode.TreeDataProvider<TreeViewItem> {
                                                                     command: 'extension.openSignalEditor',
                                                                     title: '',
                                                                     arguments:[signal.name, this.candb_, true]
-                                                                }));}});
+                                                                }
+                                            ));}});
                 });
             }
             return Promise.resolve(treeItemList);
@@ -130,15 +134,16 @@ class DataProvider implements vscode.TreeDataProvider<TreeViewItem> {
     }
 
     private templateCANdb(): TreeViewItem[]{
-        return  [...this.candb_.dbMapping.keys()].map(title => 
+        return  [...this.candb_.listOfItems.keys()].map(title => 
             new TreeViewItem(title, vscode.TreeItemCollapsibleState.Collapsed, 'treeviewroot'));
     }
 
 
     public addItem(rootName:string){
         if (rootName === "Signals") {
-            const newItem: CANDB.SignalForm = { uid: uuidv4(),
-                                        name: "new_"+rootName.slice(0, -1) + "_"+ (this.candb_.dbMapping.get(rootName).length+1),
+            let uid = uuidv4();
+            const newItem: CANDB.SignalForm = { uid: uid,
+                                        name: "new_"+rootName.slice(0, -1) + "_"+ (this.candb_.listOfItems.get(rootName).length+1),
                                         bitlength: 8,
                                         byteorder: "Intel",
                                         valuetype: 'Signed',
@@ -148,31 +153,32 @@ class DataProvider implements vscode.TreeDataProvider<TreeViewItem> {
                                         offset:  0,
                                         initValue: 0,
                                         valuetable: null,
-                                        comments: "",
-                                        msgUids: []};
+                                        comments: ""};
             
-            this.candb_.dbMapping.get(rootName).push(newItem);
+            this.candb_.listOfItems.get(rootName).push(newItem);
+            this.candb_.addIdInConnection(rootName, uid);
         }
         else if (rootName === "Messages") {
-            const newItem: CANDB.MessageForm = { uid: uuidv4(),
-                                                name: "new_"+rootName.slice(0, -1) + "_"+ (this.candb_.dbMapping.get(rootName).length+1),
+            let uid = uuidv4();
+            const newItem: CANDB.MessageForm = { uid: uid,
+                                                name: "new_"+rootName.slice(0, -1) + "_"+ (this.candb_.listOfItems.get(rootName).length+1),
                                                 msgType: "CAN Standard",
-                                                id: "0x"+(this.candb_.dbMapping.get(rootName).length+1),
+                                                id: "0x"+(this.candb_.listOfItems.get(rootName).length+1),
                                                 dlc: 8,
                                                 cycletime: 0,
-                                                comments: "",
-                                                signalUids: []};
-            this.candb_.dbMapping.get(rootName).push(newItem);
+                                                comments: ""};
+            this.candb_.listOfItems.get(rootName).push(newItem);
+            this.candb_.addIdInConnection(rootName, uid);
         }
         else if (rootName === "Network Node") {
             const newItem: CANDB.NetworkNodesForm = { uid: uuidv4(),
-                                                name: "new_"+rootName.replace(' ', '_').slice(0, -1) + "_"+ (this.candb_.dbMapping.get(rootName).length+1),
+                                                name: "new_"+rootName.replace(' ', '_').slice(0, -1) + "_"+ (this.candb_.listOfItems.get(rootName).length+1),
                                                 address: "0x0",
                                                 comments: "",
-                                                msgUids: [],
                                                 networkUids: [],
+                                                msgUids: [],
                                                 signalUids: []};
-            this.candb_.dbMapping.get(rootName).push(newItem);
+            this.candb_.listOfItems.get(rootName).push(newItem);
         }
         this.refresh();
     }
@@ -181,14 +187,17 @@ class DataProvider implements vscode.TreeDataProvider<TreeViewItem> {
         const rootName = itemName.label.split("_")[1]+"s";
         // this.candb_.dbMapping.set(root, this.candb_.dbMapping.get(root).filter((i: string) => i !== itemName.label));
         if (rootName === "Signals") {
-            this.candb_.dbMapping.set(rootName, this.candb_.dbMapping.get(rootName).filter((i: CANDB.SignalForm) => i.name !== itemName.label));
+            this.candb_.listOfItems.set(rootName, 
+                this.candb_.listOfItems.get(rootName).filter((i: CANDB.SignalForm) => i.name !== itemName.label));
         }
         else if (rootName === "Messages") {
-            this.candb_.dbMapping.set(rootName, this.candb_.dbMapping.get(rootName).filter((i: CANDB.MessageForm) => i.name !== itemName.label));
+            this.candb_.listOfItems.set(rootName, 
+                this.candb_.listOfItems.get(rootName).filter((i: CANDB.MessageForm) => i.name !== itemName.label));
             
         }
         else if (rootName === "Network Node") {
-            this.candb_.dbMapping.set(rootName, this.candb_.dbMapping.get(rootName).filter((i: CANDB.NetworkNodesForm) => i.name !== itemName.label));
+            this.candb_.listOfItems.set(rootName, 
+                this.candb_.listOfItems.get(rootName).filter((i: CANDB.NetworkNodesForm) => i.name !== itemName.label));
             
         }
         this.refresh();

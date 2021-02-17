@@ -40,7 +40,7 @@ export class SelectSignalTable extends React.Component <INNProps , ISelItemsStat
           this.props.netwoknode.signalUids = this.props.netwoknode.signalUids.filter(function(elem, index, self) {
             return index === self.indexOf(elem);
           });
-          this.updateValue( this.props.netwoknode);
+          // this.updateValue( this.props.netwoknode);
         }); 
       } 
     };
@@ -51,7 +51,7 @@ export class SelectSignalTable extends React.Component <INNProps , ISelItemsStat
       rows.splice(idx, 1);
       this.setState({ selectItem: rows }, () =>{
         this.props.netwoknode.signalUids = this.props.netwoknode.signalUids.filter(uid=> uid !== delItem.uid);
-        this.updateValue( this.props.netwoknode);
+        // this.updateValue( this.props.netwoknode);
       }) ;
     };
     render() {

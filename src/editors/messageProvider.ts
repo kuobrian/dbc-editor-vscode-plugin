@@ -15,26 +15,28 @@ export function startMsgHandler(context: vscode.ExtensionContext, modulename: st
     let webpackPathOnDisk = vscode.Uri.file(path.join(context.extensionPath, 'dist/messageEditor.js'));
     let webpackUri = panel.webview.asWebviewUri(webpackPathOnDisk);
     htmlContent = htmlContent.replace('${rootUri}', webpackUri.toString());
-
     panel.webview.html = htmlContent;
     
-    let candbMsg = candb.dbMapping.get("Messages").find((element: CANDB.SignalForm) => element.name === modulename);
-    let candbAllSignals = candb.dbMapping.get("Signals");
+    let message = candb.listOfItems.get("Messages").find((element: CANDB.SignalForm) => element.name === modulename);
+    let allSignals = candb.listOfItems.get("Signals");
+    let connectionMsg = candb.connectionMsg.find(item=> item.targetId === message.uid);
 
-    panel.webview.postMessage({
-                      message: candbMsg,
-                      signals: candbAllSignals});
+
+    panel.webview.postMessage({ message: message,
+                                signal: allSignals,
+                                connection: connectionMsg});
 
     panel.webview.onDidReceiveMessage((message: any) => {
       switch (message.command) {
         case 'modifyMsgForm':
-          let index = candb.dbMapping.get("Messages").findIndex((element: CANDB.MessageForm) =>
+          let index = candb.listOfItems.get("Messages").findIndex((element: CANDB.MessageForm) =>
                   element.uid === message.data.uid);
           if (index !== -1) {
-            candb.dbMapping.get("Messages")[index] = message.data;
+            candb.listOfItems.get("Messages")[index] = message.data;
+            let connectIdx = candb.connectionMsg.findIndex(item => item.targetId === message.data.uid);
+            candb.connectionMsg[connectIdx] = message.connect;
           }
           vscode.commands.executeCommand('vscode-plugin-demo.refresh_treeview');
-          vscode.window.showInformationMessage("save message");
           return;
           
         case 'cancelMsgForm':

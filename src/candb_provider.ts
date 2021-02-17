@@ -16,7 +16,6 @@ export interface SignalForm {
     initValue: number;
     unit?: number;
     valuetable?: any;
-    msgUids: string[];
     comments: string;
     [key: string]: any;
 }
@@ -29,7 +28,6 @@ export interface MessageForm {
     dlc: number;
     cycletime: number;
     comments: string;
-    signalUids: string[];
     [key: string]: any;
 }
 
@@ -44,26 +42,59 @@ export interface NetworkNodesForm {
     [key: string]: any;
 }
 
-export class CANdb {
-    dbMapping = new Map();
+interface SignalConnection {
+    targetId: string;
+    connection: string[];
+}
+
+interface MsgConnection {
+    targetId: string;
+    connection: string[];
+}
+
+export class CANdb  {
+    listOfItems = new Map();
+
+    connectionSignal: SignalConnection[] = [];
+    connectionMsg: MsgConnection[] = [];
 
     constructor(labels: string[]) {
         for(let label of labels) {
-            this.dbMapping.set(label, []);
-         }
-        // labels.map(label => this.dbMapping.set(label, []));
+            this.listOfItems.set(label, []);
+        }
+        
     }
 
+
+    public addIdInConnection (root:string, uid:string) {
+        if (root === "Signals"){
+            this.connectionSignal.push({targetId: uid, connection:[]});
+        }
+        else if (root === "Messages") {
+            this.connectionMsg.push({targetId: uid, connection:[]});
+        }
+    }
+
+    public deldIdInConnection (root:string, uid:string) {
+        if (root === "Signals"){
+            this.connectionSignal = this.connectionSignal.filter(item => item.targetId !== uid);
+        }
+        else if (root === "Messages") {
+            this.connectionMsg = this.connectionMsg.filter(item => item.targetId !== uid);
+        }
+    }
+
+
     public itemsInCANdb () {
-        console.log([...this.dbMapping.keys()]);
+        console.log(this.listOfItems.keys());
     }
 
     public itemsInSignal () {
-        console.log(this.dbMapping.get("Signals"));
+        console.log(this.listOfItems.get("Signals"));
     }
 
     public itemsInMsg () {
-        console.log(this.dbMapping.get("Messages"));
+        console.log(this.listOfItems.get("Messages"));
     }
 }
 

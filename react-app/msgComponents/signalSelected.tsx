@@ -5,11 +5,16 @@ import {IMsgProps, ISelItemsState} from "../src/parameters";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import {  Row, Col, Tabs, Tab, Table, Form, Button,  Modal } from "react-bootstrap";
 
+
 export class SelectSignalTable extends React.Component <IMsgProps , ISelItemsState> {
-  
+  msg = this.props.msg;
+  listOfSignal = this.props.listOfSignal;
+  msgConnect = this.props.connection;
+  isPreview = this.props.isPreview;
+
+
   constructor(props: IMsgProps) {
       super(props);
-      
       this.state = {selectItem: this.initSelectSignals(),
                     show: false };
       this.handleClose = this.handleClose.bind(this);
@@ -18,9 +23,9 @@ export class SelectSignalTable extends React.Component <IMsgProps , ISelItemsSta
 
     initSelectSignals() {
       let rows: SignalForm[] = [];
-      for (let item of this.props.allSignals) {
-        if (this.props.msg.signalUids.includes(item.uid)) {
-          rows.push(item); 
+      for (let signalItem of this.listOfSignal) {
+        if (this.msgConnect.connection.includes(signalItem.uid)) {
+          rows.push(signalItem); 
         }
       }
       return rows;
@@ -34,11 +39,13 @@ export class SelectSignalTable extends React.Component <IMsgProps , ISelItemsSta
         const rows = [...this.state.selectItem, selectItem];
         
         this.setState({ selectItem: rows}, () => {
-          this.state.selectItem.forEach(item =>  this.props.msg.signalUids.push(item.uid));
-          this.props.msg.signalUids = this.props.msg.signalUids.filter(function(elem, index, self) {
+          this.state.selectItem.forEach(signalItem =>  this.msgConnect.connection.push(signalItem.uid));
+          this.msgConnect.connection = this.msgConnect.connection.filter(function(elem: any, index: any, self: string | any[]) {
             return index === self.indexOf(elem);
           });
-          this.updateValue( this.props.msg);
+          if (this.props.updateValue) {
+            this.props.updateValue(this.msg, this.msgConnect);
+          }
         }); 
       } 
     };
@@ -48,8 +55,10 @@ export class SelectSignalTable extends React.Component <IMsgProps , ISelItemsSta
       const delItem = rows[idx];
       rows.splice(idx, 1);
       this.setState({ selectItem: rows }, () =>{
-        this.props.msg.signalUids = this.props.msg.signalUids.filter(uid=> uid !== delItem.uid);
-        this.updateValue( this.props.msg);
+        this.msgConnect.connection = this.msgConnect.connection.filter((uid: any)=> uid !== delItem.uid);
+        if (this.props.updateValue) {
+          this.props.updateValue(this.msg, this.msgConnect);
+        }
       }) ;
     };
     render() {
@@ -122,16 +131,16 @@ export class SelectSignalTable extends React.Component <IMsgProps , ISelItemsSta
                           </thead>
                           <tbody>
                                 { 
-                                  this.props.allSignals.map((item: SignalForm, idx: any) => {
-                                    if (! this.state.selectItem.includes(item)) {
+                                  this.listOfSignal.map((signalItem: SignalForm, idx: any) => {
+                                    if (! this.state.selectItem.includes(signalItem)) {
                                       return (
                                         <tr>
-                                          <td>{item.name} {this.state.selectItem.includes(item)}</td> 
-                                          <td>{item.bitlength}</td>
-                                          <td>{item.byteorder}</td>
-                                          <td>{item.valuetype}</td>
+                                          <td>{signalItem.name} {this.state.selectItem.includes(signalItem)}</td> 
+                                          <td>{signalItem.bitlength}</td>
+                                          <td>{signalItem.byteorder}</td>
+                                          <td>{signalItem.valuetype}</td>
                                           <td>
-                                            <Button variant="primary" onClick={() => this.handleSelectSignal(item)}>
+                                            <Button variant="primary" onClick={() => this.handleSelectSignal(signalItem)}>
                                             add
                                             </Button>
                                           </td>

@@ -16,10 +16,13 @@ declare global {
 window.addEventListener('message', (event) =>{
     let vscode = window.acquireVsCodeApi();
     let message = event.data.message;
-    let allSignals = event.data.signals;
+    let listOfSignal = event.data.signal;
+    let rawConnection = event.data.connection;
 
+    
     const messageUid = message.uid;
-    console.log('Webview接收到的消息：', message.name, allSignals.length, message.signalUids.length);
+
+    console.log("messageEditor Receieve:：", message.name, listOfSignal.length, rawConnection);
 
 
 
@@ -48,8 +51,9 @@ window.addEventListener('message', (event) =>{
         let copyMsg:any=[];
         copyMsg = JSON.parse(JSON.stringify(message));
 
-        const updateMessageValue =  (msg: MessageForm) => {
+        const updateMessageValue =  (msg: MessageForm, connectionData: string[]) => {
           message = msg;
+          rawConnection = connectionData;
         };
         
         
@@ -62,7 +66,8 @@ window.addEventListener('message', (event) =>{
         function onSaveBtnClick(): void {
           vscode.postMessage({
             command: 'modifyMsgForm',
-            data: message
+            data: message,
+            connect: rawConnection
           });
         }
         
@@ -77,10 +82,18 @@ window.addEventListener('message', (event) =>{
                 <>
                 <Tabs defaultActiveKey="definition" id="uncontrolled-tab-example">
                     <Tab eventKey="definition" title="Definition">
-                      <MessageDefinition msg={message}  allSignals={allSignals} isPreview={false} updateValue={updateMessageValue}/>
+                      <MessageDefinition  msg = {message} 
+                                          listOfSignal = {listOfSignal}
+                                          isPreview = {false}
+                                          connection = {rawConnection}
+                                          updateValue={updateMessageValue}/>
                     </Tab>
                     <Tab eventKey="signals" title="Signals">
-                        {/* <SelectSignalTable msg={message}  allSignals={allSignals} updateValue={updateMessageValue}/> */}
+                        <SelectSignalTable  msg={message}  
+                                            listOfSignal={listOfSignal}
+                                            isPreview={false}
+                                            connection = {rawConnection}
+                                            updateValue={updateMessageValue}/>
                     </Tab>
                     <Tab eventKey="transmitters" title="Transmitters">
                         {/* <SelectTransmittersTable msg={message}  allSignals={allSignals}  updateValue={updateMessageValue}/> */}

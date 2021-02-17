@@ -18,13 +18,15 @@ declare global {
 
 window.addEventListener('message', (event) =>{
     let vscode = window.acquireVsCodeApi();
-    let messages = event.data.message;
-    let signal = event.data.signals;
+    let signal = event.data.signal;
+    let listOfMsg = event.data.message;
     let isPreview = event.data.isPreview;
-
+    let rawConnection = event.data.connection;
+    
+    
     const signalUid = signal.uid;
 
-    console.log('signalEditor  Webview接收到的消息：', signal.name, messages.length, isPreview);
+    console.log("SignalEditor Receieve:：", signal.name, listOfMsg.length, isPreview);
 
     const App = () =>  {
         const styles = {
@@ -51,9 +53,12 @@ window.addEventListener('message', (event) =>{
         let copyMsg:any=[];
         
         copyMsg = JSON.parse(JSON.stringify(signal));
-        const updateSignalValue =  (data: SignalForm) => {
+
+        const updateSignalValue =  (data: SignalForm, connectionData : string[]) => {
           signal = data;
+          rawConnection = connectionData;
         };
+        
         const handleFormChange = (e: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLSelectElement>): void => {
           const msgKey = e.target.id.split("_")[1];
           signal[msgKey] = e.target.value;
@@ -62,7 +67,8 @@ window.addEventListener('message', (event) =>{
         function onSaveBtnClick(): void {
           vscode.postMessage({
             command: 'modifySignalForm',
-            data: signal
+            data: signal,
+            connect: rawConnection
           });
         }
         
@@ -78,15 +84,25 @@ window.addEventListener('message', (event) =>{
                 <Tabs defaultActiveKey="definition" id="uncontrolled-tab-example">
                     <Tab eventKey="definition" title="Definition">
                       <Form >
-                        <SignalDefinition signal={signal} allMessages={messages} isPreview={isPreview} updateValue={updateSignalValue} />
+                        <SignalDefinition signal = {signal} 
+                                          listOfMsg = {listOfMsg}
+                                          isPreview = {isPreview}
+                                          connection = {rawConnection}
+                                          updateValue = {updateSignalValue} />
                       </Form>
                     </Tab>
                     <Tab eventKey="messages" title="Messages">
                         {(() => {
                           if (isPreview) {
-                            return ( <MessageDefinition msg={messages}  allSignals={signal} isPreview={isPreview}/> );
+                            // return ( <MessageDefinition msg={listOfMsg}
+                            //                             listOfSignal={signal}
+                            //                             isPreview={isPreview}/> );
                           } else {
-                            return ( <SelectMsgTable allMessages={messages}  signal={signal} isPreview={isPreview} updateValue={updateSignalValue}/> );
+                            return ( <SelectMsgTable  signal = {signal} 
+                                                      listOfMsg = {listOfMsg}
+                                                      isPreview = {isPreview}
+                                                      connection = {rawConnection}
+                                                      updateValue = {updateSignalValue} /> );
                           }
                           })()
                         }
