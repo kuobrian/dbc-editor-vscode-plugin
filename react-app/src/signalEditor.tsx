@@ -84,51 +84,27 @@ window.addEventListener('message', (event) =>{
                 <Tabs defaultActiveKey="definition" id="uncontrolled-tab-example">
                     <Tab eventKey="definition" title="Definition">
                       <Form >
-
-                                        
-                        {(() => {
-                          if (isPreview) {
-                            // return ( <MessageDefinition msg={listOfMsg}
-                            //                             listOfSignal={signal}
-                            //                             isPreview={isPreview}/> );
-                          } else {
-                            return ( <SignalDefinitionEdit signal = {signal} 
-                                                            listOfMsg = {listOfMsg}
-                                                            isPreview = {isPreview}
-                                                            connection = {rawConnection}
-                                                            updateValue = {updateSignalValue} /> );
-                          }
-                          })()
-
-                        }
+                          <SignalDefinitionEdit signal = {signal} 
+                                                listOfMsg = {listOfMsg}
+                                                isPreview = {isPreview}
+                                                connection = {rawConnection}
+                                                updateValue = {updateSignalValue} />
                       </Form>
                     </Tab>
-                    <Tab eventKey="messages" title="Messages">
-                        {(() => {
-                          if (isPreview) {
-                            // return ( <MessageDefinition msg={listOfMsg}
-                            //                             listOfSignal={signal}
-                            //                             isPreview={isPreview}/> );
-                          } else {
-                            return ( <SelectMsgTable  signal = {signal} 
-                                                      listOfMsg = {listOfMsg}
-                                                      isPreview = {isPreview}
-                                                      connection = {rawConnection}
-                                                      updateValue = {updateSignalValue} /> );
+                   
+                    {(() => {
+                          if (!isPreview) {
+                            return ( 
+                              <Tab eventKey="messages" title="Messages">
+                                <SelectMsgTable  signal = {signal} 
+                                                          listOfMsg = {listOfMsg}
+                                                          isPreview = {isPreview}
+                                                          connection = {rawConnection}
+                                                          updateValue = {updateSignalValue} /> 
+                              </Tab>);
                           }
                           })()
-                        }
-
-                        
-                        
-                        
-                        
-                        
-                        
-                    
-                    
-                    
-                    </Tab>
+                    }                    
                     <Tab eventKey="receivers" title="Receivers">
                       <Table striped bordered hover variant="dark">
                           <thead>
