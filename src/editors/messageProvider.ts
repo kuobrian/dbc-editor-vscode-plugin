@@ -20,7 +20,7 @@ export function startMsgHandler(context: vscode.ExtensionContext, modulename: st
     let message = candb.listOfItems.get("Messages").find((element: CANDB.SignalForm) => element.name === modulename);
     let allSignals = candb.listOfItems.get("Signals");
     let connectionMsg = candb.connectionMsg.find(item=> item.targetId === message.uid);
-
+    console.log(connectionMsg);
 
     panel.webview.postMessage({ message: message,
                                 signal: allSignals,

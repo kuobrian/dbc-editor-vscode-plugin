@@ -3,13 +3,15 @@ import * as ReactDOM from "react-dom";
 import {SignalForm, MessageForm} from "../../src/candb_provider";
 import {IMsgProps, ISelItemsState} from "../src/parameters";
 import 'bootstrap/dist/css/bootstrap.min.css';
+
+import { SignalInMsg } from '../src/parameters';
 import {  Row, Col, Tabs, Tab, Table, Form, Button,  Modal } from "react-bootstrap";
 
 
 export class SelectSignalTable extends React.Component <IMsgProps , ISelItemsState> {
   msg = this.props.msg;
   listOfSignal = this.props.listOfSignal;
-  msgConnect = this.props.connection;
+  storeSignals = this.props.connection;
   isPreview = this.props.isPreview;
 
 
@@ -24,11 +26,12 @@ export class SelectSignalTable extends React.Component <IMsgProps , ISelItemsSta
     initSelectSignals() {
       let rows: SignalForm[] = [];
       for (let signalItem of this.listOfSignal) {
-        if (this.msgConnect.connection.includes(signalItem.uid)) {
-          rows.push(signalItem); 
+        this.storeSignals.connection.map((item: { id: string; startbit: number; multiplexortype: string;}) => {
+          if (item.id === signalItem.uid)  {
+            rows.push(signalItem); 
+          }});
         }
-      }
-      return rows;
+        return rows;
     }
 
     updateValue = this.props.updateValue;
@@ -39,25 +42,44 @@ export class SelectSignalTable extends React.Component <IMsgProps , ISelItemsSta
         const rows = [...this.state.selectItem, selectItem];
         
         this.setState({ selectItem: rows}, () => {
-          this.state.selectItem.forEach(signalItem =>  this.msgConnect.connection.push(signalItem.uid));
-          this.msgConnect.connection = this.msgConnect.connection.filter(function(elem: any, index: any, self: string | any[]) {
-            return index === self.indexOf(elem);
+          this.state.selectItem.forEach((signalItem: { uid: any; }) =>  {
+            this.storeSignals.connection.push({id: signalItem.uid,
+                                              startbit: 0,
+                                              multiplexortype: "Signal"
+            });
           });
+          this.storeSignals.connection = this.storeSignals.connection.reduce((unique: any[], o: { id: string; }) => {
+                                            if(!unique.some((obj: { id: string; }) => obj.id === o.id)) {
+                                              unique.push(o);
+                                            }
+                                            return unique;
+                                          },[]);
           if (this.props.updateValue) {
-            this.props.updateValue(this.msg, this.msgConnect);
+            this.props.updateValue(this.msg, this.storeSignals);
           }
         }); 
       } 
     };
-  
+
+    handleChange (signal: any, event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>){
+      const category = event.target.id.split("_")[1];
+      let matchIdx = this.storeSignals.connection.findIndex((element: { id: string; }) => element.id === signal.uid);
+      if (category === "startbit"){
+        this.storeSignals.connection[matchIdx].startbit = Number(event.target.value);
+      }
+      else if(category === "multiplexortype"){
+        this.storeSignals.connection[matchIdx].multiplexortype = event.target.value;
+      }
+    }
+
     handleRemoveSpecificSignal = (idx: number) => () => {
       const rows = [...this.state.selectItem];
       const delItem = rows[idx];
       rows.splice(idx, 1);
       this.setState({ selectItem: rows }, () =>{
-        this.msgConnect.connection = this.msgConnect.connection.filter((uid: any)=> uid !== delItem.uid);
+        this.storeSignals.connection = this.storeSignals.connection.filter((item: any)=> item.id !== delItem.uid);
         if (this.props.updateValue) {
-          this.props.updateValue(this.msg, this.msgConnect);
+          this.props.updateValue(this.msg, this.storeSignals);
         }
       }) ;
     };
@@ -79,20 +101,52 @@ export class SelectSignalTable extends React.Component <IMsgProps , ISelItemsSta
                       <th>Length (Bit)</th>
                       <th>Byte Order</th>
                       <th>Value Type</th>
+                      <th>Startbit(Bit)</th>
+                      <th>Multiplexortype</th>
                       <th>Remove</th>
                     </tr>
                   </thead>
                   <tbody>
                       { this.state.selectItem.map((item, idx) => {
+                        let matchIdx = this.storeSignals.connection.findIndex((element: { id: string; }) => element.id === item.uid);
+                        let startbit = (matchIdx=== -1) ? 0 : this.storeSignals.connection[matchIdx].startbit;
+                        let multiplexortype = (matchIdx=== -1) ? "Signal" : this.storeSignals.connection[matchIdx].multiplexortype;
                         return (
                           <tr>
-                            <td>{item.name}</td>
+                            <td>{item.name} </td>
                             <td>{this.props.msg.name}</td>
                             <td>{'-'}</td>
                             <td>{idx*8}</td>
                             <td>{item.bitlength}</td>
                             <td>{item.byteorder}</td>
                             <td>{item.valuetype}</td>
+                            <td>
+                              <Form.Group controlId="_startbit">
+                                <Form.Control as="select"
+                                            type="number"
+                                            defaultValue={startbit} 
+                                            onChange={(e) => this.handleChange(item, e)}>
+                                  {(() => {
+                                          let opts = [];
+                                          for(let i = 0; i <= this.msg.dlc*8; i++) {
+                                            opts.push(<option>{i}</option>);  
+                                          }
+                                          return opts;
+                                  })()}
+                                </Form.Control>
+                              </Form.Group>  
+                            </td>
+                            <td>
+                              <Form.Group controlId="_multiplexortype">
+                                <Form.Control as="select"
+                                              defaultValue={multiplexortype} 
+                                              onChange={(e) => this.handleChange(item, e)}>
+                                  <option>{"Signal"}</option>
+                                  <option>{"Mutiplexor Signal"}</option>
+                                  <option>{"Mutiplexed Signal"}</option>
+                                </Form.Control>
+                              </Form.Group>                            
+                            </td>
                             <td>
                               <Button variant="danger" onClick={this.handleRemoveSpecificSignal(idx)} >
                               Remove

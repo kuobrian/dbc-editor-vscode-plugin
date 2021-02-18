@@ -3,7 +3,7 @@ import * as ReactDOM from "react-dom";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { MessageForm, SignalForm } from '../../src/candb_provider';
 import {SelectMsgTable} from "../signalComponents/msgSelected";
-import {SignalDefinition} from "../signalComponents/signalDefinition";
+import {SignalDefinitionEdit} from "../signalComponents/signalDefinition";
 import {MessageDefinition} from "../msgComponents/messageDefinition";
 
 
@@ -84,11 +84,23 @@ window.addEventListener('message', (event) =>{
                 <Tabs defaultActiveKey="definition" id="uncontrolled-tab-example">
                     <Tab eventKey="definition" title="Definition">
                       <Form >
-                        <SignalDefinition signal = {signal} 
-                                          listOfMsg = {listOfMsg}
-                                          isPreview = {isPreview}
-                                          connection = {rawConnection}
-                                          updateValue = {updateSignalValue} />
+
+                                        
+                        {(() => {
+                          if (isPreview) {
+                            // return ( <MessageDefinition msg={listOfMsg}
+                            //                             listOfSignal={signal}
+                            //                             isPreview={isPreview}/> );
+                          } else {
+                            return ( <SignalDefinitionEdit signal = {signal} 
+                                                            listOfMsg = {listOfMsg}
+                                                            isPreview = {isPreview}
+                                                            connection = {rawConnection}
+                                                            updateValue = {updateSignalValue} /> );
+                          }
+                          })()
+
+                        }
                       </Form>
                     </Tab>
                     <Tab eventKey="messages" title="Messages">

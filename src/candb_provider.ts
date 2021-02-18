@@ -47,9 +47,15 @@ interface SignalConnection {
     connection: string[];
 }
 
+export interface SignalInMsg {
+    id: string
+    startbit: number;
+    multiplexortype: string;
+}
+
 interface MsgConnection {
     targetId: string;
-    connection: string[];
+    connection: SignalInMsg[];
 }
 
 export class CANdb  {

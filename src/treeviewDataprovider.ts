@@ -116,10 +116,9 @@ class DataProvider implements vscode.TreeDataProvider<TreeViewItem> {
             } 
             else if (element.label.includes("Message")) {
                 let msgIdx = this.candb_.connectionMsg.findIndex(item => item.targetId === element.uid);
-                console.log(this.candb_.connectionMsg);
-                this.candb_.connectionMsg[msgIdx].connection.map((connectionUid: string) =>{
+                this.candb_.connectionMsg[msgIdx].connection.map((connectionSignal: CANDB.SignalInMsg) =>{
                     this.candb_.listOfItems.get("Signals").forEach((signal: CANDB.SignalForm) => {
-                        if (signal.uid === connectionUid) {
+                        if (signal.uid === connectionSignal.id) {
                             treeItemList.push(new TreeViewItem( signal.name,
                                                                 signal.uid,
                                                                 vscode.TreeItemCollapsibleState.None, 

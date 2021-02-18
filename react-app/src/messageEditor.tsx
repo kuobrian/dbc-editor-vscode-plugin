@@ -3,9 +3,12 @@ import * as ReactDOM from "react-dom";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import {  Row, Col, Tabs, Tab, Table, Form, Button,  Modal } from "react-bootstrap";
 import { MessageForm } from '../../src/candb_provider';
+import { SignalInMsg } from './parameters';
 import {SelectTransmittersTable} from "../msgComponents/transmittersSelected";
 import {SelectSignalTable} from "../msgComponents/signalSelected";
 import {MessageDefinition} from "../msgComponents/messageDefinition";
+import { start } from 'repl';
+
 
 declare global {
     interface Window {
@@ -13,16 +16,18 @@ declare global {
     }
 }
 
+
+
 window.addEventListener('message', (event) =>{
     let vscode = window.acquireVsCodeApi();
     let message = event.data.message;
     let listOfSignal = event.data.signal;
-    let rawConnection = event.data.connection;
-
-    
+    let storeSignals = event.data.connection;
     const messageUid = message.uid;
 
-    console.log("messageEditor Receieve:：", message.name, listOfSignal.length, rawConnection);
+    
+
+    console.log("messageEditor Receieve:：", message.name, listOfSignal.length, storeSignals);
 
 
 
@@ -48,17 +53,17 @@ window.addEventListener('message', (event) =>{
 
         const t_handleClose = () => setShow(false);
         const t_handleShow = () => setShow(true);
-        let copyMsg:any=[];
-        copyMsg = JSON.parse(JSON.stringify(message));
 
-        const updateMessageValue =  (msg: MessageForm, connectionData: string[]) => {
+        let copyMsg:any = JSON.parse(JSON.stringify(message));
+        let copystoreSignals:any= JSON.parse(JSON.stringify(storeSignals));
+
+        const updateMessageValue =  (msg: MessageForm, connectionData: SignalInMsg[]) => {
           message = msg;
-          rawConnection = connectionData;
+          storeSignals = connectionData;
         };
         
         
         const handleFormChange = (e: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLSelectElement>): void => {
-          // console.log( e.target.value);
           const msgKey = e.target.id.split("_")[1];
           message[msgKey] = e.target.value;
         };
@@ -67,7 +72,7 @@ window.addEventListener('message', (event) =>{
           vscode.postMessage({
             command: 'modifyMsgForm',
             data: message,
-            connect: rawConnection
+            connect: storeSignals
           });
         }
         
@@ -85,14 +90,14 @@ window.addEventListener('message', (event) =>{
                       <MessageDefinition  msg = {message} 
                                           listOfSignal = {listOfSignal}
                                           isPreview = {false}
-                                          connection = {rawConnection}
+                                          connection = {storeSignals}
                                           updateValue={updateMessageValue}/>
                     </Tab>
                     <Tab eventKey="signals" title="Signals">
                         <SelectSignalTable  msg={message}  
                                             listOfSignal={listOfSignal}
                                             isPreview={false}
-                                            connection = {rawConnection}
+                                            connection = {storeSignals}
                                             updateValue={updateMessageValue}/>
                     </Tab>
                     <Tab eventKey="transmitters" title="Transmitters">

@@ -21,6 +21,7 @@ export function startSignalHandler(context: vscode.ExtensionContext, modulename:
     let signal = candb.listOfItems.get("Signals").find((element: CANDB.SignalForm) => element.name === modulename);
     let allMsgs = candb.listOfItems.get("Messages");
     let connectionSignal = candb.connectionSignal.find(item=> item.targetId === signal.uid);
+    
 
 
     

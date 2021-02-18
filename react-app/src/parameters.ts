@@ -1,13 +1,19 @@
 
 import {SignalForm, MessageForm, NetworkNodesForm} from "../../src/candb_provider";
 
+export interface SignalInMsg{
+    id: string;
+    startbit: number;
+    multiplexortype: string;
+}
+
 
 export interface IMsgProps {
     msg: MessageForm;
     listOfSignal: SignalForm[];
     isPreview: boolean;
-    connection: string[];
-    updateValue?: (arg0: MessageForm, arg1: string[]) => void;
+    connection: any[];
+    updateValue?: (arg0: MessageForm, arg1: SignalInMsg[]) => void;
 }
 
 export interface ISignalProps {
