@@ -16,6 +16,7 @@ function uuidv4() {
 class TreeViewItem extends vscode.TreeItem{
     constructor(
         public readonly label: string,
+        public readonly uid: string,
         public readonly collapsibleState: vscode.TreeItemCollapsibleState,
         public readonly contextValue: string,
         public readonly command?: vscode.Command
@@ -66,7 +67,8 @@ class DataProvider implements vscode.TreeDataProvider<TreeViewItem> {
             let treeItemList: TreeViewItem[] = [];
             if (element.label === "Network Node") {
                 this.candb_.listOfItems.get("Network Node").map((nnitem: CANDB.NetworkNodesForm) => 
-                        treeItemList.push(new TreeViewItem( nnitem.name, 
+                        treeItemList.push(new TreeViewItem( nnitem.name,
+                                                            nnitem.uid,
                                                             vscode.TreeItemCollapsibleState.None,
                                                             'treeviewitem',
                                                             {
@@ -81,7 +83,8 @@ class DataProvider implements vscode.TreeDataProvider<TreeViewItem> {
             else if (element.label === "Messages") {
                 if (this.candb_.listOfItems.get("Messages").length) {
                     this.candb_.listOfItems.get("Messages").map((messageitem: CANDB.MessageForm) =>
-                        treeItemList.push(new TreeViewItem( messageitem.name, 
+                        treeItemList.push(new TreeViewItem( messageitem.name,
+                                                            messageitem.uid,
                                                             vscode.TreeItemCollapsibleState.Collapsed,
                                                             'treeviewitem',
                                                             {
@@ -98,7 +101,8 @@ class DataProvider implements vscode.TreeDataProvider<TreeViewItem> {
                 if (this.candb_.listOfItems.get("Signals").length) {
 
                     this.candb_.listOfItems.get("Signals").map((signalitem: CANDB.SignalForm) =>
-                        treeItemList.push(new TreeViewItem( signalitem.name, 
+                        treeItemList.push(new TreeViewItem( signalitem.name,
+                                                            signalitem.uid,
                                                             vscode.TreeItemCollapsibleState.None,
                                                             'treeviewitem',
                                                             {
@@ -110,13 +114,14 @@ class DataProvider implements vscode.TreeDataProvider<TreeViewItem> {
                     
                     );};
             } 
-            else if (element.label.includes("Messag")) {
-                let msgIdx = this.candb_.listOfItems.get("Messages").findIndex((item: CANDB.MessageForm) => item.name === element.label);
-
-                this.candb_.listOfItems.get("Messages")[msgIdx].signalUids.map((uid: string) =>{
+            else if (element.label.includes("Message")) {
+                let msgIdx = this.candb_.connectionMsg.findIndex(item => item.targetId === element.uid);
+                console.log(this.candb_.connectionMsg);
+                this.candb_.connectionMsg[msgIdx].connection.map((connectionUid: string) =>{
                     this.candb_.listOfItems.get("Signals").forEach((signal: CANDB.SignalForm) => {
-                        if (signal.uid === uid) {
+                        if (signal.uid === connectionUid) {
                             treeItemList.push(new TreeViewItem( signal.name,
+                                                                signal.uid,
                                                                 vscode.TreeItemCollapsibleState.None, 
                                                                 'treeviewitem',
                                                                 {
@@ -135,7 +140,7 @@ class DataProvider implements vscode.TreeDataProvider<TreeViewItem> {
 
     private templateCANdb(): TreeViewItem[]{
         return  [...this.candb_.listOfItems.keys()].map(title => 
-            new TreeViewItem(title, vscode.TreeItemCollapsibleState.Collapsed, 'treeviewroot'));
+            new TreeViewItem(title, uuidv4(), vscode.TreeItemCollapsibleState.Collapsed, 'treeviewroot'));
     }
 
 
