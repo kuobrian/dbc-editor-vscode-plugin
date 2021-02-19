@@ -42,6 +42,10 @@
 				"title": "Refrsh Exist Item"
 			},
 			{
+				"command": "vscode-plugin-demo.loadJSONFile",
+				"title": "Load Json File"
+			},
+			{
 				"command": "vscode-plugin-demo.edit_treeview",
 				"title": "Edit Exist Item",
 				"icon": {
@@ -81,6 +85,10 @@
 			"view/title": [
 				{
 					"command": "vscode-plugin-demo.refresh_treeview",
+					"when": "view == TreeView"
+				},
+				{
+					"command": "vscode-plugin-demo.loadJSONFile",
 					"when": "view == TreeView"
 				}
 			],

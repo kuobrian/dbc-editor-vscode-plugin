@@ -1,6 +1,7 @@
 
 import * as vscode from 'vscode';
 import * as path from 'path';
+import * as fs from 'fs';
 import {startSignalHandler} from './editors/signalsProvider';
 import {startMsgHandler} from './editors/messageProvider';
 import {startNetworkNodesHandler} from './editors/networknodesProvider';
@@ -16,27 +17,52 @@ export function activate(context: vscode.ExtensionContext) {
 	});
 	context.subscriptions.push(disposable);
 	
-	const dataProvider = new DataProvider(path.join(context.extensionPath, 'db_output'));
+
+	// let dataProvider: any;
+	// const dataProvider = new DataProvider(path.join(context.extensionPath, 'db_output'));
+	// vscode.window.registerTreeDataProvider('TreeView', dataProvider);
+	let dbcObject = JSON.parse(fs.readFileSync(path.join(context.extensionPath, 'inputFile.json'), 'utf-8'));
+	const dataProvider = new DataProvider(path.join(context.extensionPath, 'db_output'), dbcObject);
 	vscode.window.registerTreeDataProvider('TreeView', dataProvider);
 
-
 	vscode.commands.registerCommand('extension.openSignalEditor', (moduleName, candb, isPreview=false) => {
-			startSignalHandler(context, moduleName, candb, isPreview);
+		startSignalHandler(context, moduleName, candb, isPreview);
 	});
 
 	vscode.commands.registerCommand('extension.openMessageEditor', (moduleName, candb) => {
-			startMsgHandler(context, moduleName, candb);
+		startMsgHandler(context, moduleName, candb);
 	});
 
 	vscode.commands.registerCommand('extension.openNetworkNodesEditor', (moduleName, candb) => {
-			
-			startNetworkNodesHandler(context, moduleName, candb);
+		startNetworkNodesHandler(context, moduleName, candb);
 	});
+
+
+
+	context.subscriptions.push(
+		vscode.commands.registerCommand("vscode-plugin-demo.loadJSONFile", () => {
+			vscode.window.showOpenDialog({
+				canSelectMany: false,
+				canSelectFolders: false,
+				canSelectFiles: true,
+				filters: {
+					'JSON File': ['json']
+				},
+				title: 'Select JSON File',
+				defaultUri: vscode.Uri.parse('/'+ context.extensionPath)
+			}).then(fileUri => {
+				if (fileUri && fileUri[0]) {
+					let dbcObject = JSON.parse(fs.readFileSync(fileUri[0].fsPath, 'utf-8'));
+					const dataProvider = new DataProvider(path.join(context.extensionPath, 'db_output'), dbcObject);
+					vscode.window.registerTreeDataProvider('TreeView', dataProvider);
+				}
+			});
+		})
+	);	
 
 	context.subscriptions.push(
 		vscode.commands.registerCommand("vscode-plugin-demo.add_treeviewitems", async (rootName: TreeViewItem) => {
 			dataProvider.addItem(rootName.label);
-			vscode.window.showInformationMessage("add Item ");
 		})
 	);	
 
@@ -53,7 +79,6 @@ export function activate(context: vscode.ExtensionContext) {
 			if (confirm === "delete") {
 				dataProvider.deleteItem(itemName);
 			}
-			vscode.window.showInformationMessage("delete item ");
 		})
 	);
 

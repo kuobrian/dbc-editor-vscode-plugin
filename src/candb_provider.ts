@@ -36,9 +36,6 @@ export interface NetworkNodesForm {
     name: string;
     address: string;
     comments?: string;
-    networkUids:string[];
-    msgUids: string[];
-    signalUids: string[];
     [key: string]: any;
 }
 
@@ -72,12 +69,25 @@ export class CANdb  {
     }
 
 
-    public addIdInConnection (root:string, uid:string) {
+    public initConnection (root:string, uid:string) {
         if (root === "Signals"){
             this.connectionSignal.push({targetId: uid, connection:[]});
         }
         else if (root === "Messages") {
             this.connectionMsg.push({targetId: uid, connection:[]});
+        }
+    }
+    
+    public addIdInConnection (root:string, targetUid:string, inputUid:string, startbit=0, multiplexortype="Signal") {
+        if (root === "Signals"){
+            let idx = this.connectionSignal.findIndex((item:SignalConnection) => item.targetId === targetUid);
+            this.connectionSignal[idx].connection.push(inputUid);
+        }
+        else if (root === "Messages") {
+            let idx = this.connectionMsg.findIndex((item:MsgConnection) => item.targetId === targetUid);
+            this.connectionMsg[idx].connection.push({ id: inputUid,
+                                                    startbit: startbit,
+                                                    multiplexortype: multiplexortype});
         }
     }
 

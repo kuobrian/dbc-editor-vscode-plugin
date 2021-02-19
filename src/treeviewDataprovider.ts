@@ -4,6 +4,7 @@ import * as vscode from 'vscode';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as CANDB from './candb_provider';
+import { MessageChannel } from 'worker_threads';
 
 
 function uuidv4() {
@@ -41,10 +42,15 @@ class DataProvider implements vscode.TreeDataProvider<TreeViewItem> {
 
 
     constructor(
-        private workspaceRoot: string 
+        private workspaceRoot: string,
+        private dbcObject: any
     ) {
         if (!fs.existsSync(workspaceRoot)){
             fs.mkdirSync(workspaceRoot);
+        }
+        if (dbcObject !== undefined) {
+            this.dbcObject = dbcObject;
+            this.parseDBCObject();
         }
     }
 
@@ -142,10 +148,79 @@ class DataProvider implements vscode.TreeDataProvider<TreeViewItem> {
             new TreeViewItem(title, uuidv4(), vscode.TreeItemCollapsibleState.Collapsed, 'treeviewroot'));
     }
 
+    public parseDBCObject() {
+        let msgList = this.dbcObject.messageList;
+        let networkNodeList = this.dbcObject.networkNodeList;
+        let symbolList = this.dbcObject.symbolList;
+        console.log(this.dbcObject);
+
+        this.dbcObject.messageList.map((msgItem: any) => {
+            if (true) {
+                const msgNewItem: CANDB.MessageForm = { uid: uuidv4(),
+                                                    name: msgItem.message_name,
+                                                    msgType: msgItem.message_id_type,
+                                                    id: "0x"+msgItem.message_id.toString(16),
+                                                    dlc: msgItem.message_size,
+                                                    cycletime: 0,
+                                                    comments: ""};
+                this.candb_.listOfItems.get("Messages").push(msgNewItem);
+                this.candb_.initConnection("Messages", msgNewItem.uid);
+                
+                msgItem.signal.map((signalItem: any) => {
+                    let newSignalItem: CANDB.SignalForm;
+                    if (! this.candb_.listOfItems.get("Signals").includes((item: { name: CANDB.SignalForm; }) => item.name === signalItem.signal_name)) {
+                        newSignalItem = { uid: uuidv4(),
+                                        name: signalItem.signal_name,
+                                        bitlength: signalItem.signal_size,
+                                        byteorder: signalItem.byte_order,
+                                        valuetype: signalItem.value_type,
+                                        factor:  signalItem.factor,
+                                        minimun: signalItem.minimum,
+                                        maximum: signalItem.maximum,
+                                        offset:  signalItem.offset,
+                                        initValue: 0,
+                                        valuetable: null,
+                                        comments: ""};
+                        this.candb_.listOfItems.get("Signals").push(newSignalItem);
+                        this.candb_.initConnection("Signals", newSignalItem.uid);
+                        this.candb_.addIdInConnection("Signals", newSignalItem.uid, msgNewItem.uid);
+                    } else {
+                        newSignalItem = this.candb_.listOfItems.get("Signals").find((item: { name: CANDB.SignalForm; }) => item.name === signalItem.signal_name);
+                    }
+                    this.candb_.addIdInConnection("Messages", msgNewItem.uid, newSignalItem.uid, newSignalItem.start_bit);
+                });
+            }
+            
+        });
+
+        this.dbcObject.networkNodeList.map((nodeItem: any) => {
+            const newItem: CANDB.NetworkNodesForm = { uid: uuidv4(),
+                            name: nodeItem.node_name,
+                            address: nodeItem.address,
+                            comments: "",
+                            networkUids: [],
+                            msgUids: [],
+                            signalUids: []};
+
+            this.candb_.listOfItems.get("Network Node").push(newItem);
+        });
+
+        this.dbcObject.symbolList.map((symbol: any) => {
+            if (symbol.messageComment) { 
+                let idx = this.candb_.listOfItems.get("Messages").findIndex((msg:CANDB.MessageForm) => msg.id === "0x"+symbol.messageComment.message_id.toString(16));
+                this.candb_.listOfItems.get("Messages")[idx].comments = symbol.messageComment.comment;
+            }
+            else if (symbol.signalComment) {
+                let idx = this.candb_.listOfItems.get("Signals").findIndex((signal:CANDB.SignalForm) => signal.name === symbol.signalComment.signal_name);
+                this.candb_.listOfItems.get("Signals")[idx].comments = symbol.signalComment.comment;
+            }
+        });
+        this.refresh();
+    }
 
     public addItem(rootName:string){
+        let uid = uuidv4();
         if (rootName === "Signals") {
-            let uid = uuidv4();
             const newItem: CANDB.SignalForm = { uid: uid,
                                         name: "new_"+rootName.slice(0, -1) + "_"+ (this.candb_.listOfItems.get(rootName).length+1),
                                         bitlength: 8,
@@ -160,10 +235,9 @@ class DataProvider implements vscode.TreeDataProvider<TreeViewItem> {
                                         comments: ""};
             
             this.candb_.listOfItems.get(rootName).push(newItem);
-            this.candb_.addIdInConnection(rootName, uid);
+            this.candb_.initConnection(rootName, uid);
         }
         else if (rootName === "Messages") {
-            let uid = uuidv4();
             const newItem: CANDB.MessageForm = { uid: uid,
                                                 name: "new_"+rootName.slice(0, -1) + "_"+ (this.candb_.listOfItems.get(rootName).length+1),
                                                 msgType: "CAN Standard",
@@ -172,16 +246,13 @@ class DataProvider implements vscode.TreeDataProvider<TreeViewItem> {
                                                 cycletime: 0,
                                                 comments: ""};
             this.candb_.listOfItems.get(rootName).push(newItem);
-            this.candb_.addIdInConnection(rootName, uid);
+            this.candb_.initConnection(rootName, uid);
         }
         else if (rootName === "Network Node") {
-            const newItem: CANDB.NetworkNodesForm = { uid: uuidv4(),
+            const newItem: CANDB.NetworkNodesForm = { uid: uid,
                                                 name: "new_"+rootName.replace(' ', '_').slice(0, -1) + "_"+ (this.candb_.listOfItems.get(rootName).length+1),
                                                 address: "0x0",
-                                                comments: "",
-                                                networkUids: [],
-                                                msgUids: [],
-                                                signalUids: []};
+                                                comments: "",};
             this.candb_.listOfItems.get(rootName).push(newItem);
         }
         this.refresh();

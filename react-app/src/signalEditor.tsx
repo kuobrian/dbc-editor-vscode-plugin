@@ -91,7 +91,6 @@ window.addEventListener('message', (event) =>{
                                                 updateValue = {updateSignalValue} />
                       </Form>
                     </Tab>
-                   
                     {(() => {
                           if (!isPreview) {
                             return ( 
