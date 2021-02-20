@@ -11,6 +11,7 @@ export interface SignalInMsg{
 export interface IMsgProps {
     msg: MessageForm;
     listOfSignal: SignalForm[];
+    listOfNetworknode: NetworkNodesForm[]
     isPreview: boolean;
     connection: any[];
     updateValue?: (arg0: MessageForm, arg1: SignalInMsg[]) => void;

@@ -18,11 +18,13 @@ export function startMsgHandler(context: vscode.ExtensionContext, modulename: st
     panel.webview.html = htmlContent;
     
     let message = candb.listOfItems.get("Messages").find((element: CANDB.SignalForm) => element.name === modulename);
+    let allNetworkNode = candb.listOfItems.get("Network Node");
     let allSignals = candb.listOfItems.get("Signals");
     let connectionMsg = candb.connectionMsg.find(item=> item.targetId === message.uid);
     console.log(connectionMsg);
 
-    panel.webview.postMessage({ message: message,
+    panel.webview.postMessage({ networknode: allNetworkNode,
+                                message: message,
                                 signal: allSignals,
                                 connection: connectionMsg});
 

@@ -3,29 +3,52 @@ import * as ReactDOM from "react-dom";
 import {IMsgProps, ITransmittersTableState} from "../src/parameters";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import {  Row, Col, Tabs, Tab, Table, Form, Button,  Modal } from "react-bootstrap";
-import { SignalForm } from '../../src/candb_provider';
+import {SignalForm, MessageForm, NetworkNodesForm} from "../../src/candb_provider";
 
 
 export class SelectTransmittersTable extends React.Component <IMsgProps, ITransmittersTableState> {
   msg = this.props.msg;
   listOfSignal = this.props.listOfSignal;
+  listOfNetworknode = this.props.listOfNetworknode;
+  storeSignals = this.props.connection;
   msgConnect = this.props.connection;
+
   isPreview = this.props.isPreview;
   constructor(props: IMsgProps) {
     super(props);
-    this.state = {selectTransmitters: [],
+    this.state = {selectTransmitters: this.initSelectTransmitters(),
                   show: false };
     this.handleClose = this.handleClose.bind(this);
     this.handleShow = this.handleShow.bind(this);
   }
 
+  initSelectTransmitters() {
+    let rows: NetworkNodesForm[] = [];
+    for (let nnItem of this.listOfNetworknode) {
+      if (this.msg.transmitters.find((nnInMsg:NetworkNodesForm) => nnInMsg.uid === nnItem.uid)) {
+        rows.push(nnItem); 
+      }
+    }
+    return rows;
+  }
+  updateValue = this.props.updateValue;
   handleClose () { this.setState({ show: false } );}
   handleShow ()  { this.setState({ show: true }); }
-  handleSelectSignal (selectItem: SignalForm) {
+
+  handleSelectNN (selectItem: NetworkNodesForm) {
     if (! this.state.selectTransmitters.includes(selectItem)) {
       const rows = [...this.state.selectTransmitters, selectItem];
+
+
       this.setState({ selectTransmitters: rows}, () => {
-        console.log("Log: Add selectSignal", this.state.selectTransmitters.length);
+        this.state.selectTransmitters.forEach((nnItem: NetworkNodesForm) =>  {
+          if(this.msg.transmitters.findIndex(nnInMsg=> nnInMsg.uid === nnItem.uid) < 0){
+            this.msg.transmitters.push(nnItem);
+          }
+        });
+        if (this.props.updateValue) {
+          this.props.updateValue(this.msg, this.storeSignals);
+        }
       }); 
     } 
   };
@@ -33,9 +56,20 @@ export class SelectTransmittersTable extends React.Component <IMsgProps, ITransm
 
   handleRemoveSpecificRow = (idx: number) => () => {
     const rows = [...this.state.selectTransmitters];
+    const delItem = rows[idx];
     rows.splice(idx, 1);
-    this.setState({ selectTransmitters: rows });
+    this.setState({ selectTransmitters: rows }, () => {
+      this.msg.transmitters = this.msg.transmitters.filter((nn:NetworkNodesForm) => nn.uid !== delItem.uid);
+      if (this.props.updateValue) {
+        this.props.updateValue(this.msg, this.storeSignals);
+      }
+
+    });
   };
+
+
+
+
   render() {
     return (
       <div>
@@ -89,14 +123,14 @@ export class SelectTransmittersTable extends React.Component <IMsgProps, ITransm
                         </thead>
                         <tbody>
                               { 
-                                this.listOfSignal.map((signalItem, idx) => {
-                                  if (! this.state.selectTransmitters.includes(signalItem)) {
+                                this.listOfNetworknode.map((nnItem, idx) => {
+                                  if (! this.state.selectTransmitters.includes(nnItem)) {
                                     return (
                                       <tr>
-                                        <td>{signalItem.name} {this.state.selectTransmitters.includes(signalItem)}</td> 
-                                        <td>{signalItem.bitlength}</td>
+                                        <td>{nnItem.name}</td> 
+                                        <td>{nnItem.address}</td>
                                         <td>
-                                          <Button variant="primary" onClick={() => this.handleSelectSignal(signalItem)}>
+                                          <Button variant="primary" onClick={() => this.handleSelectNN(nnItem)}>
                                           add
                                           </Button>
                                         </td>

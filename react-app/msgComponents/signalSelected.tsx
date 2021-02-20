@@ -37,6 +37,7 @@ export class SelectSignalTable extends React.Component <IMsgProps , ISelItemsSta
     updateValue = this.props.updateValue;
     handleClose () { this.setState({ show: false } );}
     handleShow ()  { this.setState({ show: true }); }
+    
     handleSelectSignal (selectItem: any) {
       if (! this.state.selectItem.includes(selectItem)) {
         const rows = [...this.state.selectItem, selectItem];

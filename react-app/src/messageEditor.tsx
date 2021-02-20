@@ -22,14 +22,11 @@ window.addEventListener('message', (event) =>{
     let vscode = window.acquireVsCodeApi();
     let message = event.data.message;
     let listOfSignal = event.data.signal;
+    let listOfNetworknode = event.data.networknode;
     let storeSignals = event.data.connection;
     const messageUid = message.uid;
 
-    
-
     console.log("messageEditor Receieve:：", message.name, listOfSignal.length, storeSignals);
-
-
 
     const App = () =>  {
         const styles = {
@@ -87,21 +84,28 @@ window.addEventListener('message', (event) =>{
                 <>
                 <Tabs defaultActiveKey="definition" id="uncontrolled-tab-example">
                     <Tab eventKey="definition" title="Definition">
-                      <MessageDefinition  msg = {message} 
+                      <MessageDefinition  msg = {message}
+                                          listOfNetworknode = {listOfNetworknode}
                                           listOfSignal = {listOfSignal}
                                           isPreview = {false}
                                           connection = {storeSignals}
                                           updateValue={updateMessageValue}/>
                     </Tab>
                     <Tab eventKey="signals" title="Signals">
-                        <SelectSignalTable  msg={message}  
-                                            listOfSignal={listOfSignal}
-                                            isPreview={false}
+                        <SelectSignalTable  msg = {message}
+                                            listOfNetworknode = {listOfNetworknode}
+                                            listOfSignal = {listOfSignal}
+                                            isPreview = {false}
                                             connection = {storeSignals}
-                                            updateValue={updateMessageValue}/>
+                                            updateValue = {updateMessageValue}/>
                     </Tab>
                     <Tab eventKey="transmitters" title="Transmitters">
-                        {/* <SelectTransmittersTable msg={message}  allSignals={allSignals}  updateValue={updateMessageValue}/> */}
+                        <SelectTransmittersTable  msg = {message}
+                                                  listOfNetworknode = {listOfNetworknode}
+                                                  listOfSignal = {listOfSignal}
+                                                  isPreview = {false}
+                                                  connection = {storeSignals}
+                                                  updateValue = {updateMessageValue}/>
                     </Tab>
                     <Tab eventKey="receivers" title="Receivers" >
                       <Table striped bordered hover variant="dark">

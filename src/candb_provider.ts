@@ -28,6 +28,7 @@ export interface MessageForm {
     dlc: number;
     cycletime: number;
     comments: string;
+    transmitters: NetworkNodesForm[];
     [key: string]: any;
 }
 

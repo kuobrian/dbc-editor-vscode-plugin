@@ -21,14 +21,14 @@ export function startNetworkNodesHandler(context: vscode.ExtensionContext, modul
 
     panel.webview.html = htmlContent;
     
-    let candbNetworkNode = candb.listOfItems.get("Network Node").find((element: CANDB.NetworkNodesForm) => element.name === modulename);
-    let candbAllMsgs = candb.listOfItems.get("Messages");
-    let candbAllSignals = candb.listOfItems.get("Signals");
+    let networkNode = candb.listOfItems.get("Network Node").find((element: CANDB.NetworkNodesForm) => element.name === modulename);
+    let allMsgs = candb.listOfItems.get("Messages");
+    let allSignals = candb.listOfItems.get("Signals");
     // console.log(candbAllMsgs);
 
-    panel.webview.postMessage({ networknode: candbNetworkNode,
-                                messages: candbAllMsgs,
-                                signals: candbAllSignals});
+    panel.webview.postMessage({ networknode: networkNode,
+                                messages: allMsgs,
+                                signals: allSignals});
 
 
 

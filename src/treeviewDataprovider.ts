@@ -153,15 +153,24 @@ class DataProvider implements vscode.TreeDataProvider<TreeViewItem> {
         let networkNodeList = this.dbcObject.networkNodeList;
         let symbolList = this.dbcObject.symbolList;
         console.log(this.dbcObject);
+        this.dbcObject.networkNodeList.map((nodeItem: any) => {
+            const newItem: CANDB.NetworkNodesForm = { uid: uuidv4(),
+                            name: nodeItem.node_name,
+                            address: nodeItem.address,
+                            comments: ""};
 
+            this.candb_.listOfItems.get("Network Node").push(newItem);
+        });
         this.dbcObject.messageList.map((msgItem: any) => {
             if (true) {
+                let nn = this.candb_.listOfItems.get("Network Node").find((nn:CANDB.NetworkNodesForm) => nn.name === msgItem.transmitter);
                 const msgNewItem: CANDB.MessageForm = { uid: uuidv4(),
                                                     name: msgItem.message_name,
                                                     msgType: msgItem.message_id_type,
                                                     id: "0x"+msgItem.message_id.toString(16),
                                                     dlc: msgItem.message_size,
                                                     cycletime: 0,
+                                                    transmitters: [nn],
                                                     comments: ""};
                 this.candb_.listOfItems.get("Messages").push(msgNewItem);
                 this.candb_.initConnection("Messages", msgNewItem.uid);
@@ -192,19 +201,7 @@ class DataProvider implements vscode.TreeDataProvider<TreeViewItem> {
             }
             
         });
-
-        this.dbcObject.networkNodeList.map((nodeItem: any) => {
-            const newItem: CANDB.NetworkNodesForm = { uid: uuidv4(),
-                            name: nodeItem.node_name,
-                            address: nodeItem.address,
-                            comments: "",
-                            networkUids: [],
-                            msgUids: [],
-                            signalUids: []};
-
-            this.candb_.listOfItems.get("Network Node").push(newItem);
-        });
-
+        
         this.dbcObject.symbolList.map((symbol: any) => {
             if (symbol.messageComment) { 
                 let idx = this.candb_.listOfItems.get("Messages").findIndex((msg:CANDB.MessageForm) => msg.id === "0x"+symbol.messageComment.message_id.toString(16));
@@ -244,6 +241,7 @@ class DataProvider implements vscode.TreeDataProvider<TreeViewItem> {
                                                 id: "0x"+(this.candb_.listOfItems.get(rootName).length+1),
                                                 dlc: 8,
                                                 cycletime: 0,
+                                                transmitters: [],
                                                 comments: ""};
             this.candb_.listOfItems.get(rootName).push(newItem);
             this.candb_.initConnection(rootName, uid);
@@ -273,12 +271,9 @@ class DataProvider implements vscode.TreeDataProvider<TreeViewItem> {
         else if (rootName === "Network Node") {
             this.candb_.listOfItems.set(rootName, 
                 this.candb_.listOfItems.get(rootName).filter((i: CANDB.NetworkNodesForm) => i.name !== itemName.label));
-            
         }
         this.refresh();
     }
-
-
 }
 
 export {DataProvider, TreeViewItem};
