@@ -170,7 +170,7 @@ class DataProvider implements vscode.TreeDataProvider<TreeViewItem> {
                                                     id: "0x"+msgItem.message_id.toString(16),
                                                     dlc: msgItem.message_size,
                                                     cycletime: 0,
-                                                    transmitters: [nn],
+                                                    transmitters: (nn===undefined)? [] : [nn],
                                                     comments: ""};
                 this.candb_.listOfItems.get("Messages").push(msgNewItem);
                 this.candb_.initConnection("Messages", msgNewItem.uid);
@@ -196,7 +196,7 @@ class DataProvider implements vscode.TreeDataProvider<TreeViewItem> {
                     } else {
                         newSignalItem = this.candb_.listOfItems.get("Signals").find((item: { name: CANDB.SignalForm; }) => item.name === signalItem.signal_name);
                     }
-                    this.candb_.addIdInConnection("Messages", msgNewItem.uid, newSignalItem.uid, newSignalItem.start_bit);
+                    this.candb_.addIdInConnection("Messages", msgNewItem.uid, newSignalItem.uid, signalItem.start_bit, "signal");
                 });
             }
             

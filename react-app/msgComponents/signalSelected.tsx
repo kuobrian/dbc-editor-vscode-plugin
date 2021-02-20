@@ -108,7 +108,8 @@ export class SelectSignalTable extends React.Component <IMsgProps , ISelItemsSta
                     </tr>
                   </thead>
                   <tbody>
-                      { this.state.selectItem.map((item, idx) => {
+                      { 
+                        this.state.selectItem.map((item, idx) => {
                         let matchIdx = this.storeSignals.connection.findIndex((element: { id: string; }) => element.id === item.uid);
                         let startbit = (matchIdx=== -1) ? 0 : this.storeSignals.connection[matchIdx].startbit;
                         let multiplexortype = (matchIdx=== -1) ? "Signal" : this.storeSignals.connection[matchIdx].multiplexortype;

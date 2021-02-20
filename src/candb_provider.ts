@@ -51,7 +51,7 @@ export interface SignalInMsg {
     multiplexortype: string;
 }
 
-interface MsgConnection {
+export interface MsgConnection {
     targetId: string;
     connection: SignalInMsg[];
 }
@@ -86,6 +86,7 @@ export class CANdb  {
         }
         else if (root === "Messages") {
             let idx = this.connectionMsg.findIndex((item:MsgConnection) => item.targetId === targetUid);
+            
             this.connectionMsg[idx].connection.push({ id: inputUid,
                                                     startbit: startbit,
                                                     multiplexortype: multiplexortype});

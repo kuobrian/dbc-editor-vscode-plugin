@@ -1,7 +1,7 @@
 import * as React from 'react';
 import * as ReactDOM from "react-dom";
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { SignalForm, MessageForm, NetworkNodesForm } from '../../src/candb_provider';
+import { SignalForm, MessageForm, NetworkNodesForm, MsgConnection, SignalInMsg} from '../../src/candb_provider';
 import {SelectSignalTable} from "../networknodesComponents/signalSelected";
 import {SelectMsgTable} from "../networknodesComponents/msgSelected";
 
@@ -19,12 +19,13 @@ declare global {
 window.addEventListener('message', (event) =>{
     let vscode = window.acquireVsCodeApi();
     let networknode = event.data.networknode;
-    let allMessages = event.data.messages;
-    let allSignals = event.data.signals;
+    let listOfMsg = event.data.message;
+    let listOfSignal = event.data.signal;
+    let connectionMsg = event.data.connectionMsg;
 
     const nnUid = networknode.uid;
 
-    console.log('networknodesEditor  Webview接收到的消息：', networknode.name, allMessages.length, );
+    console.log('networknodesEditor  Webview接收到的消息：', networknode.name, listOfMsg.length);
 
     const App = () =>  {
         const styles = {
@@ -68,6 +69,15 @@ window.addEventListener('message', (event) =>{
           });
         }
 
+        function mappedTxSig (signalItem: SignalForm)  {
+          if(connectionMsg.includes(signalItem)) {
+            return [
+              <tr>
+                <td>{listOfSignal.length} </td>
+              </tr>
+            ]
+          } 
+        }
 
         return (
                 <>
@@ -96,12 +106,65 @@ window.addEventListener('message', (event) =>{
                       </Form>
                     </Tab>
                     <Tab eventKey="mappedtx" title="Mapped Tx Sig.">
+                      <Table striped bordered hover variant="dark" 
+                              className="table table-bordered table-hover"
+                              id="tab_logic">
+                          <thead>
+                            <tr>
+                              <th>Signal</th>
+                              <th>Message</th>
+                              <th>Multiplexing/Group</th>
+                              <th>Startbit</th>
+                              <th>Length (Bit)</th>
+                              <th>Byte Order</th>
+                              <th>Value Type</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            { 
+                              listOfMsg.map((msgItem: MessageForm) =>{
+                                if (msgItem.transmitters.findIndex(t => t.uid === networknode.uid) >= 0) 
+                                {
+                                  let connectedSignals = connectionMsg.find((item:MsgConnection) => item.targetId === msgItem.uid).connection;
+                                    return (
+                                      connectedSignals.map((signalItem: SignalForm) =>{
+                                        let startbit = signalItem.startbit;
+                                        let contentSignal = listOfSignal.find((s:SignalForm) => s.uid === signalItem.id);
+                                        return (
+                                          <>
+                                            { (signalItem.id === contentSignal.uid) && 
+                                              (
+                                                <tr>
+                                                  <td>{contentSignal.name}</td>
+                                                  <td>{msgItem.name}</td>
+                                                  <td>{'-'}</td>
+                                                  <td>{signalItem.startbit} </td>
+                                                  <td>{contentSignal.bitlength}</td>
+                                                  <td>{contentSignal.byteorder}</td>
+                                                  <td>{contentSignal.valuetype}</td>
+                                                </tr>
+                                              )
+                                            }
+                                          </>
+                                          )    
+
+                                      })
+                                    );
+                                  
+                                  
+                                }
+                              })
+
+                            }
+                          </tbody>
+
+                      </Table>
                     </Tab>
                     <Tab eventKey="mappedrx" title="Mapped Rx Sig.">
-                        <SelectSignalTable netwoknode={networknode}  allMessages={allMessages} allSignals={allSignals} updateValue={updateNNValue}/>
+                        {/* <SelectSignalTable netwoknode={networknode}  allMessages={allMessages} allSignals={allSignals} updateValue={updateNNValue}/> */}
                     </Tab>
                     <Tab eventKey="txmessages" title="Tx Messages" >
-                        <SelectMsgTable netwoknode={networknode}  allMessages={allMessages} allSignals={allSignals} updateValue={updateNNValue}/>
+                        {/* <SelectMsgTable netwoknode={networknode}  allMessages={allMessages} allSignals={allSignals} updateValue={updateNNValue}/> */}
                     </Tab>
                     <Tab eventKey="netwoks" title="Netwoks" >
                     </Tab>
