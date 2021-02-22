@@ -62,7 +62,19 @@ export class MessageDefinition extends React.Component <IMsgProps, ISelItemsStat
             <Form.Label>Transmitter:</Form.Label>
             <Form.Control as="select"
                           onChange={(event) => this.handleFormChange(event as any)} disabled>
-                    <option>-- No Transmitter --</option>
+                    {(() => {
+                      if (this.message.transmitters.length > 1){
+                        return  <option>-- Mutiple Transmitters --</option>;
+                      } 
+                      else if (this.message.transmitters.length === 1) {
+                        return  <option>{this.message.transmitters[0].name}</option>;
+                      } 
+                      else {
+                        return  <option>-- No Transmitter --</option>;
+                      }
+                    })() }
+                   
+                    
             </Form.Control>
           </Form.Group>
           <Form.Group as={Col} md="3" controlId="_txmethod">

@@ -46,8 +46,6 @@ window.addEventListener('message', (event) =>{
               paddingRight: 0
           }
         };
-        const [show, setShow] = React.useState(false);
-
 
         let copyMsg:any = JSON.parse(JSON.stringify(message));
         let copystoreSignals:any= JSON.parse(JSON.stringify(storeSignals));
@@ -56,7 +54,6 @@ window.addEventListener('message', (event) =>{
           message = msg;
           storeSignals = connectionData;
         };
-        
         
         const handleFormChange = (e: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLSelectElement>): void => {
           const msgKey = e.target.id.split("_")[1];
