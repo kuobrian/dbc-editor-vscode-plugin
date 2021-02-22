@@ -132,8 +132,7 @@ window.addEventListener('message', (event) =>{
                                         let contentSignal = listOfSignal.find((s:SignalForm) => s.uid === signalItem.id);
                                         return (
                                           <>
-                                            { (signalItem.id === contentSignal.uid) && 
-                                              (
+                                            { (signalItem.id === contentSignal.uid) &&  (
                                                 <tr>
                                                   <td>{contentSignal.name}</td>
                                                   <td>{msgItem.name}</td>
@@ -146,15 +145,11 @@ window.addEventListener('message', (event) =>{
                                               )
                                             }
                                           </>
-                                          )    
-
+                                        );
                                       })
                                     );
-                                  
-                                  
                                 }
                               })
-
                             }
                           </tbody>
 
@@ -164,11 +159,58 @@ window.addEventListener('message', (event) =>{
                         {/* <SelectSignalTable netwoknode={networknode}  allMessages={allMessages} allSignals={allSignals} updateValue={updateNNValue}/> */}
                     </Tab>
                     <Tab eventKey="txmessages" title="Tx Messages" >
-                        {/* <SelectMsgTable netwoknode={networknode}  allMessages={allMessages} allSignals={allSignals} updateValue={updateNNValue}/> */}
+                      <Table striped bordered hover variant="dark" 
+                              className="table table-bordered table-hover"
+                              id="tab_logic">
+                            <thead>
+                              <tr>
+                                <th>Name</th>
+                                <th>ID</th>
+                                <th>ID-Format</th>
+                                <th>DLC (Byte)</th>
+                                <th>Remove</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              { 
+                                listOfMsg.map((msgItem: MessageForm) =>{
+                                  if (msgItem.transmitters.findIndex(t => t.uid === networknode.uid) >= 0) {
+                                    return (
+                                      <>
+                                        { <tr>
+                                              <td>{msgItem.name}</td>
+                                              <td>{msgItem.id} </td>
+                                              <td>{msgItem.msgType}</td>
+                                              <td>{msgItem.dlc}</td>
+                                              <td>{'-'}</td>
+                                          </tr>
+                                        }
+                                      </>
+                                    );}
+                                })
+                              }
+                            </tbody>
+                        </Table>
                     </Tab>
                     <Tab eventKey="netwoks" title="Netwoks" >
                     </Tab>
                     <Tab eventKey="contorlunits" title="Contorl units" >
+                      <Table  striped bordered hover variant="dark" 
+                              className="table table-bordered table-hover"
+                              id="tab_logic">
+                            <thead>
+                              <tr>
+                                <th>Name</th>
+                                <th></th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <tr>
+                                  <td>{networknode.name}</td>
+                                  <td></td>
+                              </tr>
+                            </tbody>
+                        </Table>
                     </Tab>
                     <Tab eventKey="attributes" title="Attributes" >
                     </Tab>
