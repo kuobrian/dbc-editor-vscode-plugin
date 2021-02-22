@@ -162,34 +162,34 @@ window.addEventListener('message', (event) =>{
                       <Table striped bordered hover variant="dark" 
                               className="table table-bordered table-hover"
                               id="tab_logic">
-                            <thead>
-                              <tr>
-                                <th>Name</th>
-                                <th>ID</th>
-                                <th>ID-Format</th>
-                                <th>DLC (Byte)</th>
-                                <th>Remove</th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                              { 
-                                listOfMsg.map((msgItem: MessageForm) =>{
-                                  if (msgItem.transmitters.findIndex(t => t.uid === networknode.uid) >= 0) {
-                                    return (
-                                      <>
-                                        { <tr>
-                                              <td>{msgItem.name}</td>
-                                              <td>{msgItem.id} </td>
-                                              <td>{msgItem.msgType}</td>
-                                              <td>{msgItem.dlc}</td>
-                                              <td>{'-'}</td>
-                                          </tr>
-                                        }
-                                      </>
-                                    );}
-                                })
-                              }
-                            </tbody>
+                        <thead>
+                          <tr>
+                            <th>Name</th>
+                            <th>ID</th>
+                            <th>ID-Format</th>
+                            <th>DLC (Byte)</th>
+                            <th>Remove</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          { 
+                            listOfMsg.map((msgItem: MessageForm) =>{
+                              if (msgItem.transmitters.findIndex(t => t.uid === networknode.uid) >= 0) {
+                                return (
+                                  <>
+                                    { <tr>
+                                          <td>{msgItem.name}</td>
+                                          <td>{msgItem.id} </td>
+                                          <td>{msgItem.msgType}</td>
+                                          <td>{msgItem.dlc}</td>
+                                          <td>{'-'}</td>
+                                      </tr>
+                                    }
+                                  </>
+                                );}
+                            })
+                          }
+                        </tbody>
                         </Table>
                     </Tab>
                     <Tab eventKey="netwoks" title="Netwoks" >

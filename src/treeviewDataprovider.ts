@@ -178,6 +178,7 @@ class DataProvider implements vscode.TreeDataProvider<TreeViewItem> {
                 msgItem.signal.map((signalItem: any) => {
                     let newSignalItem: CANDB.SignalForm;
                     if (! this.candb_.listOfItems.get("Signals").includes((item: { name: CANDB.SignalForm; }) => item.name === signalItem.signal_name)) {
+                        let receivers =  this.candb_.listOfItems.get("Network Node").filter((nn:CANDB.NetworkNodesForm) =>  signalItem.receiver.findIndex((r:string) => r === nn.name) >= 0);
                         newSignalItem = { uid: uuidv4(),
                                         name: signalItem.signal_name,
                                         bitlength: signalItem.signal_size,
@@ -188,6 +189,7 @@ class DataProvider implements vscode.TreeDataProvider<TreeViewItem> {
                                         maximum: signalItem.maximum,
                                         offset:  signalItem.offset,
                                         initValue: 0,
+                                        receivers: receivers,
                                         valuetable: null,
                                         comments: ""};
                         this.candb_.listOfItems.get("Signals").push(newSignalItem);
@@ -229,6 +231,7 @@ class DataProvider implements vscode.TreeDataProvider<TreeViewItem> {
                                         offset:  0,
                                         initValue: 0,
                                         valuetable: null,
+                                        receivers: [],
                                         comments: ""};
             
             this.candb_.listOfItems.get(rootName).push(newItem);

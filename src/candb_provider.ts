@@ -16,6 +16,7 @@ export interface SignalForm {
     initValue: number;
     unit?: number;
     valuetable?: any;
+    receivers: NetworkNodesForm[];
     comments: string;
     [key: string]: any;
 }

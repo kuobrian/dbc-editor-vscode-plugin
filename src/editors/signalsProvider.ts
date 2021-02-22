@@ -19,15 +19,14 @@ export function startSignalHandler(context: vscode.ExtensionContext, modulename:
     panel.webview.html = htmlContent;
     
     let signal = candb.listOfItems.get("Signals").find((element: CANDB.SignalForm) => element.name === modulename);
+    let allNetworkNode = candb.listOfItems.get('Network Node');
     let allMsgs = candb.listOfItems.get("Messages");
     let connectionSignal = candb.connectionSignal.find(item=> item.targetId === signal.uid);
     
 
-
-    
-
     panel.webview.postMessage({ signal: signal,
                                 message: allMsgs,
+                                networknode: allNetworkNode,
                                 connection: connectionSignal,
                                 isPreview: isPreview});
 

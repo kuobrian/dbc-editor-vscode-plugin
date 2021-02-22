@@ -1,7 +1,7 @@
 import * as React from 'react';
 import * as ReactDOM from "react-dom";
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { MessageForm, SignalForm } from '../../src/candb_provider';
+import { MessageForm, SignalForm, NetworkNodesForm } from '../../src/candb_provider';
 import {SelectMsgTable} from "../signalComponents/msgSelected";
 import {SignalDefinitionEdit} from "../signalComponents/signalDefinition";
 import {MessageDefinition} from "../msgComponents/messageDefinition";
@@ -20,6 +20,7 @@ window.addEventListener('message', (event) =>{
     let vscode = window.acquireVsCodeApi();
     let signal = event.data.signal;
     let listOfMsg = event.data.message;
+    let listOfNN = event.data.networknode;
     let isPreview = event.data.isPreview;
     let rawConnection = event.data.connection;
     
@@ -91,51 +92,48 @@ window.addEventListener('message', (event) =>{
                                                 updateValue = {updateSignalValue} />
                       </Form>
                     </Tab>
-                    {(() => {
-                          if (!isPreview) {
-                            return ( 
-                              <Tab eventKey="messages" title="Messages">
-                                <SelectMsgTable  signal = {signal} 
-                                                          listOfMsg = {listOfMsg}
-                                                          isPreview = {isPreview}
-                                                          connection = {rawConnection}
-                                                          updateValue = {updateSignalValue} /> 
-                              </Tab>);
-                          }
-                          })()
-                    }                    
+                      {(() => {
+                            if (!isPreview) {
+                              return ( 
+                                <Tab eventKey="messages" title="Messages">
+                                  <SelectMsgTable  signal = {signal} 
+                                                            listOfMsg = {listOfMsg}
+                                                            isPreview = {isPreview}
+                                                            connection = {rawConnection}
+                                                            updateValue = {updateSignalValue} /> 
+                                </Tab>);
+                            }
+                            })()
+                      }                    
                     <Tab eventKey="receivers" title="Receivers">
-                      <Table striped bordered hover variant="dark">
+                      <Table striped bordered hover variant="dark" 
+                            className="table table-bordered table-hover"
+                            id="tab_logic">
                           <thead>
                             <tr>
                               <th>Name</th>
                               <th>Address</th>
+                              <th></th>
                             </tr>
                           </thead>
                           <tbody>
-                            <tr>
-                              <td>1</td>
-                                {Array.from({ length: 3 }).map((_, index) => (
-                                        <td key={index}>Table cell {index}</td>
-                                  ))
-                                }
-                            </tr>
-                            <tr>
-                              <td>2</td>
-                                {Array.from({ length: 3 }).map((_, index) => (
-                                        <td key={index}>Table cell {index}</td>
-                                  ))
-                                }
-                            </tr>
+                            { 
+                              signal.receivers.map((nn: NetworkNodesForm) =>{
+                                  return (
+                                    <>
+                                      {  <tr>
+                                            <td>{nn.name}</td>
+                                            <td>{nn.address}</td>
+                                            <td></td>
+                                          </tr>
+                                      }
+                                    </>
+                                  );})
+                              
+                            }
                           </tbody>
                       </Table>
-                      <Row>
-                          <Col>
-                              <Button variant="primary" onClick={handleShow}>
-                              View
-                              </Button>
-                          </Col>
-                        </Row>                    
+                                        
                     </Tab>
                     <Tab eventKey="attributes" title="Attributes" >
                       <Table striped bordered hover variant="dark">
