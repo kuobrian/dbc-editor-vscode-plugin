@@ -73,8 +73,6 @@ export class MessageDefinition extends React.Component <IMsgProps, ISelItemsStat
                         return  <option>-- No Transmitter --</option>;
                       }
                     })() }
-                   
-                    
             </Form.Control>
           </Form.Group>
           <Form.Group as={Col} md="3" controlId="_txmethod">

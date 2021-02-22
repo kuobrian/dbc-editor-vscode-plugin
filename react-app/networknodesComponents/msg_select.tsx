@@ -30,7 +30,7 @@ export class SelectMsgTable extends React.Component <INNProps, ISelItemsState> {
         const rows = [...this.state.selectItem, selectItem];
         this.setState({ selectItem: rows}, () => {
           this.state.selectItem.forEach(item =>  this.props.netwoknode.msgUids.push(item.uid));
-          this.props.netwoknode.msgUids = this.props.netwoknode.msgUids.filter(function(elem, index, self) {
+          this.props.netwoknode.msgUids = this.props.netwoknode.msgUids.filter(function(elem: any, index: any, self: string | any[]) {
             return index === self.indexOf(elem);
           });
           // this.updateValue( this.props.netwoknode);
@@ -44,7 +44,7 @@ export class SelectMsgTable extends React.Component <INNProps, ISelItemsState> {
       const delItem = rows[idx];
       rows.splice(idx, 1);
       this.setState({ selectItem: rows }, () =>{
-        this.props.netwoknode.msgUids = this.props.netwoknode.msgUids.filter(uid=> uid !== delItem.uid);
+        this.props.netwoknode.msgUids = this.props.netwoknode.msgUids.filter((uid: any)=> uid !== delItem.uid);
         // this.updateValue( this.props.netwoknode);
       }) ;
     };

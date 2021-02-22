@@ -37,7 +37,7 @@ export class SelectSignalTable extends React.Component <INNProps , ISelItemsStat
         
         this.setState({ selectItem: rows}, () => {
           this.state.selectItem.forEach(item =>  this.props.netwoknode.signalUids.push(item.uid));
-          this.props.netwoknode.signalUids = this.props.netwoknode.signalUids.filter(function(elem, index, self) {
+          this.props.netwoknode.signalUids = this.props.netwoknode.signalUids.filter(function(elem: any, index: any, self: string | any[]) {
             return index === self.indexOf(elem);
           });
           // this.updateValue( this.props.netwoknode);
@@ -50,7 +50,7 @@ export class SelectSignalTable extends React.Component <INNProps , ISelItemsStat
       const delItem = rows[idx];
       rows.splice(idx, 1);
       this.setState({ selectItem: rows }, () =>{
-        this.props.netwoknode.signalUids = this.props.netwoknode.signalUids.filter(uid=> uid !== delItem.uid);
+        this.props.netwoknode.signalUids = this.props.netwoknode.signalUids.filter((uid: any)=> uid !== delItem.uid);
         // this.updateValue( this.props.netwoknode);
       }) ;
     };

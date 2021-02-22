@@ -4,11 +4,10 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import {  Row, Col, Tabs, Tab, Table, Form, Button,  Modal } from "react-bootstrap";
 import { MessageForm, SignalForm, NetworkNodesForm } from '../../src/candb_provider';
 import { SignalInMsg } from './parameters';
-import {SelectTransmittersTable} from "../msgComponents/transmittersSelected";
-import {SelectSignalTable} from "../msgComponents/signalSelected";
-import {MessageDefinition} from "../msgComponents/messageDefinition";
-import { start } from 'repl';
-import { lstat } from 'fs';
+import {SelectTransmittersTable} from "../msgComponents/transmitters_select";
+import {SelectSignalTable} from "../msgComponents/signal_select";
+import {MessageDefinition} from "../msgComponents/definition";
+
 
 
 declare global {
@@ -28,7 +27,7 @@ window.addEventListener('message', (event) =>{
 
     console.log("messageEditor Receieve:：", message.name, listOfSignal.length, storeSignals);
 
-    const App = () =>  {
+    const EditorApp = () =>  {
         const styles = {
           formGroupStyle: {
             padding: 20
@@ -132,8 +131,8 @@ window.addEventListener('message', (event) =>{
                                         <td>{listOfNetworknode[idx].address}</td>
                                         <td></td>
                                       </tr>
-                                )}
-                            }))
+                                );}
+                            }));
                           })()}
                         </tbody>
                       </Table>
@@ -200,5 +199,5 @@ window.addEventListener('message', (event) =>{
             );
         };
 
-    ReactDOM.render(<App />, document.getElementById('root'));
+    ReactDOM.render(<EditorApp />, document.getElementById('root'));
 });

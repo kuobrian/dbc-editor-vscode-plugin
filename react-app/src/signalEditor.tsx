@@ -2,9 +2,9 @@ import * as React from 'react';
 import * as ReactDOM from "react-dom";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { MessageForm, SignalForm, NetworkNodesForm } from '../../src/candb_provider';
-import {SelectMsgTable} from "../signalComponents/msgSelected";
-import {SignalDefinitionEdit} from "../signalComponents/signalDefinition";
-import {MessageDefinition} from "../msgComponents/messageDefinition";
+import {SelectMsgTable} from "../signalComponents/msg_select";
+import {SignalDefinitionEdit} from "../signalComponents/definition";
+import {MessageDefinition} from "../msgComponents/definition";
 
 
 import {  Row, Col, Tabs, Tab, Table, Form, Button,  Modal } from "react-bootstrap";
@@ -29,7 +29,7 @@ window.addEventListener('message', (event) =>{
 
     console.log("SignalEditor Receieve:：", signal.name, listOfMsg.length, isPreview);
 
-    const App = () =>  {
+    const EditorApp = () =>  {
         const styles = {
           formGroupStyle: {
             padding: 20
@@ -247,5 +247,5 @@ window.addEventListener('message', (event) =>{
             );
         };
 
-    ReactDOM.render(<App />, document.getElementById('root'));
+    ReactDOM.render(<EditorApp />, document.getElementById('root'));
 });

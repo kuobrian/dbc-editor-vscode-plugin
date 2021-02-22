@@ -2,8 +2,8 @@ import * as React from 'react';
 import * as ReactDOM from "react-dom";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { SignalForm, MessageForm, NetworkNodesForm, MsgConnection, SignalInMsg} from '../../src/candb_provider';
-import {SelectSignalTable} from "../networknodesComponents/signalSelected";
-import {SelectMsgTable} from "../networknodesComponents/msgSelected";
+import {SelectSignalTable} from "../networknodesComponents/signal_select";
+import {SelectMsgTable} from "../networknodesComponents/msg_select";
 
 
 
@@ -27,7 +27,7 @@ window.addEventListener('message', (event) =>{
 
     console.log('networknodesEditor  Webview接收到的消息：', networknode.name, listOfMsg.length);
 
-    const App = () =>  {
+    const EditorApp = () =>  {
         const styles = {
           formGroupStyle: {
             padding: 20
@@ -75,7 +75,7 @@ window.addEventListener('message', (event) =>{
               <tr>
                 <td>{listOfSignal.length} </td>
               </tr>
-            ]
+            ];
           } 
         }
 
@@ -241,5 +241,5 @@ window.addEventListener('message', (event) =>{
             );
         };
 
-    ReactDOM.render(<App />, document.getElementById('root'));
+    ReactDOM.render(<EditorApp />, document.getElementById('root'));
 });
