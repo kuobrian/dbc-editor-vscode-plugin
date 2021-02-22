@@ -129,7 +129,6 @@ window.addEventListener('message', (event) =>{
                                       }
                                     </>
                                   );})
-                              
                             }
                           </tbody>
                       </Table>

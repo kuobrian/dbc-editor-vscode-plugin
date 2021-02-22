@@ -2,12 +2,13 @@ import * as React from 'react';
 import * as ReactDOM from "react-dom";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import {  Row, Col, Tabs, Tab, Table, Form, Button,  Modal } from "react-bootstrap";
-import { MessageForm } from '../../src/candb_provider';
+import { MessageForm, SignalForm, NetworkNodesForm } from '../../src/candb_provider';
 import { SignalInMsg } from './parameters';
 import {SelectTransmittersTable} from "../msgComponents/transmittersSelected";
 import {SelectSignalTable} from "../msgComponents/signalSelected";
 import {MessageDefinition} from "../msgComponents/messageDefinition";
 import { start } from 'repl';
+import { lstat } from 'fs';
 
 
 declare global {
@@ -24,7 +25,6 @@ window.addEventListener('message', (event) =>{
     let listOfSignal = event.data.signal;
     let listOfNetworknode = event.data.networknode;
     let storeSignals = event.data.connection;
-    const messageUid = message.uid;
 
     console.log("messageEditor Receieve:：", message.name, listOfSignal.length, storeSignals);
 
@@ -48,8 +48,6 @@ window.addEventListener('message', (event) =>{
         };
         const [show, setShow] = React.useState(false);
 
-        const t_handleClose = () => setShow(false);
-        const t_handleShow = () => setShow(true);
 
         let copyMsg:any = JSON.parse(JSON.stringify(message));
         let copystoreSignals:any= JSON.parse(JSON.stringify(storeSignals));
@@ -78,8 +76,6 @@ window.addEventListener('message', (event) =>{
             command: 'cancelMsgForm'
           });
         }
-
-
         return (
                 <>
                 <Tabs defaultActiveKey="definition" id="uncontrolled-tab-example">
@@ -108,64 +104,42 @@ window.addEventListener('message', (event) =>{
                                                   updateValue = {updateMessageValue}/>
                     </Tab>
                     <Tab eventKey="receivers" title="Receivers" >
-                      <Table striped bordered hover variant="dark">
+                      <Table  striped bordered hover variant="dark" 
+                              className="table table-bordered table-hover"
+                              id="tab_logic">
                         <thead>
                           <tr>
-                            <th>Attribute</th>
-                            <th>Value</th>
+                            <th>Name</th>
+                            <th>Address</th>
+                            <th></th>
                           </tr>
                         </thead>
                         <tbody>
-                          <tr>
-                            <td>1</td>
-                              {Array.from({ length: 2 }).map((_, index) => (
-                                      <td key={index}>Table cell {index}</td>
-                                ))
+                          {(() => {
+                            let nonRepeatArray:string[] = [];
+                            storeSignals.connection.map((item:SignalInMsg) => {
+                              let idxSignal = listOfSignal.findIndex((s:SignalForm) => s.uid === item.id);
+                              if (idxSignal !== -1) {
+                                let receivers = listOfSignal[idxSignal].receivers;
+                                let uniqueNNs = receivers.filter((nn: NetworkNodesForm) => !nonRepeatArray.includes(nn.uid));
+                                uniqueNNs.map((nn: NetworkNodesForm) => nonRepeatArray.push(nn.uid));
                               }
-                          </tr>
-                          <tr>
-                            <td>2</td>
-                              {Array.from({ length: 2 }).map((_, index) => (
-                                      <td key={index}>Table cell {index}</td>
-                                ))
-                              }
-                          </tr>
+                            });
+                            return (
+                              nonRepeatArray.map((nnId: string, qqqidx:number) =>{
+                                let idx = listOfNetworknode.findIndex((nn:NetworkNodesForm) => nn.uid===nnId);
+                                if (idx !== -1){
+                                  return (
+                                      <tr>
+                                        <td>{listOfNetworknode[idx].name}</td>
+                                        <td>{listOfNetworknode[idx].address}</td>
+                                        <td></td>
+                                      </tr>
+                                )}
+                            }))
+                          })()}
                         </tbody>
                       </Table>
-                      <Row>
-                          <Col>
-                              <Button variant="secondary" onClick={t_handleShow} disabled>
-                              Read from DB ...
-                              </Button>
-                              <Modal show={show}
-                                      onHide={t_handleClose}
-                                      backdrop="static"
-                                      keyboard={false}>
-                                <Modal.Header closeButton>
-                                  <Modal.Title>Modal heading</Modal.Title>
-                                </Modal.Header>
-                                <Modal.Body>Woohoo, you're reading this text in a modal!</Modal.Body>
-                                  <Modal.Footer>
-                                    <Button variant="secondary" onClick={t_handleClose}>
-                                    Close
-                                    </Button>
-                                    <Button variant="primary" onClick={t_handleClose}>
-                                    Save Changes
-                                    </Button>
-                                 </Modal.Footer>
-                              </Modal>
-                          </Col>
-                          <Col>
-                              <Button variant="secondary" onClick={t_handleShow} disabled>
-                              Write to DB
-                              </Button>
-                          </Col>
-                          <Col>
-                              <Button variant="secondary" onClick={t_handleShow} disabled>
-                              Reset
-                              </Button>
-                          </Col>
-                        </Row>
                     </Tab>
                     <Tab eventKey="layout" title="Layout" >
                       <Table striped bordered hover variant="dark">
