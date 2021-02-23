@@ -4,9 +4,6 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import { SignalForm, MessageForm, NetworkNodesForm, MsgConnection, SignalInMsg} from '../../src/candb_provider';
 import {SelectSignalTable} from "../networknodesComponents/signal_select";
 import {SelectMsgTable} from "../networknodesComponents/msg_select";
-
-
-
 import {  Row, Col, Tabs, Tab, Table, Form, Button,  Modal } from "react-bootstrap";
 
 declare global {
@@ -22,6 +19,7 @@ window.addEventListener('message', (event) =>{
     let listOfMsg = event.data.message;
     let listOfSignal = event.data.signal;
     let connectionMsg = event.data.connectionMsg;
+    let connectionSignal = event.data.connectionSignal;
 
     const nnUid = networknode.uid;
 
@@ -47,8 +45,9 @@ window.addEventListener('message', (event) =>{
         };
         let copyNN = JSON.parse(JSON.stringify(networknode));
         
-        const updateNNValue =  (data: NetworkNodesForm) => {
+        const updateNNValue =  (data: any) => {
           networknode = data;
+         
         };
         
         const handleFormChange = (e: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLSelectElement>): void => {
@@ -59,7 +58,9 @@ window.addEventListener('message', (event) =>{
         function onSaveBtnClick(): void {
           vscode.postMessage({
             command: 'modifyNNForm',
-            data: networknode
+            networknode: networknode,
+            listOfMsg: listOfMsg,
+            listOfSignal: listOfSignal
           });
         }
         
@@ -67,16 +68,6 @@ window.addEventListener('message', (event) =>{
           vscode.postMessage({
             command: 'cancelNNForm'
           });
-        }
-
-        function mappedTxSig (signalItem: SignalForm)  {
-          if(connectionMsg.includes(signalItem)) {
-            return [
-              <tr>
-                <td>{listOfSignal.length} </td>
-              </tr>
-            ];
-          } 
         }
 
         return (
@@ -156,7 +147,12 @@ window.addEventListener('message', (event) =>{
                       </Table>
                     </Tab>
                     <Tab eventKey="mappedrx" title="Mapped Rx Sig.">
-                        {/* <SelectSignalTable netwoknode={networknode}  allMessages={allMessages} allSignals={allSignals} updateValue={updateNNValue}/> */}
+                        <SelectSignalTable netwoknode = {networknode}
+                                          allMessages = {listOfMsg}
+                                          allSignals = {listOfSignal}
+                                          connectionMsg = {connectionMsg}
+                                          connectionSignal = {connectionSignal}
+                                          updateValue = {updateNNValue}/>
                     </Tab>
                     <Tab eventKey="txmessages" title="Tx Messages" >
                       <Table striped bordered hover variant="dark" 

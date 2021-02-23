@@ -25,21 +25,25 @@ export function startNetworkNodesHandler(context: vscode.ExtensionContext, modul
     let allMsgs = candb.listOfItems.get("Messages");
     let allSignals = candb.listOfItems.get("Signals");
     let connectionMsg = candb.connectionMsg;
+    let connectionSignal = candb.connectionSignal;
     console.log(allMsgs);
 
     panel.webview.postMessage({ networknode: networkNode,
                                 message: allMsgs,
                                 signal: allSignals,
-                                connectionMsg: connectionMsg});
+                                connectionMsg: connectionMsg,
+                                connectionSignal: connectionSignal});
 
 
 
     panel.webview.onDidReceiveMessage((message: any) => {
       switch (message.command) {
         case 'modifyNNForm':
-          let index = candb.listOfItems.get("Network Node").findIndex((element: CANDB.SignalForm) => element.uid === message.data.uid);
+          let index = candb.listOfItems.get("Network Node").findIndex((element: CANDB.NetworkNodesForm) => element.uid === message.networknode.uid);
           if (index !== -1) {
-            candb.listOfItems.get("Network Node")[index] = message.data;
+            candb.listOfItems.get("Network Node")[index] = message.networknode;
+            candb.listOfItems.set("Messages",  message.listOfMsg);
+            candb.listOfItems.set("Signals", message.listOfSignal);
           }
           vscode.commands.executeCommand('vscode-plugin-demo.refresh_treeview');
           return;

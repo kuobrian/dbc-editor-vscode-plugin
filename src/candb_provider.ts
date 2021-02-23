@@ -41,7 +41,7 @@ export interface NetworkNodesForm {
     [key: string]: any;
 }
 
-interface SignalConnection {
+export interface SignalConnection {
     targetId: string;
     connection: string[];
 }

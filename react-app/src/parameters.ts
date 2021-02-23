@@ -1,5 +1,5 @@
 
-import {SignalForm, MessageForm, NetworkNodesForm} from "../../src/candb_provider";
+import * as CANDB from "../../src/candb_provider";
 
 export interface SignalInMsg{
     id: string;
@@ -9,28 +9,30 @@ export interface SignalInMsg{
 
 
 export interface IMsgProps {
-    msg: MessageForm;
-    listOfSignal: SignalForm[];
-    listOfNetworknode: NetworkNodesForm[]
+    msg: CANDB.MessageForm;
+    listOfSignal: CANDB.SignalForm[];
+    listOfNetworknode: CANDB.NetworkNodesForm[]
     isPreview: boolean;
     connection: any[];
-    updateValue?: (arg0: MessageForm, arg1: SignalInMsg[]) => void;
+    updateValue?: (arg0: CANDB.MessageForm, arg1: SignalInMsg[]) => void;
 }
 
 export interface ISignalProps {
-    signal: SignalForm;
-    listOfMsg: MessageForm[];
+    signal: CANDB.SignalForm;
+    listOfMsg: CANDB.MessageForm[];
     isPreview: boolean;
     connection: string[];
-    updateValue?: (arg0: SignalForm, arg1: string[]) => void;
+    updateValue?: (arg0: CANDB.SignalForm, arg1: string[]) => void;
 
 }
 
 export interface INNProps {
-    netwoknode: NetworkNodesForm;
-    allMessages: MessageForm[];
-    allSignals: SignalForm[];
-    updateValue?: (arg0: NetworkNodesForm) => void;
+    netwoknode: CANDB.NetworkNodesForm;
+    allMessages: CANDB.MessageForm[];
+    allSignals: CANDB.SignalForm[];
+    connectionMsg: CANDB.MsgConnection[];
+    connectionSignal: CANDB.SignalConnection[];
+    updateValue?: (arg0: CANDB.NetworkNodesForm) => void;
 }
   
 export interface ISelItemsState {
