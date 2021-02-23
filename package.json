@@ -1,5 +1,6 @@
 {
 	"name": "vscode-plugin-demo",
+	"publisher": "SHW",
 	"babel": {
 		"presets": [
 			"@babel/preset-env",

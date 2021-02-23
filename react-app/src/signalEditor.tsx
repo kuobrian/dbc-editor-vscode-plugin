@@ -122,10 +122,10 @@ window.addEventListener('message', (event) =>{
                                   return (
                                     <>
                                       {  <tr>
-                                            <td>{nn.name}</td>
-                                            <td>{nn.address}</td>
-                                            <td></td>
-                                          </tr>
+                                          <td>{nn.name}</td>
+                                          <td>{nn.address}</td>
+                                          <td></td>
+                                        </tr>
                                       }
                                     </>
                                   );})
