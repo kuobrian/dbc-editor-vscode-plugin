@@ -42,7 +42,7 @@ export class SelectSignalTable extends React.Component <INNProps , ISelItemsStat
       if (! this.state.selectItem.includes(selectItem)) {
         const rows = [...this.state.selectItem, selectItem];
         this.setState({ selectItem: rows}, () => {
-          for (let i=0; i<this.props.allSignals.length; i++) {
+          for (let i=0 ; i<this.props.allSignals.length ; i++) {
             if (rows.findIndex((r: CANDB.SignalForm) => r.uid === this.props.allSignals[i].uid) >=0 &&
               (this.props.allSignals[i].receivers.findIndex((item: CANDB.NetworkNodesForm) => item.uid === this.netwoknode.uid) < 0)) {
                 this.props.allSignals[i].receivers.push(this.netwoknode);

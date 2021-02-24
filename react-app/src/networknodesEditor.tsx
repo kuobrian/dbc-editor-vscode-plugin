@@ -155,6 +155,12 @@ window.addEventListener('message', (event) =>{
                                           updateValue = {updateNNValue}/>
                     </Tab>
                     <Tab eventKey="txmessages" title="Tx Messages" >
+                        <SelectMsgTable   netwoknode = {networknode}
+                                          allMessages = {listOfMsg}
+                                          allSignals = {listOfSignal}
+                                          connectionMsg = {connectionMsg}
+                                          connectionSignal = {connectionSignal}
+                                          updateValue = {updateNNValue}/>
                       <Table striped bordered hover variant="dark" 
                               className="table table-bordered table-hover"
                               id="tab_logic">
