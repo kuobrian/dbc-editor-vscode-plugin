@@ -26,9 +26,10 @@ export function startNetworkNodesHandler(context: vscode.ExtensionContext, modul
     let allSignals = candb.listOfItems.get("Signals");
     let connectionMsg = candb.connectionMsg;
     let connectionSignal = candb.connectionSignal;
-    console.log(allMsgs);
+    // console.log(allMsgs);
 
-    panel.webview.postMessage({ networknode: networkNode,
+    panel.webview.postMessage({ candb: candb,
+                                networknode: networkNode,
                                 message: allMsgs,
                                 signal: allSignals,
                                 connectionMsg: connectionMsg,

@@ -27,7 +27,7 @@ export function startSignalHandler(context: vscode.ExtensionContext, modulename:
     panel.webview.postMessage({ signal: signal,
                                 message: allMsgs,
                                 networknode: allNetworkNode,
-                                connection: connectionSignal,
+                                connectionSignal: connectionSignal,
                                 isPreview: isPreview});
 
 

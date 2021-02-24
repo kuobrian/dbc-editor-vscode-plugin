@@ -22,7 +22,7 @@ window.addEventListener('message', (event) =>{
     let listOfMsg = event.data.message;
     let listOfNN = event.data.networknode;
     let isPreview = event.data.isPreview;
-    let rawConnection = event.data.connection;
+    let connectionSignal = event.data.connectionSignal;
     
     
     const signalUid = signal.uid;
@@ -57,7 +57,7 @@ window.addEventListener('message', (event) =>{
 
         const updateSignalValue =  (data: SignalForm, connectionData : string[]) => {
           signal = data;
-          rawConnection = connectionData;
+          connectionSignal = connectionData;
         };
         
         const handleFormChange = (e: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLSelectElement>): void => {
@@ -69,7 +69,7 @@ window.addEventListener('message', (event) =>{
           vscode.postMessage({
             command: 'modifySignalForm',
             data: signal,
-            connect: rawConnection
+            connect: connectionSignal
           });
         }
         
@@ -88,7 +88,7 @@ window.addEventListener('message', (event) =>{
                           <SignalDefinitionEdit signal = {signal} 
                                                 listOfMsg = {listOfMsg}
                                                 isPreview = {isPreview}
-                                                connection = {rawConnection}
+                                                connection = {connectionSignal}
                                                 updateValue = {updateSignalValue} />
                       </Form>
                     </Tab>
@@ -99,7 +99,7 @@ window.addEventListener('message', (event) =>{
                                   <SelectMsgTable  signal = {signal} 
                                                             listOfMsg = {listOfMsg}
                                                             isPreview = {isPreview}
-                                                            connection = {rawConnection}
+                                                            connection = {connectionSignal}
                                                             updateValue = {updateSignalValue} /> 
                                 </Tab>);
                             }

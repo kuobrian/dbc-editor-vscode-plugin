@@ -1,7 +1,7 @@
 import * as React from 'react';
 import * as ReactDOM from "react-dom";
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { SignalForm, MessageForm, NetworkNodesForm, MsgConnection, SignalInMsg} from '../../src/candb_provider';
+import * as CANDB from "../../src/candb_provider";
 import {SelectSignalTable} from "../networknodesComponents/signal_select";
 import {SelectMsgTable} from "../networknodesComponents/msg_select";
 import {  Row, Col, Tabs, Tab, Table, Form, Button,  Modal } from "react-bootstrap";
@@ -20,8 +20,13 @@ window.addEventListener('message', (event) =>{
     let listOfSignal = event.data.signal;
     let connectionMsg = event.data.connectionMsg;
     let connectionSignal = event.data.connectionSignal;
+    let cnadb = event.data.candb;
 
     const nnUid = networknode.uid;
+    // let lm: CANDB.DBCObject = {label: "none", value: []};
+    
+
+
 
     console.log('networknodesEditor  Webview接收到的消息：', networknode.name, listOfMsg.length);
 
@@ -113,14 +118,14 @@ window.addEventListener('message', (event) =>{
                           </thead>
                           <tbody>
                             { 
-                              listOfMsg.map((msgItem: MessageForm) =>{
+                              listOfMsg.map((msgItem: CANDB.MessageForm) =>{
                                 if (msgItem.transmitters.findIndex(t => t.uid === networknode.uid) >= 0) 
                                 {
-                                  let connectedSignals = connectionMsg.find((item:MsgConnection) => item.targetId === msgItem.uid).connection;
+                                  let connectedSignals = connectionMsg.find((item: CANDB.MsgConnection) => item.targetId === msgItem.uid).connection;
                                     return (
-                                      connectedSignals.map((signalItem: SignalForm) =>{
+                                      connectedSignals.map((signalItem: CANDB.SignalForm) =>{
                                         let startbit = signalItem.startbit;
-                                        let contentSignal = listOfSignal.find((s:SignalForm) => s.uid === signalItem.id);
+                                        let contentSignal = listOfSignal.find((s: CANDB.SignalForm) => s.uid === signalItem.id);
                                         return (
                                           <>
                                             { (signalItem.id === contentSignal.uid) &&  (
@@ -161,38 +166,6 @@ window.addEventListener('message', (event) =>{
                                           connectionMsg = {connectionMsg}
                                           connectionSignal = {connectionSignal}
                                           updateValue = {updateNNValue}/>
-                      <Table striped bordered hover variant="dark" 
-                              className="table table-bordered table-hover"
-                              id="tab_logic">
-                        <thead>
-                          <tr>
-                            <th>Name</th>
-                            <th>ID</th>
-                            <th>ID-Format</th>
-                            <th>DLC (Byte)</th>
-                            <th>Remove</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          { 
-                            listOfMsg.map((msgItem: MessageForm) =>{
-                              if (msgItem.transmitters.findIndex(t => t.uid === networknode.uid) >= 0) {
-                                return (
-                                  <>
-                                    { <tr>
-                                          <td>{msgItem.name}</td>
-                                          <td>{msgItem.id} </td>
-                                          <td>{msgItem.msgType}</td>
-                                          <td>{msgItem.dlc}</td>
-                                          <td>{'-'}</td>
-                                      </tr>
-                                    }
-                                  </>
-                                );}
-                            })
-                          }
-                        </tbody>
-                        </Table>
                     </Tab>
                     <Tab eventKey="netwoks" title="Netwoks" >
                     </Tab>

@@ -160,6 +160,7 @@ class DataProvider implements vscode.TreeDataProvider<TreeViewItem> {
                             comments: ""};
 
             this.candb_.listOfItems.get("Network Node").push(newItem);
+            
         });
         this.dbcObject.messageList.map((msgItem: any) => {
             if (true) {
@@ -213,7 +214,12 @@ class DataProvider implements vscode.TreeDataProvider<TreeViewItem> {
                 let idx = this.candb_.listOfItems.get("Signals").findIndex((signal:CANDB.SignalForm) => signal.name === symbol.signalComment.signal_name);
                 this.candb_.listOfItems.get("Signals")[idx].comments = symbol.signalComment.comment;
             }
+            else if (symbol.attribute_name) {
+                let attribute = new CANDB.AttributesDefs(symbol);
+                this.candb_.attributesdefs.push(attribute._toObject());
+            }
         });
+        console.log(this.candb_.getAttributeLength());
         this.refresh();
     }
 

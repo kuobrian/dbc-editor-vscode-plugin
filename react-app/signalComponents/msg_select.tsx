@@ -9,7 +9,7 @@ import { type } from 'os';
 export class SelectMsgTable extends React.Component <ISignalProps, ISelItemsState> {
   signal = this.props.signal;
   listOfMsg = this.props.listOfMsg;
-  signalConnect = this.props.connection;
+  connectionSignal = this.props.connection;
   isPreview = this.props.isPreview;
 
   constructor(props : ISignalProps) {
@@ -24,7 +24,7 @@ export class SelectMsgTable extends React.Component <ISignalProps, ISelItemsStat
   initSelectMsgs() {
     let rows: MessageForm[] = [];
     for (let msgItem of this.listOfMsg) {
-      if (this.signalConnect.connection.includes(msgItem.uid)) {
+      if (this.connectionSignal.connection.includes(msgItem.uid)) {
         rows.push(msgItem); 
       }
     }
@@ -39,13 +39,13 @@ export class SelectMsgTable extends React.Component <ISignalProps, ISelItemsStat
       const rows = [...this.state.selectItem, selectItem];
       this.setState({ selectItem: rows}, () => {
         this.state.selectItem.forEach(msgItem =>  {
-          this.signalConnect.connection.push(msgItem.uid);
+          this.connectionSignal.connection.push(msgItem.uid);
         });
-        this.signalConnect.connection = this.signalConnect.connection.filter(function(elem: any, index: any, self: string | any[]) {
+        this.connectionSignal.connection = this.connectionSignal.connection.filter(function(elem: any, index: any, self: string | any[]) {
           return index === self.indexOf(elem);
         });
         if (this.props.updateValue) {
-          this.props.updateValue(this.signal, this.signalConnect);
+          this.props.updateValue(this.signal, this.connectionSignal);
         }
 
       }); 
@@ -57,9 +57,9 @@ export class SelectMsgTable extends React.Component <ISignalProps, ISelItemsStat
     const delItem = rows[idx];
     rows.splice(idx, 1);
     this.setState({ selectItem: rows }, () =>{
-      this.signalConnect.connection = this.signalConnect.connection.filter((uid: any)=> uid !== delItem.uid);
+      this.connectionSignal.connection = this.connectionSignal.connection.filter((uid: any)=> uid !== delItem.uid);
       if (this.props.updateValue) {
-        this.props.updateValue(this.signal, this.signalConnect);
+        this.props.updateValue(this.signal, this.connectionSignal);
       }
     }) ;
   };
