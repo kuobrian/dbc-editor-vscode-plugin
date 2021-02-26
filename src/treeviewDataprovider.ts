@@ -157,6 +157,7 @@ class DataProvider implements vscode.TreeDataProvider<TreeViewItem> {
             const newItem: CANDB.NetworkNodesForm = { uid: uuidv4(),
                             name: nodeItem.node_name,
                             address: nodeItem.address,
+                            attributes: [],
                             comments: ""};
 
             this.candb_.listOfItems.get("Network Node").push(newItem);
@@ -172,6 +173,7 @@ class DataProvider implements vscode.TreeDataProvider<TreeViewItem> {
                                                     dlc: msgItem.message_size,
                                                     cycletime: 0,
                                                     transmitters: (nn===undefined)? [] : [nn],
+                                                    attributes:[],
                                                     comments: ""};
                 this.candb_.listOfItems.get("Messages").push(msgNewItem);
                 this.candb_.initConnection("Messages", msgNewItem.uid);
@@ -219,7 +221,9 @@ class DataProvider implements vscode.TreeDataProvider<TreeViewItem> {
                 this.candb_.attributesdefs.push(attribute._toObject());
             }
         });
-        console.log(this.candb_.getAttributeLength());
+        this.candb_.getAttributeLength();
+        this.candb_.putAttributeInObject();
+        console.log("Number of attributes:", this.candb_.getAttributeLength());
         this.refresh();
     }
 
@@ -251,6 +255,7 @@ class DataProvider implements vscode.TreeDataProvider<TreeViewItem> {
                                                 dlc: 8,
                                                 cycletime: 0,
                                                 transmitters: [],
+                                                attributes: [],
                                                 comments: ""};
             this.candb_.listOfItems.get(rootName).push(newItem);
             this.candb_.initConnection(rootName, uid);
@@ -259,6 +264,7 @@ class DataProvider implements vscode.TreeDataProvider<TreeViewItem> {
             const newItem: CANDB.NetworkNodesForm = { uid: uid,
                                                 name: "new_"+rootName.replace(' ', '_').slice(0, -1) + "_"+ (this.candb_.listOfItems.get(rootName).length+1),
                                                 address: "0x0",
+                                                attributes: [],
                                                 comments: "",};
             this.candb_.listOfItems.get(rootName).push(newItem);
         }

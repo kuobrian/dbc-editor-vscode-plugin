@@ -7,6 +7,13 @@ export interface SignalInMsg{
     multiplexortype: string;
 }
 
+export interface IAttrProps {
+    msg: CANDB.MessageForm;
+    attributes: CANDB.DBCAttribute[];
+    listOfSignal: CANDB.SignalForm[];
+    listOfNetworknode: CANDB.NetworkNodesForm[]
+    connection: any[];
+}
 
 export interface IMsgProps {
     msg: CANDB.MessageForm;

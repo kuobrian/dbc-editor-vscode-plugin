@@ -21,11 +21,14 @@ export function startMsgHandler(context: vscode.ExtensionContext, modulename: st
     let allNetworkNode = candb.listOfItems.get("Network Node");
     let allSignals = candb.listOfItems.get("Signals");
     let connectionMsg = candb.connectionMsg.find(item=> item.targetId === message.uid);
+    let attributesdefs = candb.attributesdefs.filter((a:CANDB.DBCAttribute) => a.objectType === "Message");
     console.log(connectionMsg);
+    console.log(attributesdefs);
 
     panel.webview.postMessage({ networknode: allNetworkNode,
                                 message: message,
                                 signal: allSignals,
+                                attributesdefs: attributesdefs,
                                 connection: connectionMsg});
 
     panel.webview.onDidReceiveMessage((message: any) => {
