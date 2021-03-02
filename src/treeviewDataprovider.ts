@@ -193,6 +193,7 @@ class DataProvider implements vscode.TreeDataProvider<TreeViewItem> {
                                         offset:  signalItem.offset,
                                         initValue: 0,
                                         receivers: receivers,
+                                        attributes: [],
                                         valuetable: null,
                                         comments: ""};
                         this.candb_.listOfItems.get("Signals").push(newSignalItem);
@@ -221,7 +222,6 @@ class DataProvider implements vscode.TreeDataProvider<TreeViewItem> {
                 this.candb_.attributesdefs.push(attribute._toObject());
             }
         });
-        this.candb_.getAttributeLength();
         this.candb_.putAttributeInObject();
         console.log("Number of attributes:", this.candb_.getAttributeLength());
         this.refresh();
@@ -242,6 +242,7 @@ class DataProvider implements vscode.TreeDataProvider<TreeViewItem> {
                                         initValue: 0,
                                         valuetable: null,
                                         receivers: [],
+                                        attributes: [],
                                         comments: ""};
             
             this.candb_.listOfItems.get(rootName).push(newItem);

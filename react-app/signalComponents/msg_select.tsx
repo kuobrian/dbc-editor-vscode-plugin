@@ -52,7 +52,7 @@ export class SelectMsgTable extends React.Component <ISignalProps, ISelItemsStat
     const delItem = rows[idx];
     rows.splice(idx, 1);
     this.setState({ selectItem: rows }, () =>{
-      this.connectionSignal.connection = this.connectionSignal.connection.filter((uid: any)=> uid !== delItem.uid);
+      this.connectionSignal.connection = this.connectionSignal.connection.filter((uid: string)=> uid !== delItem.uid);
     }) ;
   };
   render() {

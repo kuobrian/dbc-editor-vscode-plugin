@@ -13,49 +13,52 @@ export function startNetworkNodesHandler(context: vscode.ExtensionContext, modul
                                                     retainContextWhenHidden: true
                                                   }  );
     
-    let htmlContent: string = CANDB.getHtmlForWebview(context.extensionPath);
-    let webpackPathOnDisk = vscode.Uri.file(path.join(context.extensionPath, 'dist/networknodesEditor.js'));
-    let webpackUri = panel.webview.asWebviewUri(webpackPathOnDisk);
-    htmlContent = htmlContent.replace('${rootUri}', webpackUri.toString());
+  let htmlContent: string = CANDB.getHtmlForWebview(context.extensionPath);
+  let webpackPathOnDisk = vscode.Uri.file(path.join(context.extensionPath, 'dist/networknodesEditor.js'));
+  let webpackUri = panel.webview.asWebviewUri(webpackPathOnDisk);
+  htmlContent = htmlContent.replace('${rootUri}', webpackUri.toString());
 
 
-    panel.webview.html = htmlContent;
-    
-    let networkNode = candb.listOfItems.get("Network Node").find((element: CANDB.NetworkNodesForm) => element.name === modulename);
-    let allMsgs = candb.listOfItems.get("Messages");
-    let allSignals = candb.listOfItems.get("Signals");
-    let connectionMsg = candb.connectionMsg;
-    let connectionSignal = candb.connectionSignal;
-    // console.log(allMsgs);
+  panel.webview.html = htmlContent;
+  
+  let networkNode = candb.listOfItems.get("Network Node").find((element: CANDB.NetworkNodesForm) => element.name === modulename);
+  let allMsgs = candb.listOfItems.get("Messages");
+  let allSignals = candb.listOfItems.get("Signals");
+  let connectionMsg = candb.connectionMsg;
+  let connectionSignal = candb.connectionSignal;
+  let attributesdefs = candb.attributesdefs.filter((a: CANDB.DBCAttribute) => a.objectType === "Node");
 
-    panel.webview.postMessage({ networknode: networkNode,
-                                message: allMsgs,
-                                signal: allSignals,
-                                connectionMsg: connectionMsg,
-                                connectionSignal: connectionSignal});
+  console.log(attributesdefs);
+
+  panel.webview.postMessage({ networknode: networkNode,
+                              message: allMsgs,
+                              signal: allSignals,
+                              connectionMsg: connectionMsg,
+                              connectionSignal: connectionSignal,
+                              attributesdefs: attributesdefs});
 
 
 
-    panel.webview.onDidReceiveMessage((message: any) => {
-      switch (message.command) {
-        case 'modifyNNForm':
-          let index = candb.listOfItems.get("Network Node").findIndex((element: CANDB.NetworkNodesForm) => element.uid === message.networknode.uid);
-          if (index !== -1) {
-            candb.listOfItems.get("Network Node")[index] = message.networknode;
-            candb.listOfItems.set("Messages",  message.listOfMsg);
-            candb.listOfItems.set("Signals", message.listOfSignal);
-          }
-          vscode.commands.executeCommand('vscode-plugin-demo.refresh_treeview');
+  panel.webview.onDidReceiveMessage((message: any) => {
+    switch (message.command) {
+      case 'modifyNNForm':
+        let index = candb.listOfItems.get("Network Node").findIndex((element: CANDB.NetworkNodesForm) => element.uid === message.networknode.uid);
+        if (index !== -1) {
+          candb.listOfItems.get("Network Node")[index] = message.networknode;
+          candb.listOfItems.set("Messages",  message.listOfMsg);
+          candb.listOfItems.set("Signals", message.listOfSignal);
+        }
+        vscode.commands.executeCommand('vscode-plugin-demo.refresh_treeview');
+        return;
+        
+      case 'cancelNNForm':
+          vscode.commands.executeCommand('workbench.action.closeActiveEditor');
           return;
-          
-        case 'cancelNNForm':
-            vscode.commands.executeCommand('workbench.action.closeActiveEditor');
-            return;
 
-      }}, 
-      undefined,
-      context.subscriptions
-    );
+    }}, 
+    undefined,
+    context.subscriptions
+  );
     
     panel.onDidDispose(onPanelDispose, null, context.subscriptions);
 

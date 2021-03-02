@@ -22,12 +22,15 @@ export function startSignalHandler(context: vscode.ExtensionContext, modulename:
     let allNetworkNode = candb.listOfItems.get('Network Node');
     let allMsgs = candb.listOfItems.get("Messages");
     let connectionSignal = candb.connectionSignal.find(item=> item.targetId === signal.uid);
-    
+    let attributesdefs = candb.attributesdefs.filter((a: CANDB.DBCAttribute) => a.objectType === "Signal");
 
+    console.log(attributesdefs)
+    
     panel.webview.postMessage({ signal: signal,
                                 message: allMsgs,
                                 networknode: allNetworkNode,
                                 connectionSignal: connectionSignal,
+                                attributesdefs: attributesdefs,
                                 isPreview: isPreview});
 
 

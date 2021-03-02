@@ -3438,19 +3438,19 @@
           "attribute_value":[
              {
                 "node_name":"BMS",
-                "address":"0x40"
+                "value":"0x40"
              },
              {
                 "node_name":"PC_Client",
-                "address":"0x20"
+                "value":"0x20"
              },
              {
                 "node_name":"VCU",
-                "address":"0x30"
+                "value":"0x30"
              },
              {
                 "node_name":"BSG",
-                "address":"0x0"
+                "value":"0x0"
              }
           ],
           "attribute_default":0

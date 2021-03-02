@@ -16,6 +16,7 @@ export interface SignalForm {
     unit?: number;
     valuetable?: any;
     receivers: NetworkNodesForm[];
+    attributes: DBCAttribute[];
     comments: string;
     [key: string]: any;
 }
@@ -68,7 +69,6 @@ export interface DBCAttribute {
     values: any[];
 }
 
-
 export class AttributesDefs {
     symbol:any;
     name: string = '';
@@ -83,19 +83,19 @@ export class AttributesDefs {
         this.defaultValue = symbol.attribute_default;
         switch (symbol.attribute_type) {
             case "STRING":
-                this.typeWithValue = {"type": "String", "options": symbol.attribute_type};
+                this.typeWithValue = { "type": "String", "options": symbol.attribute_type_value};
                 break; 
             case "ENUM":
-                this.typeWithValue = {"type": "Enumeration", "options": symbol.attribute_type};
+                this.typeWithValue = { "type": "Enumeration", "options": symbol.attribute_type_value};
                 break; 
             case "INT":
-                this.typeWithValue = {"type": "Integer", "options": symbol.attribute_type};
+                this.typeWithValue = { "type": "Integer", "options": symbol.attribute_type_value};
                 break; 
             case "HEX":
-                this.typeWithValue = {"type": "Hex", "options": symbol.attribute_type};
+                this.typeWithValue = { "type": "Hex", "options": symbol.attribute_type_value};
                 break; 
             case "FLOAT":
-                this.typeWithValue = {"type": "Float", "options": symbol.attribute_type};
+                this.typeWithValue = { "type": "Float", "options": symbol.attribute_type_value};
                 break; 
         }
 
@@ -187,21 +187,24 @@ export class CANdb  {
                     return undefined;
                 case "Node":
                     for (let val of attr.values) {
-                        let address = val.address;
-                        let idxNN = this.listOfItems.get("Network Node").findIndex((nn: MessageForm) => nn.address === address);
-                        this.listOfItems.get("Network Node")[idxNN].attributes.push(val);
+                        let idxNN = this.listOfItems.get("Network Node").findIndex((nn: MessageForm) => nn.name === val.node_name);
+                        this.listOfItems.get("Network Node")[idxNN].attributes.push(attr);
                     }
                     break; 
                 case "Message":
                     for (let val of attr.values) {
                         let messageid = "0x"+ val.message_id.toString(16);
                         let idxMsg = this.listOfItems.get("Messages").findIndex((m:MessageForm) => m.id === messageid);
-                        this.listOfItems.get("Messages")[idxMsg].attributes.push(val);
+                        this.listOfItems.get("Messages")[idxMsg].attributes.push(attr);
                     }
                     break; 
                 case "Signal":
                     for (let val of attr.values) {
                         let messageid = "0x"+ val.message_id.toString(16);
+
+                        let idxSignal = this.listOfItems.get("Signals").findIndex((s: SignalForm) => s.name === val.signal_name);
+                        this.listOfItems.get("Signals")[idxSignal].attributes.push(attr);
+
                         let signalId = this.listOfItems.get("Signals").find((s:SignalForm) => s.name === val.signal_name).uid;
                         let msgId = this.listOfItems.get("Messages").find((m:MessageForm) => m.id === messageid).uid;
                         this.connectionMsg.forEach((item: MsgConnection) => {
@@ -218,6 +221,7 @@ export class CANdb  {
             }
         })
     }
+
     public equalizeConnection () {
         this.connectionMsg.map(mc => {
             mc.connection.map(item => {
@@ -246,6 +250,7 @@ export class CANdb  {
             })
         })
     }
+
     public getAttributeLength () {
         return this.attributesdefs.length;
     }

@@ -7,7 +7,7 @@ import { SignalInMsg } from './parameters';
 import {SelectTransmittersTable} from "../msgComponents/transmitters_select";
 import {SelectSignalTable} from "../msgComponents/signal_select";
 import {MessageDefinition} from "../msgComponents/definition";
-import {ModifyAttribute} from "../msgComponents/attribute_modify";
+import { ModifyAttribute } from "../commonComponent/attribute_modify"
 
 declare global {
     interface Window {
@@ -132,7 +132,7 @@ window.addEventListener('message', (event) =>{
                   </Table>
                 </Tab>
                 <Tab eventKey="attributes" title="Attributes" >
-                    <ModifyAttribute  msg = {message}
+                    <ModifyAttribute  item = {message}
                                       attributes = {attributesdefs}
                                       listOfNetworknode = {listOfNetworknode}
                                       listOfSignal = {listOfSignal}

@@ -7,13 +7,7 @@ export interface SignalInMsg{
     multiplexortype: string;
 }
 
-export interface IAttrProps {
-    msg: CANDB.MessageForm;
-    attributes: CANDB.DBCAttribute[];
-    listOfSignal: CANDB.SignalForm[];
-    listOfNetworknode: CANDB.NetworkNodesForm[]
-    connection: any[];
-}
+
 
 export interface IMsgProps {
     msg: CANDB.MessageForm;
@@ -37,11 +31,25 @@ export interface INNProps {
     connectionSignal: CANDB.SignalConnection[];
     updateValue?: (arg0: CANDB.NetworkNodesForm) => void;
 }
-  
+
 export interface ISelItemsState {
     selectItem: any[];
     show: boolean;
 }
+
+export interface IAttrProps {
+    item: CANDB.MessageForm | CANDB.SignalForm;
+    attributes: CANDB.DBCAttribute[];
+    listOfSignal?: CANDB.SignalForm[];
+    listOfMsg?: CANDB.MessageForm[];
+    listOfNetworknode?: CANDB.NetworkNodesForm[]
+    connection: any[];
+}
+export interface IAttributeState {
+    attriValues: CANDB.DBCAttribute[];
+    show: boolean;
+}
+
   
 export interface ITransmittersTableState {
     selectTransmitters: any[];
