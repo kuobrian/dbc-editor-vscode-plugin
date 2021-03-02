@@ -7,13 +7,11 @@ import {SignalForm, MessageForm, NetworkNodesForm} from "../../src/candb_provide
 
 
 export class SelectTransmittersTable extends React.Component <IMsgProps, ITransmittersTableState> {
-  msg = this.props.msg;
+  message = this.props.msg;
   listOfSignal = this.props.listOfSignal;
   listOfNetworknode = this.props.listOfNetworknode;
-  storeSignals = this.props.connection;
-  msgConnect = this.props.connection;
+  connectionMsg = this.props.connection;
 
-  isPreview = this.props.isPreview;
   constructor(props: IMsgProps) {
     super(props);
     this.state = {selectTransmitters: this.initSelectTransmitters(),
@@ -25,13 +23,12 @@ export class SelectTransmittersTable extends React.Component <IMsgProps, ITransm
   initSelectTransmitters() {
     let rows: NetworkNodesForm[] = [];
     for (let nnItem of this.listOfNetworknode) {
-      if (this.msg.transmitters.find((nnInMsg:NetworkNodesForm) => nnInMsg.uid === nnItem.uid)) {
+      if (this.message.transmitters.find((nnInMsg:NetworkNodesForm) => nnInMsg.uid === nnItem.uid)) {
         rows.push(nnItem); 
       }
     }
     return rows;
   }
-  updateValue = this.props.updateValue;
   handleClose () { this.setState({ show: false } );}
   handleShow ()  { this.setState({ show: true }); }
 
@@ -42,13 +39,11 @@ export class SelectTransmittersTable extends React.Component <IMsgProps, ITransm
 
       this.setState({ selectTransmitters: rows}, () => {
         this.state.selectTransmitters.forEach((nnItem: NetworkNodesForm) =>  {
-          if(this.msg.transmitters.findIndex(nnInMsg=> nnInMsg.uid === nnItem.uid) < 0){
-            this.msg.transmitters.push(nnItem);
+          if (this.message.transmitters.findIndex(nnInMsg=> nnInMsg.uid === nnItem.uid) < 0){
+            this.message.transmitters.push(nnItem);
           }
         });
-        if (this.props.updateValue) {
-          this.props.updateValue(this.msg, this.storeSignals);
-        }
+        
       }); 
     } 
   };
@@ -59,11 +54,7 @@ export class SelectTransmittersTable extends React.Component <IMsgProps, ITransm
     const delItem = rows[idx];
     rows.splice(idx, 1);
     this.setState({ selectTransmitters: rows }, () => {
-      this.msg.transmitters = this.msg.transmitters.filter((nn:NetworkNodesForm) => nn.uid !== delItem.uid);
-      if (this.props.updateValue) {
-        this.props.updateValue(this.msg, this.storeSignals);
-      }
-
+      this.message.transmitters = this.message.transmitters.filter((nn:NetworkNodesForm) => nn.uid !== delItem.uid);
     });
   };
 

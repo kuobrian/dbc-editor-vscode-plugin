@@ -1,19 +1,18 @@
 import * as React from 'react';
 import * as ReactDOM from "react-dom";
-import {SignalForm, MessageForm} from "../../src/candb_provider";
+import * as CANDB from "../../src/candb_provider";
+
 import {IMsgProps, ISelItemsState} from "../src/parameters";
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 import { SignalInMsg } from '../src/parameters';
-import {  Row, Col, Tabs, Tab, Table, Form, Button,  Modal } from "react-bootstrap";
+import {  Table, Form, Button,  Modal } from "react-bootstrap";
 
 
 export class SelectSignalTable extends React.Component <IMsgProps , ISelItemsState> {
-  msg = this.props.msg;
+  message = this.props.msg;
   listOfSignal = this.props.listOfSignal;
-  storeSignals = this.props.connection;
-  isPreview = this.props.isPreview;
-
+  connectionMsg = this.props.connection;
 
   constructor(props: IMsgProps) {
       super(props);
@@ -24,9 +23,9 @@ export class SelectSignalTable extends React.Component <IMsgProps , ISelItemsSta
     }
 
     initSelectSignals() {
-      let rows: SignalForm[] = [];
+      let rows: CANDB.SignalForm[] = [];
       for (let signalItem of this.listOfSignal) {
-        this.storeSignals.connection.map((item: { id: string; startbit: number; multiplexortype: string;}) => {
+        this.connectionMsg.connection.map((item: { id: string; startbit: number; multiplexortype: string;}) => {
           if (item.id === signalItem.uid)  {
             rows.push(signalItem); 
           }});
@@ -34,7 +33,6 @@ export class SelectSignalTable extends React.Component <IMsgProps , ISelItemsSta
         return rows;
     }
 
-    updateValue = this.props.updateValue;
     handleClose () { this.setState({ show: false } );}
     handleShow ()  { this.setState({ show: true }); }
     
@@ -44,32 +42,29 @@ export class SelectSignalTable extends React.Component <IMsgProps , ISelItemsSta
         
         this.setState({ selectItem: rows}, () => {
           this.state.selectItem.forEach((signalItem: { uid: any; }) =>  {
-            this.storeSignals.connection.push({id: signalItem.uid,
+            this.connectionMsg.connection.push({id: signalItem.uid,
                                               startbit: 0,
                                               multiplexortype: "Signal"
             });
           });
-          this.storeSignals.connection = this.storeSignals.connection.reduce((unique: any[], o: { id: string; }) => {
+          this.connectionMsg.connection = this.connectionMsg.connection.reduce((unique: any[], o: { id: string; }) => {
                                             if(!unique.some((obj: { id: string; }) => obj.id === o.id)) {
                                               unique.push(o);
                                             }
                                             return unique;
                                           },[]);
-          if (this.props.updateValue) {
-            this.props.updateValue(this.msg, this.storeSignals);
-          }
         }); 
       } 
     };
 
     handleChange (signal: any, event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>){
       const category = event.target.id.split("_")[1];
-      let matchIdx = this.storeSignals.connection.findIndex((element: { id: string; }) => element.id === signal.uid);
+      let matchIdx = this.connectionMsg.connection.findIndex((element: { id: string; }) => element.id === signal.uid);
       if (category === "startbit"){
-        this.storeSignals.connection[matchIdx].startbit = Number(event.target.value);
+        this.connectionMsg.connection[matchIdx].startbit = Number(event.target.value);
       }
       else if(category === "multiplexortype"){
-        this.storeSignals.connection[matchIdx].multiplexortype = event.target.value;
+        this.connectionMsg.connection[matchIdx].multiplexortype = event.target.value;
       }
     }
 
@@ -78,10 +73,8 @@ export class SelectSignalTable extends React.Component <IMsgProps , ISelItemsSta
       const delItem = rows[idx];
       rows.splice(idx, 1);
       this.setState({ selectItem: rows }, () =>{
-        this.storeSignals.connection = this.storeSignals.connection.filter((item: any)=> item.id !== delItem.uid);
-        if (this.props.updateValue) {
-          this.props.updateValue(this.msg, this.storeSignals);
-        }
+        this.connectionMsg.connection = this.connectionMsg.connection.filter((item: any)=> item.id !== delItem.uid);
+        
       }) ;
     };
     render() {
@@ -110,9 +103,9 @@ export class SelectSignalTable extends React.Component <IMsgProps , ISelItemsSta
                   <tbody>
                       { 
                         this.state.selectItem.map((item, idx) => {
-                        let matchIdx = this.storeSignals.connection.findIndex((element: { id: string; }) => element.id === item.uid);
-                        let startbit = (matchIdx=== -1) ? 0 : this.storeSignals.connection[matchIdx].startbit;
-                        let multiplexortype = (matchIdx=== -1) ? "Signal" : this.storeSignals.connection[matchIdx].multiplexortype;
+                        let matchIdx = this.connectionMsg.connection.findIndex((element: { id: string; }) => element.id === item.uid);
+                        let startbit = (matchIdx=== -1) ? 0 : this.connectionMsg.connection[matchIdx].startbit;
+                        let multiplexortype = (matchIdx=== -1) ? "Signal" : this.connectionMsg.connection[matchIdx].multiplexortype;
                         return (
                           <tr>
                             <td>{item.name} </td>
@@ -130,7 +123,7 @@ export class SelectSignalTable extends React.Component <IMsgProps , ISelItemsSta
                                             onChange={(e) => this.handleChange(item, e)}>
                                   {(() => {
                                           let opts = [];
-                                          for(let i = 0; i <= this.msg.dlc*8; i++) {
+                                          for (let i = 0; i <= this.message.dlc*8; i++) {
                                             opts.push(<option>{i}</option>);  
                                           }
                                           return opts;
@@ -187,7 +180,7 @@ export class SelectSignalTable extends React.Component <IMsgProps , ISelItemsSta
                           </thead>
                           <tbody>
                                 { 
-                                  this.listOfSignal.map((signalItem: SignalForm, idx: any) => {
+                                  this.listOfSignal.map((signalItem: CANDB.SignalForm, idx: any) => {
                                     if (! this.state.selectItem.includes(signalItem)) {
                                       return (
                                         <tr>

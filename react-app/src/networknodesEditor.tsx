@@ -20,34 +20,10 @@ window.addEventListener('message', (event) =>{
     let listOfSignal = event.data.signal;
     let connectionMsg = event.data.connectionMsg;
     let connectionSignal = event.data.connectionSignal;
-    let cnadb = event.data.candb;
-
-    const nnUid = networknode.uid;
-    // let lm: CANDB.DBCObject = {label: "none", value: []};
-    
-
-
 
     console.log('networknodesEditor  Webview接收到的消息：', networknode.name, listOfMsg.length);
 
     const EditorApp = () =>  {
-        const styles = {
-          formGroupStyle: {
-            padding: 20
-          },
-          container: {
-              paddingLeft: 0,
-              paddingRight: 0
-          },
-          row: {
-              marginLeft: 0,
-              marginRight: 0
-          },
-          col: {
-              paddingLeft: 0,
-              paddingRight: 0
-          }
-        };
         let copyNN = JSON.parse(JSON.stringify(networknode));
         
         const updateNNValue =  (data: any) => {

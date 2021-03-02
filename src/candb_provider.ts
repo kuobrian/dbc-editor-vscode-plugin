@@ -59,11 +59,6 @@ export interface MsgConnection {
     connection: SignalInMsg[];
 }
 
-export interface DBCObject {
-    label: string;
-    value: any[];
-}
-
 export interface DBCAttribute {
     name: string;
     type: string;
@@ -137,7 +132,6 @@ export class AttributesDefs {
 
 export class CANdb  {
     listOfItems = new Map();
-    objectList: DBCObject[] = [];
 
     connectionSignal: SignalConnection[] = [];
     connectionMsg: MsgConnection[] = [];
@@ -146,7 +140,6 @@ export class CANdb  {
     constructor(labels: string[]) {
         for(let label of labels) {
             this.listOfItems.set(label, []);
-            this.objectList.push({label: label, value: []});
         }
     }
 
@@ -187,10 +180,6 @@ export class CANdb  {
         console.log(this.listOfItems.keys());
     }
 
-    public itemsInObjectList () {
-        console.log(this.objectList);
-    }
-
     public putAttributeInObject() {
         this.attributesdefs.map((attr: DBCAttribute) => {
             switch(attr.objectType) {
@@ -229,7 +218,34 @@ export class CANdb  {
             }
         })
     }
-
+    public equalizeConnection () {
+        this.connectionMsg.map(mc => {
+            mc.connection.map(item => {
+                let idx = this.connectionSignal.findIndex(s => s.targetId === item.id)
+                if (idx >= 0) {
+                    if (!this.connectionSignal[idx].connection.includes(mc.targetId)) {
+                        this.addIdInConnection("Signals", item.id, mc.targetId);
+                    }
+                }
+                else {
+                    this.addIdInConnection("Signals", item.id, mc.targetId);
+                }
+            })
+        })
+        this.connectionSignal.map(sc =>{
+            sc.connection.map(mid => {
+                let idx = this.connectionMsg.findIndex(m => m.targetId=== mid)
+                if (idx >= 0 ) {
+                    if (this.connectionMsg[idx].connection.findIndex(item => item.id === sc.targetId) < 0) {
+                        this.addIdInConnection("Messages", mid, sc.targetId, 0, "signal");
+                    }
+                }
+                else {
+                    this.addIdInConnection("Messages", mid, sc.targetId, 0, "signal");
+                }
+            })
+        })
+    }
     public getAttributeLength () {
         return this.attributesdefs.length;
     }

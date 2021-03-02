@@ -1,7 +1,7 @@
 import * as React from 'react';
 import * as ReactDOM from "react-dom";
 import {ISignalProps, ISelItemsState} from "../src/parameters";
-import {SignalForm, MessageForm} from "../../src/candb_provider";
+import * as CANDB from "../../src/candb_provider";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import {  Row, Col, Tabs, Tab, Table, Form, Button,  Modal } from "react-bootstrap";
 import { type } from 'os';
@@ -10,7 +10,6 @@ export class SelectMsgTable extends React.Component <ISignalProps, ISelItemsStat
   signal = this.props.signal;
   listOfMsg = this.props.listOfMsg;
   connectionSignal = this.props.connection;
-  isPreview = this.props.isPreview;
 
   constructor(props : ISignalProps) {
     super(props);
@@ -22,7 +21,7 @@ export class SelectMsgTable extends React.Component <ISignalProps, ISelItemsStat
   }
 
   initSelectMsgs() {
-    let rows: MessageForm[] = [];
+    let rows: CANDB.MessageForm[] = [];
     for (let msgItem of this.listOfMsg) {
       if (this.connectionSignal.connection.includes(msgItem.uid)) {
         rows.push(msgItem); 
@@ -44,10 +43,6 @@ export class SelectMsgTable extends React.Component <ISignalProps, ISelItemsStat
         this.connectionSignal.connection = this.connectionSignal.connection.filter(function(elem: any, index: any, self: string | any[]) {
           return index === self.indexOf(elem);
         });
-        if (this.props.updateValue) {
-          this.props.updateValue(this.signal, this.connectionSignal);
-        }
-
       }); 
     } 
   };
@@ -58,9 +53,6 @@ export class SelectMsgTable extends React.Component <ISignalProps, ISelItemsStat
     rows.splice(idx, 1);
     this.setState({ selectItem: rows }, () =>{
       this.connectionSignal.connection = this.connectionSignal.connection.filter((uid: any)=> uid !== delItem.uid);
-      if (this.props.updateValue) {
-        this.props.updateValue(this.signal, this.connectionSignal);
-      }
     }) ;
   };
   render() {

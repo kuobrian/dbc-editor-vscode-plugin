@@ -1,10 +1,9 @@
 import * as React from 'react';
 import * as ReactDOM from "react-dom";
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { MessageForm, SignalForm, NetworkNodesForm } from '../../src/candb_provider';
+import * as CANDB from "../../src/candb_provider";
 import {SelectMsgTable} from "../signalComponents/msg_select";
 import {SignalDefinitionEdit} from "../signalComponents/definition";
-import {MessageDefinition} from "../msgComponents/definition";
 
 
 import {  Row, Col, Tabs, Tab, Table, Form, Button,  Modal } from "react-bootstrap";
@@ -24,41 +23,16 @@ window.addEventListener('message', (event) =>{
     let isPreview = event.data.isPreview;
     let connectionSignal = event.data.connectionSignal;
     
-    
-    const signalUid = signal.uid;
 
     console.log("SignalEditor Receieve:：", signal.name, listOfMsg.length, isPreview);
 
     const EditorApp = () =>  {
-        const styles = {
-          formGroupStyle: {
-            padding: 20
-          },
-          container: {
-              paddingLeft: 0,
-              paddingRight: 0
-          },
-          row: {
-              marginLeft: 0,
-              marginRight: 0
-          },
-          col: {
-              paddingLeft: 0,
-              paddingRight: 0
-          }
-        };
         const [show, setShow] = React.useState(false);
 
         const handleClose = () => setShow(false);
         const handleShow = () => setShow(true);
         let copyMsg:any=[];
         
-        copyMsg = JSON.parse(JSON.stringify(signal));
-
-        const updateSignalValue =  (data: SignalForm, connectionData : string[]) => {
-          signal = data;
-          connectionSignal = connectionData;
-        };
         
         const handleFormChange = (e: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLSelectElement>): void => {
           const msgKey = e.target.id.split("_")[1];
@@ -87,48 +61,41 @@ window.addEventListener('message', (event) =>{
                       <Form >
                           <SignalDefinitionEdit signal = {signal} 
                                                 listOfMsg = {listOfMsg}
-                                                isPreview = {isPreview}
-                                                connection = {connectionSignal}
-                                                updateValue = {updateSignalValue} />
+                                                connection = {connectionSignal}/>
                       </Form>
                     </Tab>
-                      {(() => {
-                            if (!isPreview) {
-                              return ( 
-                                <Tab eventKey="messages" title="Messages">
-                                  <SelectMsgTable  signal = {signal} 
-                                                            listOfMsg = {listOfMsg}
-                                                            isPreview = {isPreview}
-                                                            connection = {connectionSignal}
-                                                            updateValue = {updateSignalValue} /> 
-                                </Tab>);
-                            }
-                            })()
-                      }                    
+                    <Tab eventKey="messages" title="Messages">
+                      <Form>
+                          <SelectMsgTable signal={signal}
+                                          listOfMsg={listOfMsg}
+                                          connection={connectionSignal} />
+                      </Form>
+                    </Tab>
+                                      
                     <Tab eventKey="receivers" title="Receivers">
                       <Table striped bordered hover variant="dark" 
                             className="table table-bordered table-hover"
                             id="tab_logic">
-                          <thead>
-                            <tr>
-                              <th>Name</th>
-                              <th>Address</th>
-                              <th></th>
-                            </tr>
-                          </thead>
-                          <tbody>
+                            <thead>
+                              <tr>
+                                <th>Name</th>
+                                <th>Address</th>
+                                <th></th>
+                              </tr>
+                            </thead>
+                            <tbody>
                             { 
-                              signal.receivers.map((nn: NetworkNodesForm) =>{
-                                  return (
-                                    <>
-                                      {  <tr>
-                                          <td>{nn.name}</td>
-                                          <td>{nn.address}</td>
-                                          <td></td>
-                                        </tr>
-                                      }
-                                    </>
-                                  );})
+                              signal.receivers.map((nn: CANDB.NetworkNodesForm) =>{
+                              return (
+                                <>
+                                  {  <tr>
+                                      <td>{nn.name}</td>
+                                      <td>{nn.address}</td>
+                                      <td></td>
+                                    </tr>
+                                  }
+                                </>
+                              );})
                             }
                           </tbody>
                       </Table>

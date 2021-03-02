@@ -29,7 +29,7 @@ export function startMsgHandler(context: vscode.ExtensionContext, modulename: st
                                 message: message,
                                 signal: allSignals,
                                 attributesdefs: attributesdefs,
-                                connection: connectionMsg});
+                                connectionMsg: connectionMsg});
 
     panel.webview.onDidReceiveMessage((message: any) => {
       switch (message.command) {

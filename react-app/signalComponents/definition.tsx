@@ -2,18 +2,12 @@ import * as React from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import {  Row, Col, Tabs, Tab, Table, Form, Button,  Modal } from "react-bootstrap";
 import {ISignalProps, ISelItemsState} from "../src/parameters";
-import {SignalForm, MessageForm} from "../../src/candb_provider";
-
-
-
+import * as CANDB from "../../src/candb_provider";
 
 
 
 export class SignalDefinitionEdit extends React.Component <ISignalProps, { [key: string]: number }> {
   signal = this.props.signal;
-  listOfMsg = this.props.listOfMsg;
-  signalConnect = this.props.connection;
-  isPreview = this.props.isPreview;
   
   constructor(props : ISignalProps) {
     super(props);
@@ -21,7 +15,6 @@ export class SignalDefinitionEdit extends React.Component <ISignalProps, { [key:
                   maximum:  this.signal["maximum"] };
     this.onCalMinMaxBtnClick=this.onCalMinMaxBtnClick.bind(this);
   }
-  updateValue = this.props.updateValue;
 
   handleFormChange (e: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLSelectElement>) {
     const msgKey = e.target.id.split("_")[1];
@@ -49,7 +42,6 @@ export class SignalDefinitionEdit extends React.Component <ISignalProps, { [key:
             <Form.Control required
                           type="text"
                           defaultValue={this.signal.name}
-                          disabled={this.isPreview}
                           onChange={(event) =>  this.handleFormChange(event as any)}>
             </Form.Control>
           </Form.Group>

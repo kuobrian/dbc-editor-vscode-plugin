@@ -19,17 +19,13 @@ export interface IMsgProps {
     msg: CANDB.MessageForm;
     listOfSignal: CANDB.SignalForm[];
     listOfNetworknode: CANDB.NetworkNodesForm[]
-    isPreview: boolean;
-    connection: any[];
-    updateValue?: (arg0: CANDB.MessageForm, arg1: SignalInMsg[]) => void;
+    connection: CANDB.MsgConnection;
 }
 
 export interface ISignalProps {
     signal: CANDB.SignalForm;
     listOfMsg: CANDB.MessageForm[];
-    isPreview: boolean;
-    connection: string[];
-    updateValue?: (arg0: CANDB.SignalForm, arg1: string[]) => void;
+    connection: CANDB.SignalConnection;
 
 }
 
