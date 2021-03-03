@@ -43,6 +43,10 @@
 				"title": "Refrsh Exist Item"
 			},
 			{
+				"command": "vscode-plugin-demo.openAttributeDefinitions",
+				"title": "Attribute Definitions"
+			},
+			{
 				"command": "vscode-plugin-demo.loadJSONFile",
 				"title": "Load Json File"
 			},
@@ -91,6 +95,10 @@
 				{
 					"command": "vscode-plugin-demo.loadJSONFile",
 					"when": "view == TreeView"
+				},
+				{
+					"command": "vscode-plugin-demo.openAttributeDefinitions",
+					"when": "view == TreeView"
 				}
 			],
 			"view/item/context": [
@@ -113,14 +121,14 @@
 		}
 	},
 	"scripts": {
-		"vscode:prepublish": "npm run package",
+		"vscode:prepublish": "npm run compile",
 		"package": "webpack --watch --mode development --config webpack.config.pluging.js",
 		"compile": "npm-run-all compile:*",
 		"compile:views": "webpack --mode production --config ./webpack.config.view.js",
 		"compile:extension": "webpack --mode production --config webpack.config.pluging.js",
 		"watch": "npm-run-all -p watch:*",
 		"watch:extension": "webpack --watch --mode development --config webpack.config.pluging.js",
-		"watch:views": "webpack --watch --mode development --config webpack.config.view.js",
+		"watch:views": "webpack --watch --mode development --config ./webpack.config.view.js",
 		"test-watch": "tsc -watch -p ./",
 		"test": "node ./out/test/runTest.js"
 	},

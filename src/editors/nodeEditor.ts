@@ -14,7 +14,7 @@ export function startNetworkNodesHandler(context: vscode.ExtensionContext, modul
                                                   }  );
     
   let htmlContent: string = CANDB.getHtmlForWebview(context.extensionPath);
-  let webpackPathOnDisk = vscode.Uri.file(path.join(context.extensionPath, 'dist/networknodesEditor.js'));
+  let webpackPathOnDisk = vscode.Uri.file(path.join(context.extensionPath, 'dist/nodeView.js'));
   let webpackUri = panel.webview.asWebviewUri(webpackPathOnDisk);
   htmlContent = htmlContent.replace('${rootUri}', webpackUri.toString());
 

@@ -2,21 +2,15 @@ const HtmlWebPackPlugin = require("html-webpack-plugin");
 const HtmlWebpackInlineSourcePlugin = require('html-webpack-inline-source-plugin');
 var path = require('path');
 
-
-
-// const htmlWebpackPlugin = new HtmlWebPackPlugin({
-//   template: path.resolve(__dirname, "react-app/src/index.html"),
-//   filename: "./index_out.html",
-//   inlineSource: '.(js|css)$'
-// });
-
+console.log(__dirname)
 const htmlWebpackInlineSourcePlugin = new HtmlWebpackInlineSourcePlugin();
 
 module.exports = {
   entry: {
-    signalEditor: path.resolve(__dirname, "react-app/src/signalEditor.tsx"),
-    messageEditor: path.resolve(__dirname, "react-app/src/messageEditor.tsx"),
-    networknodesEditor: path.resolve(__dirname, "react-app/src/networknodesEditor.tsx"),
+    signalView: path.resolve(__dirname, "react-app/src/signalView.tsx"),
+    messageView: path.resolve(__dirname, "react-app/src/messageView.tsx"),
+    nodeView: path.resolve(__dirname, "react-app/src/nodeView.tsx"),
+    attributeView: path.resolve(__dirname, "react-app/src/attributeView.tsx")
   },
   output: {
     path: path.resolve(__dirname, "dist"),

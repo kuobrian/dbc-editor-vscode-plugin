@@ -35,7 +35,7 @@ class TreeViewItem extends vscode.TreeItem{
     
 class DataProvider implements vscode.TreeDataProvider<TreeViewItem> {
     
-    private candb_ = new CANDB.CANdb(["Networks", "ECUs", "Environment variables", "Network Node", "Messages", "Signals"]);
+    public candb_ = new CANDB.CANdb(["Networks", "ECUs", "Environment variables", "Network Node", "Messages", "Signals"]);
         
     private _onDidChangeTreeData: vscode.EventEmitter<TreeViewItem | undefined | void> = new vscode.EventEmitter<TreeViewItem | undefined | void>();
 	readonly onDidChangeTreeData: vscode.Event<TreeViewItem | undefined | void> = this._onDidChangeTreeData.event;
@@ -223,7 +223,6 @@ class DataProvider implements vscode.TreeDataProvider<TreeViewItem> {
             }
         });
         this.candb_.putAttributeInObject();
-        console.log("Number of attributes:", this.candb_.getAttributeLength());
         this.refresh();
     }
 

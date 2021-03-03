@@ -12,7 +12,7 @@ export function startMsgHandler(context: vscode.ExtensionContext, modulename: st
                                                   }  );
     
     let htmlContent: string = CANDB.getHtmlForWebview(context.extensionPath);
-    let webpackPathOnDisk = vscode.Uri.file(path.join(context.extensionPath, 'dist/messageEditor.js'));
+    let webpackPathOnDisk = vscode.Uri.file(path.join(context.extensionPath, 'dist/messageView.js'));
     let webpackUri = panel.webview.asWebviewUri(webpackPathOnDisk);
     htmlContent = htmlContent.replace('${rootUri}', webpackUri.toString());
     panel.webview.html = htmlContent;

@@ -1,5 +1,7 @@
 out
+dist/.DS_Store
 dist/*.js
+dist/*.txt
 node_modules
 .vscode-test/
 *.vsix

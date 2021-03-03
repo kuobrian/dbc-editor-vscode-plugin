@@ -13,7 +13,7 @@ export function startSignalHandler(context: vscode.ExtensionContext, modulename:
                                                   }  );
     
     let htmlContent: string = CANDB.getHtmlForWebview(context.extensionPath);
-    let webpackPathOnDisk = vscode.Uri.file(path.join(context.extensionPath, 'dist/signalEditor.js'));
+    let webpackPathOnDisk = vscode.Uri.file(path.join(context.extensionPath, 'dist/signalView.js'));
     let webpackUri = panel.webview.asWebviewUri(webpackPathOnDisk);
     htmlContent = htmlContent.replace('${rootUri}', webpackUri.toString());
     panel.webview.html = htmlContent;
@@ -24,7 +24,6 @@ export function startSignalHandler(context: vscode.ExtensionContext, modulename:
     let connectionSignal = candb.connectionSignal.find(item=> item.targetId === signal.uid);
     let attributesdefs = candb.attributesdefs.filter((a: CANDB.DBCAttribute) => a.objectType === "Signal");
 
-    console.log(attributesdefs)
     
     panel.webview.postMessage({ signal: signal,
                                 message: allMsgs,

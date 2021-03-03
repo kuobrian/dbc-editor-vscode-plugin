@@ -2,10 +2,11 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
 import * as fs from 'fs';
-import {startSignalHandler} from './editors/signalsProvider';
-import {startMsgHandler} from './editors/messageProvider';
-import {startNetworkNodesHandler} from './editors/networknodesProvider';
-import {DataProvider, TreeViewItem} from "./treeviewDataprovider";
+import { startSignalHandler } from './editors/signalsEditor';
+import { startMsgHandler } from './editors/messageEditor';
+import { startNetworkNodesHandler } from './editors/nodeEditor';
+import { DataProvider, TreeViewItem } from "./treeviewDataprovider";
+import { startAttributeHandler } from "./attributeProvider";
 
 export function activate(context: vscode.ExtensionContext) {
 	
@@ -30,14 +31,13 @@ export function activate(context: vscode.ExtensionContext) {
 	});
 
 	vscode.commands.registerCommand('extension.openMessageEditor', (moduleName, candb) => {
+		console.log(moduleName);
 		startMsgHandler(context, moduleName, candb);
 	});
 
 	vscode.commands.registerCommand('extension.openNetworkNodesEditor', (moduleName, candb) => {
 		startNetworkNodesHandler(context, moduleName, candb);
 	});
-
-
 
 	context.subscriptions.push(
 		vscode.commands.registerCommand("vscode-plugin-demo.loadJSONFile", () => {
@@ -66,8 +66,15 @@ export function activate(context: vscode.ExtensionContext) {
 		})
 	);	
 
-	context.subscriptions.push(vscode.commands.registerCommand("vscode-plugin-demo.refresh_treeview" , () => {
+	context.subscriptions.push(
+		vscode.commands.registerCommand("vscode-plugin-demo.refresh_treeview" , () => {
 			dataProvider.refresh();
+		})
+	);
+
+	context.subscriptions.push(
+		vscode.commands.registerCommand("vscode-plugin-demo.openAttributeDefinitions", () => {
+			startAttributeHandler(context, dataProvider.candb_);
 		})
 	);
 
