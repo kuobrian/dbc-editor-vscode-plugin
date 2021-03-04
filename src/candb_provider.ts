@@ -2,6 +2,13 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { PassThrough } from 'stream';
 
+export function uuidv4() {
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+        var r = Math.random() * 16 | 0, v = c === 'x' ? r : (r & 0x3 | 0x8);
+        return v.toString(16);
+    });
+}
+
 export interface SignalForm {
     uid: string;
     name: string;
@@ -61,12 +68,14 @@ export interface MsgConnection {
 }
 
 export interface DBCAttribute {
+    uid: string;
     name: string;
     type: string;
     objectType: string;
     defaultValue: any;
     typeWithValue: any;
     values: any[];
+    [key: string]: any;
 }
 
 export class AttributesDefs {
@@ -119,7 +128,9 @@ export class AttributesDefs {
     }
 
     public _toObject():DBCAttribute {
-        const item: DBCAttribute = {name: this.name,
+        const item: DBCAttribute = {
+                                    uid: uuidv4(),
+                                    name: this.name,
                                     type: this.typeWithValue['type'],
                                     objectType : this.objectType,
                                     defaultValue: this.defaultValue,
