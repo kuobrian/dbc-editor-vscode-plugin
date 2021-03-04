@@ -19,12 +19,16 @@ interface IEditAttrProps {
 
 
 function CreateEditAttribute(props: IEditAttrProps) {
+
+  const [isRageValue, setRageValue] = React.useState(true)
+
   const mCopy = JSON.parse(JSON.stringify(props.item));
 
   function handleFormChange(e: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLSelectElement>) {
     const attrKey = e.target.id.split("_")[1];
     console.log(attrKey, e.target.value)
     mCopy[attrKey] = e.target.value;
+    (mCopy.type === "String") ? setRageValue(false) : setRageValue(true)
   };
 
   function handleSave() {
@@ -93,26 +97,36 @@ function CreateEditAttribute(props: IEditAttrProps) {
               </Form.Control>
             </Form.Group>
           </Form.Row>
-          <Form.Row>
-            <Form.Group as={Col} md="5" controlId="_Minimum">
-              <Form.Label>Minimum :</Form.Label>
-              <Form.Control required
-                type="number"
-                defaultValue={props.item.typeWithValue[0]}
-                onChange={(event) => handleFormChange(event as any)}>
-              </Form.Control>
-            </Form.Group>
-          </Form.Row>
-          <Form.Row>
-            <Form.Group as={Col} md="5" controlId="_Maximum">
-              <Form.Label>Maximum :</Form.Label>
-              <Form.Control required
-                type="number"
-                defaultValue={props.item.typeWithValue[1]}
-                onChange={(event) => handleFormChange(event as any)}>
-              </Form.Control>
-            </Form.Group>
-          </Form.Row>
+          
+            {(() => {
+            if (isRageValue) {
+                return (
+                  <>
+                  <Form.Row>
+                  <Form.Group as={Col} md="5" controlId="_Minimum">
+                    <Form.Label>Minimum :</Form.Label>
+                    <Form.Control required
+                      type="number"
+                      defaultValue={props.item.typeWithValue[0]}
+                      onChange={(event) => handleFormChange(event as any)}>
+                    </Form.Control>
+                  </Form.Group>
+                  </Form.Row>
+                  <Form.Row>
+                    <Form.Group as={Col} md="5" controlId="_Maximum">
+                      <Form.Label>Maximum :</Form.Label>
+                      <Form.Control required
+                        type="number"
+                        defaultValue={props.item.typeWithValue[1]}
+                        onChange={(event) => handleFormChange(event as any)}>
+                      </Form.Control>
+                    </Form.Group>
+                  </Form.Row>
+                  </>
+                )}
+            })()
+              }
+          
         </Form>
     </Modal.Body>
       <Modal.Footer>
@@ -201,9 +215,6 @@ window.addEventListener('message', (event) =>{
     return (
       
         <div>
-          <div>
-            <h1>{dataModal.name}</h1>
-          </div>
           <Table striped bordered hover variant="dark"
                 className="table table-bordered table-hover"
                 id="tab_logic">
