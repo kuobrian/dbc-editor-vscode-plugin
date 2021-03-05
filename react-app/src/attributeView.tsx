@@ -1,7 +1,6 @@
 import * as React from 'react';
 import * as ReactDOM from "react-dom";
 import 'bootstrap/dist/css/bootstrap.min.css';
-
 import * as CANDB from "../../src/candb_provider";
 import { uuidv4 } from "../src/parameters";
 import {SelectMsgTable} from "../signalComponents/msg_select";
@@ -17,22 +16,33 @@ interface IEditAttrProps {
   handleModifyAttribute: (data:CANDB.DBCAttribute) => (void);
 }
 
-
 function CreateEditAttribute(props: IEditAttrProps) {
+  const [attrData, setAttrData] = React.useState<CANDB.DBCAttribute>(props.item)
+  
 
-  const [isRageValue, setRageValue] = React.useState(true)
-
-  const mCopy = JSON.parse(JSON.stringify(props.item));
+  // React.useEffect(() => {
+  //   console.log("*****  ", attrData.type, attrData.typeWithValue)
+  // });
 
   function handleFormChange(e: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLSelectElement>) {
     const attrKey = e.target.id.split("_")[1];
-    console.log(attrKey, e.target.value)
-    mCopy[attrKey] = e.target.value;
-    (mCopy.type === "String") ? setRageValue(false) : setRageValue(true)
-  };
+    if (attrKey ==="typeWithValue") { 
+      setAttrData({
+        ...attrData,
+        [attrKey]: e.target.value.split(/\n/)
+      });
+    }
+    else { 
+      setAttrData({
+        ...attrData,
+        [attrKey]: e.target.value
+      });
+    }
+  };  
+
 
   function handleSave() {
-    props.handleModifyAttribute(mCopy)
+    props.handleModifyAttribute(attrData)
   }
 
   return (
@@ -52,7 +62,7 @@ function CreateEditAttribute(props: IEditAttrProps) {
               <Form.Label>name :</Form.Label>
               <Form.Control required
                 type="text"
-                defaultValue={props.item.name}
+                defaultValue={attrData.name}
                 onChange={(event) => handleFormChange(event as any)}>
               </Form.Control>
             </Form.Group>
@@ -61,7 +71,7 @@ function CreateEditAttribute(props: IEditAttrProps) {
             <Form.Group as={Col} md="3" controlId="_objectType">
               <Form.Label>Object Type:</Form.Label>
               <Form.Control as="select"
-                defaultValue={props.item.objectType}
+                defaultValue={attrData.objectType}
                 onChange={(event) => handleFormChange(event as any)}>
                 <option>Network</option>
                 <option>Node</option>
@@ -78,7 +88,7 @@ function CreateEditAttribute(props: IEditAttrProps) {
             <Form.Group as={Col} md="3" controlId="_type">
               <Form.Label>Value Type:</Form.Label>
               <Form.Control as="select"
-                defaultValue={props.item.type}
+                defaultValue={attrData.type}
                 onChange={(event) => handleFormChange(event as any)}>
                 <option>Integer</option>
                 <option>Float</option>
@@ -88,44 +98,82 @@ function CreateEditAttribute(props: IEditAttrProps) {
               </Form.Control>
             </Form.Group>
           </Form.Row>
-          <Form.Row>
-            <Form.Group as={Col} md="5" controlId="_defaultValue">
-              <Form.Label>Default :</Form.Label>
-              <Form.Control required
-                defaultValue={props.item.defaultValue}
-                onChange={(event) => handleFormChange(event as any)}>
-              </Form.Control>
-            </Form.Group>
-          </Form.Row>
-          
-            {(() => {
-            if (isRageValue) {
-                return (
-                  <>
-                  <Form.Row>
-                  <Form.Group as={Col} md="5" controlId="_Minimum">
-                    <Form.Label>Minimum :</Form.Label>
+          {(() => {
+            if (attrData.type === "Enumeration") {
+              return (
+                <>
+                <Form.Row>
+                  <Form.Group as={Col} md="3" controlId="_defaultValue">
+                    <Form.Label>Default :</Form.Label>
+                    <Form.Control as="select"
+                      defaultValue={props.item.type}
+                      onChange={(event) => handleFormChange(event as any)}>
+                      {
+                        attrData.typeWithValue.map((item: string) => {
+                          return ( <option>{item}</option> )
+                        })
+                      }
+                    </Form.Control>
+                  </Form.Group>
+                </Form.Row>
+                <Form.Row>
+                  <Form.Group controlId="_typeWithValue">
+                    <Form.Label>Value Range :</Form.Label>
+                    <Form.Control as="textarea"
+                        rows={5}
+                        defaultValue={attrData.typeWithValue.join("\n")}
+                        onChange={(event) => handleFormChange(event as any)} />
+                  </Form.Group>
+                </Form.Row>
+              </>
+              )
+            } 
+            else {
+              return (
+                <>
+                <Form.Row>
+                  <Form.Group as={Col} md="5" controlId="_defaultValue">
+                    <Form.Label>Default :</Form.Label>
                     <Form.Control required
-                      type="number"
-                      defaultValue={props.item.typeWithValue[0]}
+                      defaultValue={attrData.defaultValue}
                       onChange={(event) => handleFormChange(event as any)}>
                     </Form.Control>
                   </Form.Group>
+                </Form.Row>
+                </>
+              )
+            }
+          })()
+          }
+          {(() => {
+            if (attrData.type !== "Enumeration" && attrData.type !== "String") {
+              return (
+                <>
+                  <Form.Row>
+                    <Form.Group as={Col} md="5" controlId="_Minimum">
+                      <Form.Label>Minimum :</Form.Label>
+                      <Form.Control required
+                        type="number"
+                        defaultValue={(attrData.typeWithValue.length > 0) ? attrData.typeWithValue[0] : " "}
+                        onChange={(event) => handleFormChange(event as any)}>
+                      </Form.Control>
+                    </Form.Group>
                   </Form.Row>
                   <Form.Row>
                     <Form.Group as={Col} md="5" controlId="_Maximum">
                       <Form.Label>Maximum :</Form.Label>
                       <Form.Control required
                         type="number"
-                        defaultValue={props.item.typeWithValue[1]}
+                        defaultValue={(attrData.typeWithValue.length > 1) ? attrData.typeWithValue[1] : " "}
                         onChange={(event) => handleFormChange(event as any)}>
                       </Form.Control>
                     </Form.Group>
                   </Form.Row>
-                  </>
-                )}
-            })()
-              }
+                </>
+              )
+            }
+
+          })()}
           
         </Form>
     </Modal.Body>
@@ -158,8 +206,8 @@ window.addEventListener('message', (event) =>{
     
     const [attributeState, setChangeAttribute] = React.useState(attributes);
 
-    const [showModal, setModal] = React.useState(false);
-    const [dataModal, setDataModal] = React.useState<CANDB.DBCAttribute>(() => CreateNewAttr());
+    let initData = CreateNewAttr();
+    const [dataModal, setDataModal] = React.useState({ data: initData, show:false});
 
     function CreateNewAttr(): CANDB.DBCAttribute {
       let newAttr: CANDB.DBCAttribute = {
@@ -167,18 +215,28 @@ window.addEventListener('message', (event) =>{
         name: "New_AttrDef_" + attributeState.length,
         type: "Integer", 
         objectType: "Message",
-        defaultValue: 0,
-        typeWithValue: 0,
+        defaultValue: " ",
+        typeWithValue: [],
         values: [],
       }
       return newAttr;
     }
+    
 
-    function handleclose() { setModal(false) }
+    function handleclose() {
+      setDataModal({
+        ...dataModal,
+        data: initData,
+        show: false
+      });
+     }
 
     function handleSpecificAttribute(attr: CANDB.DBCAttribute): void {
-      setDataModal(attr)
-      setModal(true)
+      setDataModal({
+        ...dataModal,
+        data: attr,
+        show: true
+      });
     }
 
     function handleModifyAttribute(attr: CANDB.DBCAttribute): void {
@@ -211,9 +269,7 @@ window.addEventListener('message', (event) =>{
       vscode.postMessage({
         command: 'cancelAttribute'
       });    }
-
     return (
-      
         <div>
           <Table striped bordered hover variant="dark"
                 className="table table-bordered table-hover"
@@ -227,7 +283,7 @@ window.addEventListener('message', (event) =>{
                 <th>Maximum</th>
                 <th>Default</th>
                 <th>
-                <Button variant="success" onClick={() => handleSpecificAttribute(CreateNewAttr())}>
+                <Button variant="success" onClick={() => handleSpecificAttribute(initData)}>
                     Create New
                 </Button>
                 </th>
@@ -267,8 +323,13 @@ window.addEventListener('message', (event) =>{
               }
             </tbody>
           </Table >
-        <CreateEditAttribute item={dataModal} show={showModal} handleclose={handleclose} handleModifyAttribute={handleModifyAttribute}/>
-            
+          {(() => {
+            if (dataModal.show){
+              return (
+                <CreateEditAttribute item={dataModal.data} show={dataModal.show} handleclose={handleclose} handleModifyAttribute={handleModifyAttribute}/>
+              )}
+            })()
+          }
           <div style={{margin:"20px"}} className="mb-2">
             <Button variant="success" size="lg" type="save" onClick={onSaveBtnClick}>
             Save
