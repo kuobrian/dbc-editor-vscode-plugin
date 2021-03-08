@@ -1,5 +1,5 @@
 {
-	"name": "vscode-plugin-demo",
+	"name": "dbc-editor-vscode-plugin",
 	"publisher": "SHW",
 	"babel": {
 		"presets": [
@@ -7,7 +7,7 @@
 			"@babel/preset-react"
 		]
 	},
-	"displayName": "vscode-plugin-demo",
+	"displayName": "dbc-editor-vscode-plugin",
 	"description": "",
 	"version": "0.0.1",
 	"engines": {
@@ -23,15 +23,15 @@
 	"contributes": {
 		"commands": [
 			{
-				"command": "vscode-plugin-demo.helloWorld",
+				"command": "dbc-editor-vscode-plugin.helloWorld",
 				"title": "Hello World"
 			},
 			{
-				"command": "vscode-plugin-demo.registerDataProvide",
+				"command": "dbc-editor-vscode-plugin.registerDataProvide",
 				"title": "register TreeView DataProvider"
 			},
 			{
-				"command": "vscode-plugin-demo.add_treeviewitems",
+				"command": "dbc-editor-vscode-plugin.add_treeviewitems",
 				"title": "Add New Item",
 				"icon": {
 					"dark": "assets/add.png",
@@ -39,23 +39,23 @@
 				}
 			},
 			{
-				"command": "vscode-plugin-demo.refresh_treeview",
+				"command": "dbc-editor-vscode-plugin.refresh_treeview",
 				"title": "Refrsh Exist Item"
 			},
 			{
-				"command": "vscode-plugin-demo.openAttributeDefinitions",
+				"command": "dbc-editor-vscode-plugin.openAttributeDefinitions",
 				"title": "Attribute Definitions"
 			},
 			{
-				"command": "vscode-plugin-demo.loadJSONFile",
+				"command": "dbc-editor-vscode-plugin.loadJSONFile",
 				"title": "Load Json File"
 			},
 			{
-				"command": "vscode-plugin-demo.saveJSONFile",
+				"command": "dbc-editor-vscode-plugin.saveJSONFile",
 				"title": "Save Json File"
 			},
 			{
-				"command": "vscode-plugin-demo.edit_treeview",
+				"command": "dbc-editor-vscode-plugin.edit_treeview",
 				"title": "Edit Exist Item",
 				"icon": {
 					"dark": "assets/edit.png",
@@ -63,7 +63,7 @@
 				}
 			},
 			{
-				"command": "vscode-plugin-demo.delete_treeview",
+				"command": "dbc-editor-vscode-plugin.delete_treeview",
 				"title": "Delete Item",
 				"icon": {
 					"light": "assets/trash.png",
@@ -93,35 +93,35 @@
 		"menus": {
 			"view/title": [
 				{
-					"command": "vscode-plugin-demo.refresh_treeview",
+					"command": "dbc-editor-vscode-plugin.refresh_treeview",
 					"when": "view == TreeView"
 				},
 				{
-					"command": "vscode-plugin-demo.loadJSONFile",
+					"command": "dbc-editor-vscode-plugin.loadJSONFile",
 					"when": "view == TreeView"
 				},
 				{
-					"command": "vscode-plugin-demo.openAttributeDefinitions",
+					"command": "dbc-editor-vscode-plugin.openAttributeDefinitions",
 					"when": "view == TreeView"
 				},
 				{
-					"command": "vscode-plugin-demo.saveJSONFile",
+					"command": "dbc-editor-vscode-plugin.saveJSONFile",
 					"when": "view == TreeView"
 				}
 			],
 			"view/item/context": [
 				{
-					"command": "vscode-plugin-demo.add_treeviewitems",
+					"command": "dbc-editor-vscode-plugin.add_treeviewitems",
 					"when": "view == TreeView && viewItem == treeviewroot",
 					"group": "inline"
 				},
 				{
-					"command": "vscode-plugin-demo.delete_treeview",
+					"command": "dbc-editor-vscode-plugin.delete_treeview",
 					"when": "view == TreeView && viewItem == treeviewitem",
 					"group": "inline"
 				},
 				{
-					"command": "vscode-plugin-demo.edit_treeview",
+					"command": "dbc-editor-vscode-plugin.edit_treeview",
 					"when": "view == TreeView && viewItem == treeviewitem",
 					"group": "navigation"
 				}

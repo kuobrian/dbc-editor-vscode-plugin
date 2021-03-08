@@ -13,18 +13,18 @@ export function activate(context: vscode.ExtensionContext) {
 	let totalPanels:string[] = [];
 
 
-	let disposable = vscode.commands.registerCommand('vscode-plugin-demo.helloWorld', () => {
+	let disposable = vscode.commands.registerCommand('dbc-editor-vscode-plugin.helloWorld', () => {
 		vscode.window.showInformationMessage('Hello World from demo-test!');
 	});
 	context.subscriptions.push(disposable);
 	
 
-	// let dataProvider: any;
+	let dataProvider: any;
 	// const dataProvider = new DataProvider(path.join(context.extensionPath, 'db_output'));
 	// vscode.window.registerTreeDataProvider('TreeView', dataProvider);
-	let dbcObject = JSON.parse(fs.readFileSync(path.join(context.extensionPath, 'inputFile.json'), 'utf-8'));
-	const dataProvider = new DataProvider(path.join(context.extensionPath, 'db_output'), dbcObject);
-	vscode.window.registerTreeDataProvider('TreeView', dataProvider);
+	// let dbcObject = JSON.parse(fs.readFileSync(path.join(context.extensionPath, 'example.json'), 'utf-8'));
+	// const dataProvider = new DataProvider(path.join(context.extensionPath, 'db_output'), dbcObject);
+	// vscode.window.registerTreeDataProvider('TreeView', dataProvider);
 
 	vscode.commands.registerCommand('extension.openSignalEditor', (moduleName, candb, isPreview=false) => {
 		startSignalHandler(context, moduleName, candb, isPreview);
@@ -40,7 +40,7 @@ export function activate(context: vscode.ExtensionContext) {
 	});
 
 	context.subscriptions.push(
-		vscode.commands.registerCommand("vscode-plugin-demo.loadJSONFile", () => {
+		vscode.commands.registerCommand("dbc-editor-vscode-plugin.loadJSONFile", () => {
 			vscode.window.showOpenDialog({
 				canSelectMany: false,
 				canSelectFolders: false,
@@ -53,7 +53,7 @@ export function activate(context: vscode.ExtensionContext) {
 			}).then(fileUri => {
 				if (fileUri && fileUri[0]) {
 					let dbcObject = JSON.parse(fs.readFileSync(fileUri[0].fsPath, 'utf-8'));
-					const dataProvider = new DataProvider(path.join(context.extensionPath, 'db_output'), dbcObject);
+					dataProvider = new DataProvider(path.join(context.extensionPath, 'db_output'), dbcObject);
 					vscode.window.registerTreeDataProvider('TreeView', dataProvider);
 				}
 			});
@@ -61,31 +61,31 @@ export function activate(context: vscode.ExtensionContext) {
 	);
 	
 	context.subscriptions.push(
-		vscode.commands.registerCommand("vscode-plugin-demo.saveJSONFile", () => {
-			jsonData = dataProvider.saveJsonFile()
+		vscode.commands.registerCommand("dbc-editor-vscode-plugin.saveJSONFile", () => {
+			// jsonData = dataProvider.saveJsonFile()
 		})
 	);
 
 	context.subscriptions.push(
-		vscode.commands.registerCommand("vscode-plugin-demo.add_treeviewitems", async (rootName: TreeViewItem) => {
+		vscode.commands.registerCommand("dbc-editor-vscode-plugin.add_treeviewitems", async (rootName: TreeViewItem) => {
 			dataProvider.addItem(rootName.label);
 		})
 	);	
 
 	context.subscriptions.push(
-		vscode.commands.registerCommand("vscode-plugin-demo.refresh_treeview" , () => {
+		vscode.commands.registerCommand("dbc-editor-vscode-plugin.refresh_treeview" , () => {
 			dataProvider.refresh();
 		})
 	);
 
 	context.subscriptions.push(
-		vscode.commands.registerCommand("vscode-plugin-demo.openAttributeDefinitions", () => {
+		vscode.commands.registerCommand("dbc-editor-vscode-plugin.openAttributeDefinitions", () => {
 			startAttributeHandler(context, dataProvider.candb_);
 		})
 	);
 
 	context.subscriptions.push(
-		vscode.commands.registerCommand("vscode-plugin-demo.delete_treeview", async (itemName: TreeViewItem) => {
+		vscode.commands.registerCommand("dbc-editor-vscode-plugin.delete_treeview", async (itemName: TreeViewItem) => {
 			const confirm = await vscode.window.showQuickPick(["delete", "cancel"], {
 				placeHolder: "Do you want to delete item?"
 			});
