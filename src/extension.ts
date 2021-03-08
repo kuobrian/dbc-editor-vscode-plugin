@@ -58,7 +58,13 @@ export function activate(context: vscode.ExtensionContext) {
 				}
 			});
 		})
-	);	
+	);
+	
+	context.subscriptions.push(
+		vscode.commands.registerCommand("vscode-plugin-demo.saveJSONFile", () => {
+			jsonData = dataProvider.saveJsonFile()
+		})
+	);
 
 	context.subscriptions.push(
 		vscode.commands.registerCommand("vscode-plugin-demo.add_treeviewitems", async (rootName: TreeViewItem) => {

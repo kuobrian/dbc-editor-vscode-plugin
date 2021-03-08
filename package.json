@@ -51,6 +51,10 @@
 				"title": "Load Json File"
 			},
 			{
+				"command": "vscode-plugin-demo.saveJSONFile",
+				"title": "Save Json File"
+			},
+			{
 				"command": "vscode-plugin-demo.edit_treeview",
 				"title": "Edit Exist Item",
 				"icon": {
@@ -98,6 +102,10 @@
 				},
 				{
 					"command": "vscode-plugin-demo.openAttributeDefinitions",
+					"when": "view == TreeView"
+				},
+				{
+					"command": "vscode-plugin-demo.saveJSONFile",
 					"when": "view == TreeView"
 				}
 			],
