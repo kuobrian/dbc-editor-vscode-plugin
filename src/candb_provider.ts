@@ -141,6 +141,84 @@ export class AttributesDefs {
 }
 
 
+
+/////////////////////////////////////////////////////////////////
+
+export interface DbcSignalType {
+    signal_name?: string;
+    multiplexer_indicator?: string;
+    start_bit?: number;
+    signal_size?: number;
+    byte_order?: 'INTEL_LITTLE_ENDIAN' | 'MOTOROLA_BIG_ENDIAN';
+    value_type?: 'SIGNED' | 'UNSIGNED';
+    factor?: number;
+    offset?: number;
+    minimum?: number;
+    maximum?: number;
+    unit?: string;
+    float?: 'SIGNED_UNSIGNED' | 'FLOAT' | 'DOUBLE';
+    receiver?: string[];
+    value_table?: string[];
+    signal_attr?: any;
+}
+export interface DbcMessageType {
+    message_id?: number;
+    message_id_type?: 'STANDARD' | 'EXTENDED';
+    message_name?: string;
+    message_size?: number;
+    transmitter?: string;
+    message_attr?: any;
+    signal?: DbcSignalType[];
+}
+export interface DbcReturnType {
+    messageList: DbcMessageType[];
+    networkNodeList: NetworkNodeType[];
+    symbolList: AttributeDefinitionType[];
+}
+export interface SingalExtendValueType {
+    message_id?: number;
+    signal_name?: string;
+    extend_value_type?: number;
+}
+export interface MessageCommentType {
+    message_id?: number;
+    comment?: string;
+}
+export interface SignalCommentType {
+    message_id?: number;
+    signal_name?: string;
+    comment?: string;
+}
+export interface SignalGroupType {
+    message_id?: number;
+    group_name?: string;
+    repetitions?: number;
+    signal_name?: string[];
+}
+export interface AttributeDefinitionType {
+    object_type?: string;
+    attribute_name?: string;
+    attribute_type?: string;
+    attribute_type_value?: any;
+    attribute_default?: any;
+    attribute_value?: any;
+    valueTable?: any;
+    signalValueTable?: any;
+    signalValueType?: any;
+    messageComment?: MessageCommentType;
+    signalComment?: SignalCommentType;
+    signalGroup?: SignalGroupType;
+}
+export interface NetworkNodeType {
+    node_name?: string;
+    address?: string;
+}
+
+/////////////////////////////////////////////////////////////////
+
+
+
+
 export class CANdb  {
     listOfItems = new Map();
 
@@ -264,6 +342,22 @@ export class CANdb  {
 
     public getAttributeLength () {
         return this.attributesdefs.length;
+    }
+
+    public saveJsonFile(folder:string, filename:string) {
+        let jsonData = JSON.stringify(
+            {
+                signals: this.listOfItems.get("Signals"),
+                messages: this.listOfItems.get("Messages"),
+                network_node: this.listOfItems.get("Network Node"),
+                connectionSignal: this.connectionSignal,
+                connectionMsg: this.connectionMsg,
+                attributes: this.attributesdefs
+            }, null, 2)
+        fs.writeFileSync(path.join(folder,(filename + ".json")), jsonData)
+        
+
+
     }
 
 }

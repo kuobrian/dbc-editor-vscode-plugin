@@ -20,6 +20,7 @@ export function activate(context: vscode.ExtensionContext) {
 	
 
 	let dataProvider: any;
+	let selectedFilePath: string
 	// const dataProvider = new DataProvider(path.join(context.extensionPath, 'db_output'));
 	// vscode.window.registerTreeDataProvider('TreeView', dataProvider);
 	// let dbcObject = JSON.parse(fs.readFileSync(path.join(context.extensionPath, 'example.json'), 'utf-8'));
@@ -52,7 +53,10 @@ export function activate(context: vscode.ExtensionContext) {
 				defaultUri: vscode.Uri.parse('/'+ context.extensionPath)
 			}).then(fileUri => {
 				if (fileUri && fileUri[0]) {
-					let dbcObject = JSON.parse(fs.readFileSync(fileUri[0].fsPath, 'utf-8'));
+					
+					selectedFilePath = fileUri[0].fsPath
+
+					let dbcObject = JSON.parse(fs.readFileSync(selectedFilePath, 'utf-8'));
 					dataProvider = new DataProvider(path.join(context.extensionPath, 'db_output'), dbcObject);
 					vscode.window.registerTreeDataProvider('TreeView', dataProvider);
 				}
@@ -62,7 +66,11 @@ export function activate(context: vscode.ExtensionContext) {
 	
 	context.subscriptions.push(
 		vscode.commands.registerCommand("dbc-editor-vscode-plugin.saveJSONFile", () => {
-			// jsonData = dataProvider.saveJsonFile()
+			
+			let filename = selectedFilePath.split(".")[0].split('/').pop()
+			dataProvider.candb_.saveJsonFile(path.join(context.extensionPath, 'db_output'), filename);
+
+			vscode.window.showInformationMessage('Save ' + filename + ".json in " + path.join(context.extensionPath, 'db_output'));
 		})
 	);
 

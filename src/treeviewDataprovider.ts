@@ -287,6 +287,7 @@ class DataProvider implements vscode.TreeDataProvider<TreeViewItem> {
         }
         this.refresh();
     }
+
 }
 
 export {DataProvider, TreeViewItem};

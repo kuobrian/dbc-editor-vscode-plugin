@@ -2,6 +2,7 @@ out
 dist/.DS_Store
 dist/*.js
 dist/*.txt
+db_output/
 node_modules
 .vscode-test/
 *.vsix
