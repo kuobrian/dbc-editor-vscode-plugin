@@ -31,6 +31,10 @@
 				"title": "register TreeView DataProvider"
 			},
 			{
+				"command": "dbc-editor-vscode-plugin.createNewFile",
+				"title": "Create new file"
+			},
+			{
 				"command": "dbc-editor-vscode-plugin.add_treeviewitems",
 				"title": "Add New Item",
 				"icon": {
@@ -114,6 +118,10 @@
 				},
 				{
 					"command": "dbc-editor-vscode-plugin.saveJSONFile",
+					"when": "view == TreeView"
+				},
+				{
+					"command": "dbc-editor-vscode-plugin.createNewFile",
 					"when": "view == TreeView"
 				}
 			],
