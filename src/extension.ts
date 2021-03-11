@@ -88,10 +88,10 @@ export function activate(context: vscode.ExtensionContext) {
 	
 	context.subscriptions.push(
 		vscode.commands.registerCommand("dbc-editor-vscode-plugin.saveJSONFile", () => {
-			console.log(selectedFilePath)
-			let filename = selectedFilePath.split(".")[0].split('/').pop()
-			dataProvider.candb_.saveJsonFile(path.join(context.extensionPath, 'db_output'), filename);
+	
+			let filename = selectedFilePath.replace(/^.*[\\\/]/, '').split(".")[0];
 
+			dataProvider.candb_.saveJsonFile(path.join(context.extensionPath, 'db_output'), filename);
 			vscode.window.showInformationMessage('Save ' + filename + ".json in " + path.join(context.extensionPath, 'db_output'));
 		})
 	);
