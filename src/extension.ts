@@ -41,6 +41,27 @@ export function activate(context: vscode.ExtensionContext) {
 		startNetworkNodesHandler(context, moduleName, candb);
 	});
 
+	vscode.commands.registerCommand('dbc-editor-vscode-plugin.createNewFile', (moduleName, candb) => {
+		vscode.window.showInformationMessage("Create New File")
+		dataProvider = new DataProvider(path.join(context.extensionPath, 'db_output'), undefined);
+		vscode.window.registerTreeDataProvider('TreeView', dataProvider);
+		vscode.window.showSaveDialog({
+			defaultUri: vscode.Uri.parse('/' + context.extensionPath + "/db_output/new"),
+			title: 'Create JSON File',
+			filters: {
+				'JSON File': ['json']
+			}
+		}).then(fileUri => {
+			if (fileUri ) {
+				console.log(fileUri.path)
+				let jsonData = dataProvider.candb_.toJsonData();
+				selectedFilePath = fileUri.path
+				fs.writeFileSync(fileUri.path, jsonData)
+			}
+		});
+
+	});
+
 	context.subscriptions.push(
 		vscode.commands.registerCommand("dbc-editor-vscode-plugin.loadJSONFile", () => {
 			vscode.window.showOpenDialog({
@@ -67,7 +88,7 @@ export function activate(context: vscode.ExtensionContext) {
 	
 	context.subscriptions.push(
 		vscode.commands.registerCommand("dbc-editor-vscode-plugin.saveJSONFile", () => {
-			
+			console.log(selectedFilePath)
 			let filename = selectedFilePath.split(".")[0].split('/').pop()
 			dataProvider.candb_.saveJsonFile(path.join(context.extensionPath, 'db_output'), filename);
 
@@ -83,7 +104,6 @@ export function activate(context: vscode.ExtensionContext) {
 
 	context.subscriptions.push(
 		vscode.commands.registerCommand("dbc-editor-vscode-plugin.refresh_treeview" , () => {
-
 			dataProvider.refresh();
 		})
 	);

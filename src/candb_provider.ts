@@ -283,8 +283,7 @@ export class CANdb  {
     public getAttributeLength () {
         return this.attributesdefs.length;
     }
-
-    public saveJsonFile(folder:string, filename:string) {
+    public toJsonData() {
         let jsonData = JSON.stringify(
             {
                 signals: this.listOfItems.get("Signals"),
@@ -295,10 +294,12 @@ export class CANdb  {
                 attributes: this.attributesdefs,
                 valuetable: this.valuetables
             }, null, 2)
+        return jsonData
+    }
+
+    public saveJsonFile(folder:string, filename:string) {
+        let jsonData = this.toJsonData();
         fs.writeFileSync(path.join(folder,(filename + ".json")), jsonData)
-        
-
-
     }
 
 }
