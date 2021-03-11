@@ -10,7 +10,8 @@ module.exports = {
     signalView: path.resolve(__dirname, "react-app/src/signalView.tsx"),
     messageView: path.resolve(__dirname, "react-app/src/messageView.tsx"),
     nodeView: path.resolve(__dirname, "react-app/src/nodeView.tsx"),
-    attributeView: path.resolve(__dirname, "react-app/src/attributeView.tsx")
+    attributeView: path.resolve(__dirname, "react-app/src/attributeView.tsx"),
+    tableView: path.resolve(__dirname, "react-app/src/tableView.tsx")
   },
   output: {
     path: path.resolve(__dirname, "dist"),

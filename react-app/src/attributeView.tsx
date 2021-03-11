@@ -207,7 +207,7 @@ window.addEventListener('message', (event) =>{
     const [attributeState, setChangeAttribute] = React.useState(attributes);
 
     let initData = CreateNewAttr();
-    const [dataModal, setDataModal] = React.useState({ data: initData, show:false});
+    const [selectData, setSelectData] = React.useState({ data: initData, show:false});
 
     function CreateNewAttr(): CANDB.DBCAttribute {
       let newAttr: CANDB.DBCAttribute = {
@@ -224,16 +224,16 @@ window.addEventListener('message', (event) =>{
     
 
     function handleclose() {
-      setDataModal({
-        ...dataModal,
+      setSelectData({
+        ...selectData,
         data: initData,
         show: false
       });
      }
 
     function handleSpecificAttribute(attr: CANDB.DBCAttribute): void {
-      setDataModal({
-        ...dataModal,
+      setSelectData({
+        ...selectData,
         data: attr,
         show: true
       });
@@ -268,7 +268,9 @@ window.addEventListener('message', (event) =>{
     function onCancelBtnClick(): void {
       vscode.postMessage({
         command: 'cancelAttribute'
-      });    }
+      });    
+    }
+
     return (
         <div>
           <Table striped bordered hover variant="dark"
@@ -324,9 +326,9 @@ window.addEventListener('message', (event) =>{
             </tbody>
           </Table >
           {(() => {
-            if (dataModal.show){
+            if (selectData.show){
               return (
-                <CreateEditAttribute item={dataModal.data} show={dataModal.show} handleclose={handleclose} handleModifyAttribute={handleModifyAttribute}/>
+                <CreateEditAttribute item={selectData.data} show={selectData.show} handleclose={handleclose} handleModifyAttribute={handleModifyAttribute}/>
               )}
             })()
           }

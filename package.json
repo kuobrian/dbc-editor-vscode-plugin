@@ -47,6 +47,10 @@
 				"title": "Attribute Definitions"
 			},
 			{
+				"command": "dbc-editor-vscode-plugin.openValueTables",
+				"title": "Value Table"
+			},
+			{
 				"command": "dbc-editor-vscode-plugin.loadJSONFile",
 				"title": "Load Json File"
 			},
@@ -102,6 +106,10 @@
 				},
 				{
 					"command": "dbc-editor-vscode-plugin.openAttributeDefinitions",
+					"when": "view == TreeView"
+				},
+				{
+					"command": "dbc-editor-vscode-plugin.openValueTables",
 					"when": "view == TreeView"
 				},
 				{
