@@ -35,7 +35,7 @@ export function startAttributeHandler(context: vscode.ExtensionContext, candb: C
                     if (a.objectType > b.objectType) { return 1; }
                     return 0;
                 })
-                vscode.commands.executeCommand('vscode-plugin-demo.refresh_treeview');
+                vscode.commands.executeCommand('dbc-editor-vscode-plugin.refresh_treeview');
                 return;
 
             case 'cancelAttribute':

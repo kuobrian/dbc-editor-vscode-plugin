@@ -49,7 +49,7 @@ class DataProvider implements vscode.TreeDataProvider<TreeViewItem> {
         }
     }
 
-    refresh() {
+    public refresh() {
         this._onDidChangeTreeData.fire();
     }
 
@@ -218,6 +218,18 @@ class DataProvider implements vscode.TreeDataProvider<TreeViewItem> {
             else if (symbol.attribute_name) {
                 let attribute = new CANDB.AttributesDefs(symbol);
                 this.candb_.attributesdefs.push(attribute._toObject());
+            }
+            else if (symbol.valueTable) {
+                let tablevalues: CANDB.tableValue[] = [];
+                symbol.valueTable.table.map((v:string, idx:number) => {
+                    if (v){
+                        tablevalues.push({name: v, value: idx.toString()})
+                    }
+                })
+                let valueTable: CANDB.DBCValueTable = {uid: CANDB.uuidv4(),
+                    name: symbol.valueTable.table_name,
+                    tables: tablevalues}
+                this.candb_.valuetables.push(valueTable)
             }
         });
         this.candb_.putAttributeInObject();

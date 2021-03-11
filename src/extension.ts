@@ -7,6 +7,7 @@ import { startMsgHandler } from './editors/messageEditor';
 import { startNetworkNodesHandler } from './editors/nodeEditor';
 import { DataProvider, TreeViewItem } from "./treeviewDataprovider";
 import { startAttributeHandler } from "./attributeProvider";
+import { startTableHandler } from "./tableProvider"
 
 export function activate(context: vscode.ExtensionContext) {
 	
@@ -82,6 +83,7 @@ export function activate(context: vscode.ExtensionContext) {
 
 	context.subscriptions.push(
 		vscode.commands.registerCommand("dbc-editor-vscode-plugin.refresh_treeview" , () => {
+
 			dataProvider.refresh();
 		})
 	);
@@ -89,6 +91,12 @@ export function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(
 		vscode.commands.registerCommand("dbc-editor-vscode-plugin.openAttributeDefinitions", () => {
 			startAttributeHandler(context, dataProvider.candb_);
+		})
+	);
+
+	context.subscriptions.push(
+		vscode.commands.registerCommand("dbc-editor-vscode-plugin.openValueTables", () => {
+			startTableHandler(context, dataProvider.candb_);
 		})
 	);
 
