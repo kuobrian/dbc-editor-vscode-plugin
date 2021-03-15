@@ -248,13 +248,13 @@ export class CANdb  {
                     }
                     break; 
             }
-        })
+        });
     }
 
     public equalizeConnection () {
         this.connectionMsg.map(mc => {
             mc.connection.map(item => {
-                let idx = this.connectionSignal.findIndex(s => s.targetId === item.id)
+                let idx = this.connectionSignal.findIndex(s => s.targetId === item.id);
                 if (idx >= 0) {
                     if (!this.connectionSignal[idx].connection.includes(mc.targetId)) {
                         this.addIdInConnection("Signals", item.id, mc.targetId);
@@ -263,11 +263,11 @@ export class CANdb  {
                 else {
                     this.addIdInConnection("Signals", item.id, mc.targetId);
                 }
-            })
-        })
+            });
+        });
         this.connectionSignal.map(sc =>{
             sc.connection.map(mid => {
-                let idx = this.connectionMsg.findIndex(m => m.targetId=== mid)
+                let idx = this.connectionMsg.findIndex(m => m.targetId=== mid);
                 if (idx >= 0 ) {
                     if (this.connectionMsg[idx].connection.findIndex(item => item.id === sc.targetId) < 0) {
                         this.addIdInConnection("Messages", mid, sc.targetId, 0, "signal");
@@ -276,8 +276,8 @@ export class CANdb  {
                 else {
                     this.addIdInConnection("Messages", mid, sc.targetId, 0, "signal");
                 }
-            })
-        })
+            });
+        });
     }
 
     public getAttributeLength () {
@@ -293,16 +293,261 @@ export class CANdb  {
                 connectionMsg: this.connectionMsg,
                 attributes: this.attributesdefs,
                 valuetable: this.valuetables
-            }, null, 2)
-        return jsonData
+            }, null, 2);
+        return jsonData;
     }
 
     public saveJsonFile(folder:string, filename:string) {
         let jsonData = this.toJsonData();
-        fs.writeFileSync(path.join(folder,(filename + ".json")), jsonData)
+        let dbccontent = this.Json2Dbc();
+        fs.writeFileSync(path.join(folder,(filename + ".dbc")), dbccontent);
+        fs.writeFileSync(path.join(folder,(filename + ".json")), jsonData);
     }
 
+    public Json2Dbc() : string  {
+        let preTitle =  'VERSION ""\n\n\n'+
+                        'NS_: \n' +
+                        '\tNS_DESC_\n' +
+                        '\tCM_\n' +
+                        '\tBA_DEF_\n' +
+                        '\tBA_\n' +
+                        '\tVAL_\n' +
+                        '\tCAT_DEF_\n' +
+                        '\tCAT_\n' +
+                        '\tFILTER\n' +
+                        '\tBA_DEF_DEF_\n' +
+                        '\tEV_DATA_\n' +
+                        '\tENVVAR_DATA_\n' +
+                        '\tSGTYPE_\n' +
+                        '\tSGTYPE_VAL_\n' +
+                        '\tBA_DEF_SGTYPE_\n' +
+                        '\tBA_SGTYPE_\n' +
+                        '\tSIG_TYPE_REF_\n' +
+                        '\tVAL_TABLE_\n' +
+                        '\tSIG_GROUP_\n' +
+                        '\tSIG_VALTYPE_\n' +
+                        '\tSIGTYPE_VALTYPE_\n' +
+                        '\tBO_TX_BU_\n' +
+                        '\tBA_DEF_REL_\n' +
+                        '\tBA_REL_\n' +
+                        '\tBA_DEF_DEF_REL_\n' +
+                        '\tBU_SG_REL_\n' +
+                        '\tBU_EV_REL_\n' +
+                        '\tBU_BO_REL_\n' +
+                        '\tSG_MUL_VAL_\n\n' +
+                        'BS_:\n\n';
+                        
+        let nns = this.listOfItems.get("Network Node");
+        let signals = this.listOfItems.get("Signals");
+        let msgs =  this.listOfItems.get("Messages");
+        let connectionMsg = this.connectionMsg;
+        let attributes = this.attributesdefs;
+        let valuetable =this.valuetables;
+    
+        let buString = 'BU_:';
+        nns.forEach((nn: NetworkNodesForm) => {
+            buString += ' ' + nn.name;
+        });
+        buString += '\n';
+    
+        // write value table
+        let value_table_lines = "";
+        valuetable.map((table :  DBCValueTable) => {
+            let VT_string = 'VAL_TABLE_ ' + table.name;
+            table.tables.map((element: tableValue) => {
+                VT_string += " " + element.value+ " " + element.name;
+            });
+        VT_string += " ;"; 
+        value_table_lines += VT_string +'\n';
+        });
+        let CM_string = "";
+        let BO_string = "";
+        msgs.map((msg : MessageForm) => {
+            let Msg_string = 'BO_ ' + parseInt(msg.id, 16) + " " + msg.name + ": " + msg.dlc + " ";
+            if (Object.keys(msg.transmitters).length > 0)
+            {
+                msg.transmitters.map(t => {
+                    Msg_string += t.name + " ";
+                });
+            }
+            else {
+                Msg_string += "Vector__XXX ";
+            }
+            if (msg.comments !== ""){
+                CM_string += 'CM_ BO_ ' + parseInt(msg.id, 16) + " \"" + msg.comments + "\" ;\n";
+            }
+    
+            let connectionIdx = connectionMsg.findIndex((item : MsgConnection) => item.targetId === msg.uid);
+            if (connectionIdx >=0) {
+                let Signal_string = getSignalString(msg.uid, connectionMsg[connectionIdx], signals);
+                BO_string += Msg_string + "\n" + Signal_string[0] + "\n";
+                CM_string += Signal_string[1];
+
+            }
+        });
+    
+        let Attr_strings = "";
+        let Attr_strings_defaults = "";
+        let Attr_value_for_objects = "";
+        attributes.map((attr : DBCAttribute) => {
+            let Attr_string = 'BA_DEF_ ';
+            let Attr_strings_default = "BA_DEF_DEF_  " + "\"" + attr.name + "\" " 
+                                    +  `${attr.type.includes('Enum') || attr.type.includes('String')  ?  "\""+ attr.defaultValue + "\" ": attr.defaultValue}`;
+                                    + "\n";
+            let Attr_value_for_object_temp = "BA_ " + "\"" + attr.name + "\" "; 
+            let Attr_value_for_object = "";
+            switch(attr.objectType) { 
+                case 'Message': { 
+                    Attr_string += "BO_  ";
+                    attr.values.map(v => {
+                        Attr_value_for_object += Attr_value_for_object_temp + "BO_ "
+                                                + v.message_id + " " + v.value + "\n";
+                    });
+                    break; 
+                } 
+                case "Signal": { 
+                    Attr_string += "SG_  ";
+                    attr.values.map(v => {
+                        Attr_value_for_object += Attr_value_for_object_temp + "SG_ "
+                                                + v.message_id + " " + v.signal_name + " " + v.value + "\n";
+                    });
+                    break; 
+                } 
+                case "Node": { 
+                    Attr_string += "BU_  ";
+                    attr.values.map(v => {
+                        Attr_value_for_object += Attr_value_for_object_temp + "BU_ "
+                                                + v.node_name + " " + parseInt(v.address, 16) + "\n";
+                    });
+                    break;; 
+                }
+                case "Network": { 
+                    Attr_string += "  ";
+                    attr.values.map(v => {
+                        Attr_value_for_object += Attr_value_for_object_temp + " ";
+                                                "\""+ v.value + "\"" + "\n";
+                    });
+                    break; 
+                }
+                case "Environmental Variable": { 
+                    Attr_string += "EV_  ";
+                    attr.values.map(v => {
+                        // TODO Environmental Variable default value
+                    });
+                    break; 
+                }
+                default: { 
+                    Attr_string += "  ";
+                    break; 
+                } 
+            }
+            Attr_string += "\"" + attr.name + "\" ";
+            switch(attr.type) { 
+                case 'String': { 
+                    Attr_string += "STRING ;";
+                    break; 
+                } 
+                case "Hex": { 
+                    Attr_string += "HEX " + attr.typeWithValue[0] + " " + attr.typeWithValue[1] +" ;";
+                    break; 
+                } 
+                case "Enumeration": { 
+                    Attr_string += "ENUM ";
+                    let enum_string = "";
+                    attr.typeWithValue.map((e: any, idx: number) => {
+                        enum_string += idx + " \"" + e + "\* "; 
+                    });
+                    Attr_string +=  enum_string + " ;";
+    
+                    break;; 
+                }
+                case "Integer": { 
+                    Attr_string += "INT " + attr.typeWithValue[0] + " " + attr.typeWithValue[1] +" ;";
+                    break; 
+                }
+                case "Float": { 
+                    Attr_string += "FLOAT "+ attr.typeWithValue[0] + " " + attr.typeWithValue[1] +" ;";
+                    break; 
+                }
+                default: { 
+                    Attr_string += "  ";
+                    break; 
+                } 
+            }
+            Attr_strings += Attr_string +  "\n";
+            Attr_strings_defaults += Attr_strings_default + "\n";
+            if (Attr_value_for_object !== "") {
+                Attr_value_for_objects += Attr_value_for_object;
+    
+            }
+        });
+    
+    
+        
+        console.log(preTitle);
+        console.log(buString);
+        console.log(value_table_lines);
+        console.log(BO_string);
+        console.log(CM_string);
+        console.log(Attr_strings);
+        console.log(Attr_strings_defaults);
+        console.log(Attr_value_for_objects);
+        let dbccontent = preTitle + "\n"
+                + buString + "\n"
+                + value_table_lines + "\n"
+                + BO_string + "\n"
+                + CM_string + "\n"
+                + Attr_strings + "\n"
+                + Attr_strings_defaults + "\n"
+                + Attr_value_for_objects + "\n";
+        return dbccontent;
+    
+    }
+    
+    
+
+
+
+
+
 }
+
+function getSignalString(targetId:string, listSignals : MsgConnection, signals:SignalForm[]): string[] {
+    let Signal_strings = "";
+    let signal_comments = "";
+    listSignals.connection.map(item => {
+        let signalIdx = signals.findIndex((s :  SignalForm) => s.uid === item.id);
+        if (signalIdx >=0 ) {
+            let signal = signals[signalIdx];
+            let Signal_string = " SG_ " + signal.name + " : " + item.startbit + "|" + signal.bitlength 
+                                + "@" +  `${signal.byteorder.includes("MOTOROLA")? 0:1 }`
+                                +  `${signal.valuetype.includes("UNSIGNED")? "+ ": "- "}`
+                                + "(" + signal.factor + "," + signal.offset + ") "
+                                + "[" + signal.minimun + "|" + signal.maximum + "] "
+                                +  `${signal.unit !== undefined?  "\""+ signal.unit + "\" ": "\"\" "}`;
+                                
+            if (Object.keys(signal.receivers).length > 0)
+            {
+                signal.receivers.map(r => {
+                    Signal_string += r.name + " ";
+                });
+            }
+            else {
+                Signal_string += "Vector__XXX ";
+            }
+
+            if (signal.comments !== ""){
+                signal_comments += 'CM_ SG_ ' + parseInt(targetId, 16) +" "+ signal.name+ " \"" + signal.comments + "\" ;\n";
+            }
+            Signal_strings += Signal_string+ "\n";
+        }
+
+
+    });
+    return [Signal_strings, signal_comments];
+}
+
+
 
 export function getHtmlForWebview(rootpath: string): string {
   

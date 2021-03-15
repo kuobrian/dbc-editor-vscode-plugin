@@ -223,13 +223,13 @@ class DataProvider implements vscode.TreeDataProvider<TreeViewItem> {
                 let tablevalues: CANDB.tableValue[] = [];
                 symbol.valueTable.table.map((v:string, idx:number) => {
                     if (v){
-                        tablevalues.push({name: v, value: idx.toString()})
+                        tablevalues.push({name: v, value: idx.toString()});
                     }
-                })
+                });
                 let valueTable: CANDB.DBCValueTable = {uid: CANDB.uuidv4(),
                     name: symbol.valueTable.table_name,
-                    tables: tablevalues}
-                this.candb_.valuetables.push(valueTable)
+                    tables: tablevalues};
+                this.candb_.valuetables.push(valueTable);
             }
         });
         this.candb_.putAttributeInObject();

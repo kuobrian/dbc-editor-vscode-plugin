@@ -7,7 +7,7 @@ import { startMsgHandler } from './editors/messageEditor';
 import { startNetworkNodesHandler } from './editors/nodeEditor';
 import { DataProvider, TreeViewItem } from "./treeviewDataprovider";
 import { startAttributeHandler } from "./attributeProvider";
-import { startTableHandler } from "./tableProvider"
+import { startTableHandler } from "./tableProvider";
 
 export function activate(context: vscode.ExtensionContext) {
 	
@@ -21,7 +21,7 @@ export function activate(context: vscode.ExtensionContext) {
 	
 
 	let dataProvider: any;
-	let selectedFilePath: string
+	let selectedFilePath: string;
 	// const dataProvider = new DataProvider(path.join(context.extensionPath, 'db_output'));
 	// vscode.window.registerTreeDataProvider('TreeView', dataProvider);
 	// let dbcObject = JSON.parse(fs.readFileSync(path.join(context.extensionPath, 'example.json'), 'utf-8'));
@@ -42,7 +42,7 @@ export function activate(context: vscode.ExtensionContext) {
 	});
 
 	vscode.commands.registerCommand('dbc-editor-vscode-plugin.createNewFile', (moduleName, candb) => {
-		vscode.window.showInformationMessage("Create New File")
+		vscode.window.showInformationMessage("Create New File");
 		dataProvider = new DataProvider(path.join(context.extensionPath, 'db_output'), undefined);
 		vscode.window.registerTreeDataProvider('TreeView', dataProvider);
 		vscode.window.showSaveDialog({
@@ -53,10 +53,10 @@ export function activate(context: vscode.ExtensionContext) {
 			}
 		}).then(fileUri => {
 			if (fileUri ) {
-				console.log(fileUri.path)
+				console.log(fileUri.path);
 				let jsonData = dataProvider.candb_.toJsonData();
-				selectedFilePath = fileUri.path
-				fs.writeFileSync(fileUri.path, jsonData)
+				selectedFilePath = fileUri.path;
+				fs.writeFileSync(fileUri.path, jsonData);
 			}
 		});
 
@@ -76,7 +76,7 @@ export function activate(context: vscode.ExtensionContext) {
 			}).then(fileUri => {
 				if (fileUri && fileUri[0]) {
 					
-					selectedFilePath = fileUri[0].fsPath
+					selectedFilePath = fileUri[0].fsPath;
 
 					let dbcObject = JSON.parse(fs.readFileSync(selectedFilePath, 'utf-8'));
 					dataProvider = new DataProvider(path.join(context.extensionPath, 'db_output'), dbcObject);
