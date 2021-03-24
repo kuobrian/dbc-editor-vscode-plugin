@@ -8,6 +8,7 @@ import { startNetworkNodesHandler } from './editors/nodeEditor';
 import { DataProvider, TreeViewItem } from "./treeviewDataprovider";
 import { startAttributeHandler } from "./attributeProvider";
 import { startTableHandler } from "./tableProvider";
+import { privateEncrypt } from 'crypto';
 
 export function activate(context: vscode.ExtensionContext) {
 	
@@ -46,17 +47,17 @@ export function activate(context: vscode.ExtensionContext) {
 		dataProvider = new DataProvider(path.join(context.extensionPath, 'db_output'), undefined);
 		vscode.window.registerTreeDataProvider('TreeView', dataProvider);
 		vscode.window.showSaveDialog({
-			defaultUri: vscode.Uri.parse('/' + context.extensionPath + "/db_output/new"),
+			defaultUri: vscode.Uri.parse('/'+ path.join(context.extensionPath, 'db_output', 'new') ),
 			title: 'Create JSON File',
 			filters: {
 				'JSON File': ['json']
 			}
 		}).then(fileUri => {
 			if (fileUri ) {
-				console.log(fileUri.path);
+				console.log(fileUri.fsPath);
 				let jsonData = dataProvider.candb_.toJsonData();
-				selectedFilePath = fileUri.path;
-				fs.writeFileSync(fileUri.path, jsonData);
+				selectedFilePath = fileUri.fsPath;
+				fs.writeFileSync(fileUri.fsPath, jsonData);
 			}
 		});
 
